@@ -20,7 +20,6 @@ tf_backend = "tf_backend_dq"
 
 # module apis
 apis_list = [
-    "cloudresourcemanager.googleapis.com",
     "cloudfunctions.googleapis.com",
     "run.googleapis.com",
     "logging.googleapis.com",
