@@ -13,3 +13,6 @@ variable "name_secret" {
   type        = string
 }
 
+variable "dependencies_apis" {
+  type    = bool
+}
