@@ -1,6 +1,5 @@
-# Service Cloud Resource Manager First
-resource "google_project_service" "cloud_resource_manager" {
+resource "google_project_service" "enable_apis" {
   project = var.id_project
-  service = "cloudresourcemanager.googleapis.com"
+  for_each = toset(var.apis_list)
+  service = each.key
 }
-
