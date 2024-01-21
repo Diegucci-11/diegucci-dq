@@ -1,0 +1,34 @@
+steps:
+  # Paso 1: Ejecutar las pruebas unitarias
+  - name: 'python:3.9'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r Codigo/QAE/qae_notification/requirements.txt
+        python -m unittest Codigo/QAE/test/test_qae_notification.py
+
+        pip install -r Codigo/QAE/qae_publisher/requirements.txt
+        python -m unittest Codigo/QAE/test/test_qae_publisher.py
+
+  # Paso 2: Desplegar la Cloud Function
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['auth', 'activate-service-account', '--key-file', 'eighth-service-396109-496d39a68911.json']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+            'functions', 'deploy', 'qae_notification_system',
+            '--region=europe-west3',
+            '--source=Codigo/QAE/qae_notification', 
+            '--trigger-topic=ceep-test-topic',
+            '--runtime=python39'
+          ]
+  
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+            'functions', 'deploy', 'qae_publisher',
+            '--region=europe-west3',
+            '--source=Codigo/QAE/qae_publisher', 
+            '--trigger-http',
+            '--runtime=python39'
+          ]

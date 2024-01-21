@@ -1,0 +1,18 @@
+functions-framework==3.*
+requests
+gspread 
+pydrive
+numpy
+pandas
+google-cloud-secret-manager
+# google.oauth2 
+gspread
+# oauth2client.service_account 
+datetime
+# base64
+# smtplib
+# os
+# json
+# email.message 
+# markupsafe 
+# re

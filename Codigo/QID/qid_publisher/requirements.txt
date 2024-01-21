@@ -1,0 +1,6 @@
+functions-framework==3.*
+gspread
+pydrive
+numpy
+pandas
+google-cloud-secret-manager
