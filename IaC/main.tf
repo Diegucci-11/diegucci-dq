@@ -11,7 +11,7 @@ terraform {
 }
 
 module "apis"{
-  source               = "./modules/apis"
+  source = "./modules/apis"
   apis_list = var.apis_list
 }
 
