@@ -47,6 +47,7 @@ module "function" {
   source       = "./modules/function"
   id_project   = var.id_project
   region       = var.region
+  name_function_qae_notification = var.name_function_qae_notification
   lenguaje_programacion          = var.lenguaje_programacion
   service_account                = var.service_account
   name_secret                    = var.name_secret
