@@ -23,7 +23,7 @@ module "pubsub" {
 }
 
 module "service-account" {
-  source  = "./modules/service_account"
+  source  = "./modules/service-account"
   id_project = var.id_project
   service_account = var.service_account
   name_secret = var.name_secret
