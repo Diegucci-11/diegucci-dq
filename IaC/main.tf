@@ -44,7 +44,7 @@ module "service_account" {
 # }
 
 module "function" {
-  source       = "./modulos/function"
+  source       = "./modules/function"
   id_project   = var.id_project
   region       = var.region
   lenguaje_programacion          = var.lenguaje_programacion
