@@ -52,6 +52,6 @@ module "function" {
   service_account                = var.service_account
   name_secret                    = var.name_secret
   dependencies_apis = module.apis.enabled_apis
-  dependencies_service_account = module.serviceaccount.service_account_created
+  dependencies_service_account = module.service_account.service_account_created
 }
 

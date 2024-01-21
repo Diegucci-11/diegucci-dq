@@ -18,12 +18,13 @@ resource "google_cloudfunctions2_function" "qae_notification" {
     available_cpu      = "0.583"
     timeout_seconds    = 500
     environment_variables = {
-      id_proyecto = var.id_project
-      service_account_email = var.service_account
-      version    = "latest"
+      SERVICE_ACCOUNT_EMAIL = var.service_account
     }
     secret_environment_variables {
+      key        = "CLAVE"
+      project_id = var.id_project
       secret     = var.name_secret
+      version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
     service_account_email = var.service_account
