@@ -16,7 +16,7 @@ variable "apis_list"{
   ]
 }
 
-# variable "id_project" {
-#   description = "Id project GCP"
-#   type        = string
-# }
+variable "id_project" {
+  description = "Id project GCP"
+  type        = string
+}
