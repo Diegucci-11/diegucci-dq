@@ -8,10 +8,10 @@ variable "id_project" {
 #   type        = string
 # }
 
-# variable "region" {
-#   description = "Region for deployment"
-#   type        = string
-# }
+variable "region" {
+  description = "Region for deployment"
+  type        = string
+}
 
 # variable "programming_language" {
 #   description = "Programming language for the cloud functions"
