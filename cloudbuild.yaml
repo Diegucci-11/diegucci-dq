@@ -6,7 +6,7 @@ steps:
       - '-c'
       - |
         if [ ! -d diegucci-dq ]; then
-          git clone https://github.com/Diegucci-11/diegucci-dq diegucci-dq
+          git clone https://github.com/Diegucci-11/diegucci-dq.git diegucci-dq
         fi
 
   - name: 'hashicorp/terraform:latest'
