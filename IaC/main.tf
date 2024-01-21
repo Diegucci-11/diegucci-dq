@@ -12,8 +12,8 @@ terraform {
 
 module "apis"{
   source = "./modules/apis"
-  id_project = var.id_project
-  apis_list = var.apis_list
+  # id_project = var.id_project
+  # apis_list = var.apis_list
 }
 
 module "pubsub" {
