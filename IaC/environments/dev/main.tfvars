@@ -7,7 +7,7 @@ name_secret = "data_quality_key"
 qae_topic = "qae_topic"
 
 
-name_function_qae_notification = ""
+name_function_qae_notification = "qae_notification"
 name_function_qae_publisher = ""
 name_function_qid_publisher = ""
 name_function_yml_publisher = ""

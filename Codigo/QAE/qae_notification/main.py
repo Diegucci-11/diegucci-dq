@@ -17,7 +17,7 @@ from google.cloud import secretmanager
 import functions_framework
 
 @functions_framework.cloud_event
-def qae_notification_system(cloud_event):
+def qae_notification(cloud_event):
 
     data = (base64.b64decode(cloud_event.data["message"]["data"])).decode('utf-8')
     data_json = json.loads(data)

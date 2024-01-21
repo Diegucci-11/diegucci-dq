@@ -43,18 +43,14 @@ module "serviceaccount" {
 #   nombre_ubicacion_local_update_scheduler  = var.nombre_ubicacion_local_update_scheduler
 # }
 
-# module "function" {
-#   source       = "./modulos/function"
-#   id_project   = var.id_project
-#   number_project = var.number_project
-#   region       = var.region
-#   lenguaje_programacion          = var.lenguaje_programacion
-#   nombre_fichero_conf            = var.nombre_fichero_conf
-#   topic_pubsub_drive_to_storage  = var.topic_pubsub_drive_to_storage
-#   topic_pubsub_storage_to_drive  = var.topic_pubsub_storage_to_drive
-#   service_account                = var.service_account
-#   nombre_scheduler               = var.nombre_scheduler
-#   name_secret                    = var.name_secret
-#   dependencies_apis = module.apis.enabled_apis
-# }
+module "function" {
+  source       = "./modulos/function"
+  id_project   = var.id_project
+  region       = var.region
+  lenguaje_programacion          = var.lenguaje_programacion
+  service_account                = var.service_account
+  name_secret                    = var.name_secret
+  dependencies_apis = module.apis.enabled_apis
+  dependencies_service_account = module.serviceaccount.service_account_created
+}
 
