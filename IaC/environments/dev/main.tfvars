@@ -2,8 +2,8 @@ id_project = "diegucci-dq"
 number_project = ""
 region = "europe-west3"
 programming_language = "python311"
-service_account = ""
-name_secret = ""
+service_account = "dataquality"
+name_secret = "data_quality_key"
 qae_topic = "qae_topic"
 
 

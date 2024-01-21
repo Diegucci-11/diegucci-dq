@@ -3,10 +3,10 @@ variable "id_project" {
   type        = string
 }
 
-variable "number_project" {
-  description = "Number project GCP"
-  type        = string
-}
+# variable "number_project" {
+#   description = "Number project GCP"
+#   type        = string
+# }
 
 variable "region" {
   description = "Region for deployment"
@@ -29,11 +29,6 @@ variable "name_secret" {
   type        = string
 }
 
-variable "name_bucket" {
-  description = "Name for the GCS bucket"
-  type        = string
-}
-
 variable "tf_backend" {
   description = "Name for the tfstate bucket"
   type        = string
@@ -46,7 +41,7 @@ variable "qae_topic" {
 }
 
 # especifico apis
-# variable "apis_list"{
-#   description = "Required APIs for the Data Quality Platform"
-#   type        = list(string)
-# }
+variable "apis_list"{
+  description = "Required APIs for the Data Quality Platform"
+  type        = list(string)
+}
