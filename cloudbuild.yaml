@@ -1,6 +1,8 @@
-- REPO_NAME: 'diegucci-dq'
-
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    env:
+      - REPO_NAME: 'diegucci-dq'
+
   # Verifica si el directorio del repositorio ya existe.
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
