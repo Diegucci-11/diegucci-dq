@@ -31,4 +31,5 @@ apis_list = [
     "pubsub.googleapis.com",
     "eventarc.googleapis.com",
     "cloudbuild.googleapis.com",
+    "iam.googleapis.com",
   ]
