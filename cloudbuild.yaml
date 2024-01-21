@@ -1,0 +1,25 @@
+REPO_NAME: 'diegucci-dq'
+
+steps:
+  # Verifica si el directorio del repositorio ya existe.
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ ! -d $REPO_NAME ]; then
+          git clone https://github.com/Diegucci-11/$REPO_NAME $REPO_NAME
+        fi
+
+  - name: 'hashicorp/terraform:latest'
+    args:
+      - 'init'
+      dir: 'IaC'
+
+
+  - name: 'hashicorp/terraform:latest'
+    args:
+      - 'apply'
+      - '-auto-approve'
+      - '-var-file=$REPO_NAME/dev.tfvars'
+      dir: 'IaC'
