@@ -27,6 +27,10 @@ resource "google_service_account_key" "my_service_account_key" {
 
 resource "google_secret_manager_secret" "my_service_account_secret" {
   secret_id = var.name_secret
+
+  replication {
+    auto {}
+  }
 }
 
 resource "google_secret_manager_secret_version" "my_service_account_secret_version" {
