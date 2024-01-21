@@ -3,7 +3,7 @@ variable "apis_list"{
   type        = list(string)
 }
 
-variable "id_project" {
-  description = "Id project GCP"
-  type        = string
-}
+# variable "id_project" {
+#   description = "Id project GCP"
+#   type        = string
+# }

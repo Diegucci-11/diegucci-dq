@@ -46,7 +46,7 @@ variable "qae_topic" {
 }
 
 # especifico apis
-variable "apis_list"{
-  description = "Required APIs for the Data Quality Platform"
-  type        = list(string)
-}
+# variable "apis_list"{
+#   description = "Required APIs for the Data Quality Platform"
+#   type        = list(string)
+# }
