@@ -5,9 +5,8 @@ steps:
     args:
       - '-c'
       - |
-        if [ ! -d diegucci-dq ]; then
-          git clone https://github.com/Diegucci-11/diegucci-dq.git diegucci-dq
-        fi
+        cd diegucci-dq
+        git pull origin main
 
   - name: 'hashicorp/terraform:latest'
     args:

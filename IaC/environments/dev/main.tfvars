@@ -15,7 +15,7 @@ name_function_yml_publisher = ""
 name_bucket = ""
 
 # bucket for tfstate
-tf_backend = "tf_backend"
+tf_backend = "tf_backend_dq"
 
 
 # module apis

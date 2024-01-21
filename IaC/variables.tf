@@ -38,3 +38,15 @@ variable "tf_backend" {
   description = "Name for the tfstate bucket"
   type        = string
 }
+
+#especifico pubsub
+variable "qae_topic" {
+  description = "Nombre del tema Pub/Sub Storage to Drive"
+  type        = string
+}
+
+# especifico apis
+variable "apis_list"{
+  description = "Required APIs for the Data Quality Platform"
+  type        = list(string)
+}

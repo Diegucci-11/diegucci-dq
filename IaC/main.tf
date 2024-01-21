@@ -12,9 +12,7 @@ terraform {
 
 module "apis"{
   source               = "./modules/apis"
-  region               = var.region
-  id_project           = var.id_project
-  listado_apis_activar = var.apis_list
+  apis_list = var.apis_list
 }
 
 module "pubsub" {
