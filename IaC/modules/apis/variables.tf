@@ -15,3 +15,8 @@ variable "apis_list"{
     "cloudbuild.googleapis.com",
   ]
 }
+
+# variable "id_project" {
+#   description = "Id project GCP"
+#   type        = string
+# }
