@@ -4,9 +4,9 @@ resource "google_project_service" "cloud_resource_manager" {
   service = "cloudresourcemanager.googleapis.com"
 }
 
-resource "google_project_service" "enable_apis" {
-  project = var.id_project
-  for_each = toset(var.apis_list)
-  service = each.key
-  depends_on = [google_project_service.cloud_resource_manager]
-}
+# resource "google_project_service" "enable_apis" {
+#   project = var.id_project
+#   for_each = toset(var.apis_list)
+#   service = each.key
+#   depends_on = [google_project_service.cloud_resource_manager]
+# }
