@@ -22,7 +22,7 @@ module "pubsub" {
   dependencies_apis = module.apis.enabled_apis
 }
 
-module "service_account" {
+module "service-account" {
   source  = "./modules/service_account"
   id_project = var.id_project
   service_account = var.service_account
