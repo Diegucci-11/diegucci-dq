@@ -14,7 +14,7 @@ steps:
   - name: 'hashicorp/terraform:latest'
     args:
       - 'init'
-      dir: 'IaC'
+    dir: 'IaC'
 
 
   - name: 'hashicorp/terraform:latest'
@@ -22,4 +22,4 @@ steps:
       - 'apply'
       - '-auto-approve'
       - '-var-file=$REPO_NAME/dev.tfvars'
-      dir: 'IaC'
+    dir: 'IaC'
