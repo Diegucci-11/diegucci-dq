@@ -8,7 +8,7 @@ resource "google_cloudfunctions2_function" "qae_notification" {
   name          = var.name_function_qae_notification
   location      = var.region
   build_config {
-    runtime     = var.lenguaje_programacion
+    runtime     = var.programming_language
     entry_point = "qae_notification"
     source = "qae_notification.zip"
   }

@@ -48,7 +48,7 @@ module "function" {
   id_project   = var.id_project
   region       = var.region
   name_function_qae_notification = var.name_function_qae_notification
-  lenguaje_programacion          = var.lenguaje_programacion
+  lenguaje_programacion          = var.programming_language
   service_account                = var.service_account
   name_secret                    = var.name_secret
   dependencies_apis = module.apis.enabled_apis
