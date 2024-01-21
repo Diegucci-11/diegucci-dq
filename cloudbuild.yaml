@@ -1,4 +1,4 @@
-REPO_NAME: 'diegucci-dq'
+- REPO_NAME: 'diegucci-dq'
 
 steps:
   # Verifica si el directorio del repositorio ya existe.
