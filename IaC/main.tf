@@ -5,7 +5,7 @@ provider "google" {
 
 terraform {
   backend "gcs" {
-    bucket  = var.tf_backend
+    bucket  = "tf_backend_dq"
     prefix  = "data_quality_tfstate"
   }
 }
