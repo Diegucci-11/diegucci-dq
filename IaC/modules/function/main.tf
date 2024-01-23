@@ -1,7 +1,20 @@
-resource "archive_file" "qae_notification_zip" {
+resource "google_storage_bucket" "bucket_functions_code_asdf" {
+  name          = "functions_code_asdf"  
+  location      = var.region     
+  force_destroy = true               
+}
+
+resource "archive_file" "function_code_zip" {
   type        = "zip"
-  output_path = "${path.module}/qae_notification.zip"
-  source_dir  = "../../../QAE/qae_notification"
+  output_path = "${path.module}/function_code.zip"
+  source_dir  = "../../../Codigo/QAE/qae_notification"
+}
+
+resource "google_storage_bucket_object" "qae_notification2storage" {
+  name   = "qae_notification"
+  source = "function_code.zip"
+  bucket = "functions_code_asdf" 
+  depends_on = [google_storage_bucket.bucket_functions_code_asdf]
 }
 
 resource "google_cloudfunctions2_function" "qae_notification" {
@@ -10,7 +23,12 @@ resource "google_cloudfunctions2_function" "qae_notification" {
   build_config {
     runtime     = var.programming_language
     entry_point = "qae_notification"
-    source = "qae_notification.zip"
+    source {
+      storage_source {
+        bucket  = "functions_code_asdf" 
+        object  = "qae_notification"
+      }
+    }
   }
   service_config {
     max_instance_count = 2
