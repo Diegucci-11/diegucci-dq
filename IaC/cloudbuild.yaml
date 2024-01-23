@@ -1,15 +1,15 @@
 steps:
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'modules/apis/cloudbuild.yaml', '.']
+    args: ['builds', 'submit', '--config', './modules/apis/cloudbuild.yaml', '.']
     id: 'build-1'
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'modules/pubsub/cloudbuild.yaml', '.']
+    args: ['builds', 'submit', '--config', './modules/pubsub/cloudbuild.yaml', '.']
     id: 'build-2'
     waitFor: ['build-1']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'modules/service_account/cloudbuild.yaml', '.']
+    args: ['builds', 'submit', '--config', './modules/service_account/cloudbuild.yaml', '.']
     id: 'build-3'
     waitFor: ['build-2']
 
