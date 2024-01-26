@@ -14,7 +14,7 @@ steps:
   # Paso 2: Desplegar la Cloud Function
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
-            'functions', 'deploy', 'qae_notification_system',
+            'functions', 'deploy', 'qae_notification',
             '--region=europe-west3',
             '--source=Codigo/QAE/qae_notification', 
             '--trigger-topic=ceep-test-topic',
