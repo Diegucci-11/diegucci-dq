@@ -1,16 +1,24 @@
 steps:
+    # - name: 'hashicorp/terraform:1.6.6'
+    #   args: ['init']
+    #   dir: 'IaC'
+    
+    # - name: 'hashicorp/terraform:1.6.6'
+    #   args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=./main.tfvars']
+    #   dir: 'modules/apis'
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/apis/cloudbuild.yaml', '.']
     id: 'build-1'
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/pubsub/cloudbuild.yaml', '.']
-    id: 'build-2'
-    waitFor: ['build-1']
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/pubsub/cloudbuild.yaml', '.']
+  #   id: 'build-2'
+  #   waitFor: ['build-1']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
-    id: 'build-3'
-    waitFor: ['build-2']
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
+  #   id: 'build-3'
+  #   waitFor: ['build-2']
 
     
