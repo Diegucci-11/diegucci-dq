@@ -14,6 +14,6 @@ steps:
             'functions', 'deploy', 'qid_publisher',
             '--region=europe-west3',
             '--source=Codigo/QID/qid_publisher', 
-            '--trigger=http',
+            '--trigger-http',
             '--runtime=python39'
           ]
