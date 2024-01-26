@@ -1,8 +1,8 @@
 steps:
   - name: 'hashicorp/terraform:1.6.6'
     args: ['init']
-    dir: 'modules/pubsub'
+    dir: 'IaC/modules/pubsub'
     
   - name: 'hashicorp/terraform:1.6.6'
     args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
-    dir: 'modules/pubsub'
+    dir: 'IaC/modules/pubsub'
