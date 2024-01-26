@@ -3,10 +3,6 @@ variable "qae_topic" {
   type        = string
 }
 
-# variable "dependencies_apis" {
-#   type    = bool
-# }
-
 variable "id_project" {
   description = "Id project GCP"
   type        = string
