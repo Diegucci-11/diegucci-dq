@@ -6,7 +6,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/pubsub/cloudbuild.yaml', '.']
     id: 'build-2'
-    waitFor: ['build-1']
+    # waitFor: ['build-1']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
