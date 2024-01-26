@@ -14,7 +14,7 @@ steps:
     waitFor: ['build-1']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', '../Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
-    id: 'build-3'
+    args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
+    id: 'build-4'
     waitFor: ['build-3']
     
