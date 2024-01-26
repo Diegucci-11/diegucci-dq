@@ -4,13 +4,13 @@ provider "google" {
 }
 
 locals {
-  # service_accounts = {
-  #   terraform_admin = {
-  #     id             = "terraform-admin",
-  #     email          = "terraform-admin@${var.project_id}.iam.gserviceaccount.com"
-  #     roles_to_grant = []
-  #   }
-  # }
+  service_accounts = {
+    terraform_admin = {
+      id             = "terraform-admin",
+      email          = "terraform-admin@${var.project_id}.iam.gserviceaccount.com"
+      roles_to_grant = []
+    }
+  }
 
   services_to_enable = [
     "cloudfunctions.googleapis.com",
