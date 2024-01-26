@@ -7,7 +7,7 @@ locals {
   service_accounts = {
     terraform_admin = {
       id             = "terraform-admin",
-      email          = "terraform-admin@${var.project_id}.iam.gserviceaccount.com"
+      email          = "terraform-admin@${var.id_project}.iam.gserviceaccount.com"
       roles_to_grant = []
     }
   }

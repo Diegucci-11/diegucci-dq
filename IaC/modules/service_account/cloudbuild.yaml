@@ -1,8 +1,8 @@
 steps:
   - name: 'hashicorp/terraform:1.6.6'
     args: ['init']
-    dir: 'modules/service_account'
+    dir: 'IaC/modules/service_account'
     
   - name: 'hashicorp/terraform:1.6.6'
-    args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=environments/dev/main.tfvars']
-    dir: 'modules/service_account'
+    args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
+    dir: 'IaC/modules/service_account'
