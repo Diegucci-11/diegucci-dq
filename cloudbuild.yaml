@@ -18,3 +18,7 @@ steps:
     id: 'build-3'
     waitFor: ['build-2']
     
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
+    id: 'build-3'
+    waitFor: ['build-2']

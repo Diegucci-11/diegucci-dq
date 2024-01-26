@@ -1,0 +1,19 @@
+steps:
+  # Paso 1: Ejecutar las pruebas unitarias
+  - name: 'python:3.9'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r Codigo/QID/qid_publisher/requirements.txt
+        python -m unittest Codigo/QID/test/test_qid_publisher.py
+
+  # Paso 2: Desplegar la Cloud Function
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+            'functions', 'deploy', 'qid_publisher',
+            '--region=europe-west3',
+            '--source=Codigo/QID/qid_publisher', 
+            '--trigger=http',
+            '--runtime=python39'
+          ]
