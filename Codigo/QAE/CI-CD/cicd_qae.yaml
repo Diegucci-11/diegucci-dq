@@ -13,9 +13,6 @@ steps:
 
   # Paso 2: Desplegar la Cloud Function
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['auth', 'activate-service-account', '--key-file', 'eighth-service-396109-496d39a68911.json']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'qae_notification_system',
             '--region=europe-west3',
