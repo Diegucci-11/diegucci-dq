@@ -22,3 +22,8 @@ steps:
     args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
     id: 'build-4'
     waitFor: ['build-2']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml', '.']
+    id: 'build-5'
+    waitFor: ['build-2']

@@ -1,0 +1,19 @@
+steps:
+  # Paso 1: Ejecutar las pruebas unitarias
+  - name: 'python:3.9'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r Codigo/YML_Publisher/yml_publisher/requirements.txt
+        python -m unittest Codigo/YML_Publisher/test/test_yml_publisher.py
+
+  # Paso 2: Desplegar la Cloud Function
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+            'functions', 'deploy', 'yml_publisher',
+            '--region=europe-west3',
+            '--source=Codigo/YML_Publisher/yml_publisher', 
+            '--trigger-http',
+            '--runtime=python39'
+          ]
