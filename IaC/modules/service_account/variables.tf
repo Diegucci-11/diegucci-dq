@@ -12,3 +12,13 @@ variable "name_secret" {
   description = "Name for the secret of the service-account key"
   type        = string
 }
+
+variable "id_project" {
+  description = "Id project GCP"
+  type        = string
+}
+
+variable "region" {
+  description = "Region for deployment"
+  type        = string
+}

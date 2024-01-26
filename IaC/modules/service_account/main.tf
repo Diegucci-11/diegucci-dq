@@ -1,3 +1,8 @@
+provider "google" {
+  project     = var.id_project
+  region      = var.region
+}
+
 resource "google_service_account" "data_quality_service_account" {
   account_id   = var.service_account
   display_name = "DQ service account"
