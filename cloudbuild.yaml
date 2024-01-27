@@ -28,12 +28,12 @@ steps:
     id: 'check-changes-qae'
     waitFor: ['service_account']
 
-    # - name: 'gcr.io/cloud-builders/gcloud'
+  # - name: 'gcr.io/cloud-builders/gcloud'
     # args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
     # id: 'check-changes-qiq'
     # waitFor: ['service_account']
 
-    - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml', '.']
     id: 'check-changes-yml-publisher'
     waitFor: ['service_account']
