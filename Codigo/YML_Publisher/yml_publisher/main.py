@@ -46,11 +46,9 @@ def yml_publisher(request):
     for rule in rules_values:
         output_yaml += "\t" + str(rule) + "\n\n"
     
-    print(output_yaml)
-
     output_yaml += "rule_bindings: \n"
     
-    all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values_matrix_input()
+    all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
     df = pd.DataFrame(all_values_matrix_input[2:])
 
@@ -59,13 +57,22 @@ def yml_publisher(request):
 
     print(df)
 
-    # for indice_fila, fila in df.iterrows():
-    #     binding = ""
-    #     if(indice_fila+2 is not None):
-    #         binding += "\t" + fila[0].to_upper() + "_" + fila[1].to_upper() + ":\n"
-    #         binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{table}"
+    project_id = "diegucci-dq"
+    location = "europe-southwest1"
+    dataset = "Dataset_test"
 
-    
+    for indice_fila, fila in df.iloc[2:].iterrows():
+        binding = ""
+        if(indice_fila is not None):
+            binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
+            binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            binding += f"\t\tcolumn_id: {fila[1]}\n"
+            binding += f"\t\trow_filter_id: {fila[7]}\n"
+            binding += "\t\trule_ids:\n"
+        
+        output_yaml += binding
+
+    print(output_yaml)
 
     # DGQO_TIENDA_NOMBRE:
     #     entity_uri: bigquery://projects/diegucci-dq/locations/europe-southwest1/datasets/Dataset_test/tables/Tienda
@@ -84,20 +91,7 @@ def yml_publisher(request):
     #     bu: ES
     #     enginetype: CORE
 
-
-
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
-    
-    # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
-    # sheet_instance_tablas = sheet.get_worksheet(15)
-    # values_list = sheet_instance_tablas.col_values(1)
-    # output_list = " ".join(str(x) for x in values_list)
-    # export_yaml = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
-    # export_yaml.SetContentString(output_list)
-    # export_yaml.Upload()
-    # with open(file_name, 'w') as f:
-    #     f.write(output_list)
-    
     return ""
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
