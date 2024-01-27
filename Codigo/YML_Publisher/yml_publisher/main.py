@@ -27,13 +27,13 @@ def yml_publisher(request):
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     
     reglas = spreadsheet.worksheet('Reglas')
-    rules = reglas.range('K2:K')
+    rules = reglas.range('K2:K').values_list()
     
     filtros = spreadsheet.worksheet('Filtros_Aut')
-    filters = filtros.range('D3:D')
+    filters = filtros.range('D3:D').values_list()
+    # column_d_values = [cell.value for cell in range_d if cell.value.strip()]
 
     output_yaml = "rule_dimensions:\n\t- Exactitud\n\t- Completitud\n\t- Consistencia\n\t- Integridad\n\t- Disponibilidad\n\t- Unicidad\n\t- Validez\n\n"
-    print(output_yaml)
     
     output_yaml += "row_filters: \n"
     for filter in filters:
