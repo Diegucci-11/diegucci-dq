@@ -71,14 +71,17 @@ def yml_publisher(request):
             for columna, valor_celda in fila[8:].items():
                 if valor_celda == 'x':
                     binding += f"\t\t- {df.iloc[0][columna]}\n"
-                elif valor_celda is not None:
-                    binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
-      
-        binding += "\n\t\tmetadata:\n"
+                elif valor_celda is not None and valor_celda.strip() != "":
+                    if df.iloc[0][columna] != "" and df.iloc[0][columna] is not None:
+                        binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
+                    else:
+                        binding += f"\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
+                binding += "\n"
+        binding += "\n\n\t\tmetadata:\n"
         binding += f"\t\tproject:{project_id}\n"
         binding += f"\t\tcapa:{fila[5]}\n"
         binding += f"\t\tbu:{fila[6]}\n\n"
-        
+
         print(binding)
         output_yaml += binding
 
