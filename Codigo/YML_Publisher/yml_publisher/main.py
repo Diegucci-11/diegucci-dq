@@ -13,6 +13,7 @@ import re
 from google.cloud import secretmanager
 from google.cloud import storage
 import functions_framework
+import pandas as pd
 
 @functions_framework.http
 def yml_publisher(request):
@@ -28,7 +29,9 @@ def yml_publisher(request):
     
     reglas = spreadsheet.worksheet('Reglas')
     rules = reglas.range('K2:K')
-    
+    rules_values = [cell.value for cell in rules if cell.value.strip()]
+
+
     filtros = spreadsheet.worksheet('Filtros_Aut')
     filters = filtros.range('D3:D')
     filters_values = [cell.value for cell in filters if cell.value.strip()]
@@ -39,16 +42,23 @@ def yml_publisher(request):
     for filter in filters_values:
         output_yaml += "\t" + str(filter) + "\n\n"
     
-    print(output_yaml)
-
     output_yaml += "rules: \n"
-    for rule in rules:
+    for rule in rules_values:
         output_yaml += "\t" + str(rule) + "\n\n"
     
     print(output_yaml)
 
     output_yaml += "rule_bindings: \n"
     
+    all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values_matrix_input()
+
+    df = pd.DataFrame(all_values_matrix_input[2:])
+
+    df.dropna(how='all', axis=0, inplace=True)
+    df.dropna(how='all', axis=1, inplace=True)
+
+    print(df)
+
     # DGQO_TIENDA_NOMBRE:
     #     entity_uri: bigquery://projects/diegucci-dq/locations/europe-southwest1/datasets/Dataset_test/tables/Tienda
     #     column_id: nombre
