@@ -29,7 +29,8 @@ steps:
     args:
       - '-c'
       - |
-        if git diff HEAD^ -- Codigo/QAE; then
+        last_commit_hash=$(git rev-parse HEAD)
+        if git diff $last_commit_hash -- Codigo/QAE; then
           echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
