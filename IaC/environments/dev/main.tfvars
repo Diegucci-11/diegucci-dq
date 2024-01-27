@@ -5,20 +5,15 @@ programming_language = "python311"
 service_account = "dataquality"
 name_secret = "data_quality_key"
 qae_topic = "qae_topic"
-
+name_dataplex_lake = "quality_tasks_lake"
 
 name_function_qae_notification = "qae_notification"
-name_function_qae_publisher = ""
-name_function_qid_publisher = ""
-name_function_yml_publisher = ""
 
-name_bucket = ""
+name_quality_bucket = "yml_bucket"
 
 # bucket for tfstate
 tf_backend = "tf_backend_dq"
 
-
-# module apis
 apis_list = [
     "cloudfunctions.googleapis.com",
     "run.googleapis.com",

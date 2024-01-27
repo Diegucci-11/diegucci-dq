@@ -3,7 +3,7 @@ variable "id_project" {
   type        = string
 }
 
-variable "name_quality_bucket" {
+variable "name_dataplex_lake" {
   description = "Nombre del bucket GCP"
   type        = string
 }
