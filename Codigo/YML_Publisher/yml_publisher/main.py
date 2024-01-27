@@ -51,7 +51,6 @@ def yml_publisher(request):
     all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
     df = pd.DataFrame(all_values_matrix_input[2:])
-    print(df.shape)
 
     df.dropna(how='all', axis=0, inplace=True)
 
@@ -59,7 +58,7 @@ def yml_publisher(request):
 
     project_id = tablas.get('B4')
     print(tablas.get('B4'))
-    print(tablas.cell('B4').value)
+    print(tablas.cell(4, 2).value)
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = tablas.range('B:C').get_all_values()
