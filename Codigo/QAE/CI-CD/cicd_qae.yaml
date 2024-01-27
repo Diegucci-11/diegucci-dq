@@ -19,7 +19,7 @@ steps:
             '--region=europe-west3',
             '--source=Codigo/QAE/qae_notification', 
             '--trigger-topic=qae_topic',
-            '--runtime=python39'
+            '--runtime=python39',
             '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
           ]
     waitFor: ['testing_functions']
@@ -31,6 +31,7 @@ steps:
             '--source=Codigo/QAE/qae_publisher', 
             '--trigger-http',
             '--runtime=python39',
+            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
             '--set-secrets=data_quality_key'
           ]
     waitFor: ['testing_functions']

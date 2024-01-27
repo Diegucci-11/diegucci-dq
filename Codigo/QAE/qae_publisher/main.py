@@ -18,12 +18,13 @@ import os
 def qae_publisher(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     # id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
+    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('clave_cuenta_servicio')), scopes=SCOPES)
 
-    credentials_json = json.loads(get_password('data_quality_key'))
-    credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
+    # credentials_json = json.loads(get_password('data_quality_key'))
+    # credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
     client = gspread.authorize(credentials)
-    gauth = GoogleAuth()
-    gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
+    # gauth = GoogleAuth()
+    # gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
     # drive = GoogleDrive(gauth)
 
     # dateNow_name = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
