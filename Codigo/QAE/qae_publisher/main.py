@@ -37,7 +37,6 @@ def qae_publisher(request):
     datasetGCP = str(sheet.get('B5')).replace("[","").replace("]","").replace("'","")
     lozalizaciónGCP = str(sheet.get('B6')).replace("[","").replace("]","").replace("'","")
 
-    # dfafdas
     output_list = "# Autor: QAE_Publisher\n"\
     "# Modulo: QAE\n"\
     "#   - Notifica por email a los usuarios establecidos cuando ocurre algún error\n" \
@@ -61,7 +60,7 @@ def qae_publisher(request):
     destination_blob_name = "qae_test"
 
     upload_blob(bucket_name, output_list, destination_blob_name)
-
+# asdfsdf
     # export_qid.SetContentString(output_list)
     # export_qid.Upload()
     # with open(file_name, 'w') as f:
