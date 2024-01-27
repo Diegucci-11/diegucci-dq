@@ -61,7 +61,7 @@ def yml_publisher(request):
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
-        if(fila[0] is not None):
+        if(fila[0] is not None and fila[0].strip() != ''):
             binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
             binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"\t\tcolumn_id: {fila[1]}\n"
@@ -77,9 +77,10 @@ def yml_publisher(request):
             
             print("---------------------------------------------------")
             print(binding)
+        
         output_yaml += binding
 
-    print(output_yaml)
+    # print(output_yaml)
 
     # DGQO_TIENDA_NOMBRE:
     #     entity_uri: bigquery://projects/diegucci-dq/locations/europe-southwest1/datasets/Dataset_test/tables/Tienda
