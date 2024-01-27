@@ -39,9 +39,16 @@ def yml_publisher(request):
     filtros = spreadsheet.worksheet('Filtros_Aut')
     filters = filtros.range('D3:D')
 
-    output_yaml = "rules: \n"
+    output_yaml = "rule_dimensions:\n\t- Exactitud\n\t- Completitud\n\t- Consistencia\n\t- Integridad\n\t- Disponibilidad\n\t- Unicidad\n\t- Validez\n\n"
+    output_yaml += "row_filters: \n"
+    for filter in filters:
+        output_yaml += "\t" + filter + "\n\n"
+
+    output_yaml += "rules: \n"
     for rule in rules:
-        output_yaml += "\t\t" + rule
+        output_yaml += "\t" + rule + "\n\n"
+    
+
 
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
     # sheet_instance_tablas = sheet.get_worksheet(15)

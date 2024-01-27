@@ -17,17 +17,8 @@ import os
 @functions_framework.http
 def qae_publisher(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    credentials = service_account.Credentials.from_service_account_info(json.dumps(os.environ.get('DQ_KEY')), scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    print("Cliente definido!")
-    # gauth = GoogleAuth()
-    # gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
-    # drive = GoogleDrive(gauth)
-
-    # dateNow_name = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
-    # file_name = "QAE" + dateNow_name
-    # file_name = "qae_test"
-    # export_qid = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
 
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     sheet = spreadsheet.worksheet('Tablas')
@@ -61,18 +52,7 @@ def qae_publisher(request):
     destination_blob_name = os.environ.get('QAE_SQL')
 
     upload_blob(bucket_name, output_list, destination_blob_name)
-# asdfsdf
-    # export_qid.SetContentString(output_list)
-    # export_qid.Upload()
-    # with open(file_name, 'w') as f:
-    #     f.write(output_list)
     return ""
-
-# def get_password(clave):
-#     client = secretmanager.SecretManagerServiceClient()
-#     secret_name = f"projects/409016403024/secrets/{clave}/versions/2"
-#     response = client.access_secret_version(name=secret_name)
-#     return response.payload.data.decode("utf-8")
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
     storage_client = storage.Client()
