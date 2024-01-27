@@ -58,7 +58,8 @@ steps:
     args:
       - '-c'
       - |
-        if ./test.sh; then
+        changes="git diff HEAD^ HEAD -- Codigo/QID"
+        if $(eval "$changes"); then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QID. Se ejecutará el paso de compilación."
@@ -72,7 +73,7 @@ steps:
   #   args:
   #     - '-c'
   #     - |
-  #       if git diff HEAD -- Codigo/YML_Publisher; then
+  #       if git diff HEAD^ HEAD -- Codigo/YML_Publisher; then
   #         echo "No hay cambios en Codigo/YML_Publisher. No se ejecutará el paso de compilación."
   #       else
   #         echo "Se detectaron cambios en Codigo/YML_Publisher. Se ejecutará el paso de compilación."
