@@ -32,6 +32,6 @@ steps:
             '--trigger-http',
             '--runtime=python39',
             '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
-            '--set-secrets=DQ_KEY=data_quality_key'
+            '--set-secrets=DQ_KEY=data_quality_key:latest'
           ]
     waitFor: ['testing_functions']
