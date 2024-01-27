@@ -27,4 +27,6 @@ apis_list = [
     "eventarc.googleapis.com",
     "cloudbuild.googleapis.com",
     "iam.googleapis.com",
+    "dataplex.googleapis.com",
+    "dataproc.googleapis.com",
   ]
