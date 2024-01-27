@@ -37,7 +37,7 @@ def qae_publisher(request):
     datasetGCP = str(sheet.get('B5')).replace("[","").replace("]","").replace("'","")
     lozalizaciónGCP = str(sheet.get('B6')).replace("[","").replace("]","").replace("'","")
 
-
+    # dfafdas
     output_list = "# Autor: QAE_Publisher\n"\
     "# Modulo: QAE\n"\
     "#   - Notifica por email a los usuarios establecidos cuando ocurre algún error\n" \

@@ -65,5 +65,3 @@ steps:
           gcloud builds submit --config Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml .
         fi
     waitFor: ['service_account']
-
-  
