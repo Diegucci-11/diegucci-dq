@@ -9,6 +9,8 @@ name_dataplex_lake = "quality-tasks-lake"
 name_function_qae_notification = "qae_notification"
 
 name_quality_bucket = "yml_bucket"
+name_qid_bucket = "qid_bucket"
+name_qae_bucket = "qae_bucket"
 
 # bucket for tfstate
 tf_backend = "tf_backend_dq"
