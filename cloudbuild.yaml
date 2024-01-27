@@ -23,24 +23,24 @@ steps:
     id: 'dataplex_lake'
     waitFor: ['enable_apis']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
-    id: 'check-changes-qae'
-    waitFor: ['service_account']
-
   # - name: 'gcr.io/cloud-builders/gcloud'
-  #   id: check-changes-qae
-  #   entrypoint: 'bash'
-  #   args:
-  #     - '-c'
-  #     - |
-  #       if git diff HEAD^ HEAD -- Codigo/QAE; then
-  #         echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
-  #       else
-  #         echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
-  #         gcloud builds submit --config Codigo/QAE/CI-CD/cicd_qae.yaml .
-  #       fi
+  #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
+  #   id: 'check-changes-qae'
   #   waitFor: ['service_account']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: check-changes-qae
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if git diff HEAD\^ HEAD -- Codigo/QAE; then
+          echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
+        else
+          echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
+          gcloud builds submit --config Codigo/QAE/CI-CD/cicd_qae.yaml .
+        fi
+    waitFor: ['service_account']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: check-changes-qid
