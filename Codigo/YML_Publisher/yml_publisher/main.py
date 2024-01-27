@@ -53,9 +53,7 @@ def yml_publisher(request):
     df = pd.DataFrame(all_values_matrix_input[2:])
 
     df.dropna(how='all', axis=0, inplace=True)
-    df.dropna(how='all', axis=1, inplace=True)
-
-    print(df)
+    df.dropna(how='all', axis=1, subset=df.columns[8:], inplace=True)
 
     project_id = "diegucci-dq"
     location = "europe-southwest1"
@@ -63,7 +61,7 @@ def yml_publisher(request):
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
-        if(indice_fila is not None):
+        if(fila[0] is not None):
             binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
             binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"\t\tcolumn_id: {fila[1]}\n"
