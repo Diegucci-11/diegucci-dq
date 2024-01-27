@@ -68,23 +68,19 @@ def yml_publisher(request):
             binding += f"\t\tcolumn_id: {fila[1]}\n"
             binding += f"\t\trow_filter_id: {fila[7]}\n"
             binding += "\t\trule_ids:\n"
-            print("---------------------------------------------------")
-            print(binding)
             for columna, valor_celda in fila[8:].items():
                 if valor_celda == 'x':
                     binding += f"\t\t- {df.iloc[0][columna]}\n"
-                else:
+                elif valor_celda is not None:
                     binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
-            
-            print("---------------------------------------------------")
-            print(binding)
+      
+        binding += "\n\t\tmetadata:\n"
+        binding += f"\t\tproject:{project_id}\n"
+        binding += f"\t\tcapa:{fila[5]}\n"
+        binding += f"\t\tbu:{fila[6]}\n\n"
         
+        print(binding)
         output_yaml += binding
-
-        output_yaml += "\n\t\tmetadata:\n"
-        output_yaml += f"\t\tproject:{project_id}\n"
-        output_yaml += f"\t\tcapa:{fila[5]}\n"
-        output_yaml += f"\t\tbu:{fila[6]}\n\n"
 
     # print(output_yaml)
 
