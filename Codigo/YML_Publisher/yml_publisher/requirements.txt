@@ -2,3 +2,4 @@ functions-framework==3.*
 gspread
 pydrive
 google-cloud-secret-manager
+google-cloud-storage

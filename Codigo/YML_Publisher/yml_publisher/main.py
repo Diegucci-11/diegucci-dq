@@ -11,30 +11,28 @@ from oauth2client.service_account import ServiceAccountCredentials
 from markupsafe import escape
 import re
 from google.cloud import secretmanager
+from google.cloud import storage
 import functions_framework
 
 @functions_framework.http
 def yml_publisher(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     dateNow_name = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
-    file_name = "CEEP_YML_"+dateNow_name+".yml"
+    file_name = "YML_"+dateNow_name+".yml"
 
-    #Incluir el id del repo del drive de test donde se quiera almacenar los yaml del proyecto
-    # id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
-
-    # credentials_json = json.loads(get_password('credenciales_ceep'))
-    credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    # gauth = GoogleAuth()
-    # gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
-    # drive = GoogleDrive(gauth)
 
-    spreadsheet = client.open('MatrixInput_v1.1')
-
+    spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
+    
     reglas = spreadsheet.worksheet('Reglas')
     rules = reglas.range('K2:K')
+    i=0
     for rule in rules:
+        if(i > 4): 
+            return
         print(rule)
+        i+=1
     
     filtros = spreadsheet.worksheet('Filtros_Aut')
     filters = filtros.range('D3:D')
@@ -48,7 +46,9 @@ def yml_publisher(request):
     for rule in rules:
         output_yaml += "\t" + rule + "\n\n"
     
-
+    output_yaml += "rule_bindings: \n"
+    
+    upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
 
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
     # sheet_instance_tablas = sheet.get_worksheet(15)
@@ -62,8 +62,10 @@ def yml_publisher(request):
 
     return ""
 
-# def get_password(clave):
-#     client = secretmanager.SecretManagerServiceClient()
-#     secret_name = f"projects/513602888593/secrets/{clave}/versions/1"
-#     response = client.access_secret_version(name=secret_name)
-#     return response.payload.data.decode("utf-8")
+def upload_blob(bucket_name, output_list, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_string(output_list)
+
+    print(f"Archivo {destination_blob_name} subido al bucket {bucket_name}.")
