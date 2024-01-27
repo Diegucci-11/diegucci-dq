@@ -38,7 +38,10 @@ def yml_publisher(request):
     
     filtros = spreadsheet.worksheet('Filtros_Aut')
     filters = filtros.range('D3:D')
-    
+
+    output_yaml = "rules: \n"
+    for rule in rules:
+        output_yaml += "\t\t" + rule
 
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
     # sheet_instance_tablas = sheet.get_worksheet(15)

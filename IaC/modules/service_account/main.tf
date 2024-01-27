@@ -39,7 +39,6 @@ resource "google_secret_manager_secret" "my_service_account_secret" {
 }
 
 resource "google_secret_manager_secret_version" "my_service_account_secret_version" {
-  secret = google_secret_manager_secret.my_service_account_secret.id
-  secret_data = jsonencode(google_service_account_key.my_service_account_key.private_key)
-  # secret_data = google_service_account_key.my_service_account_key.private_key
+  secret = google_secret_manager_secret.my_service_account_secret.name
+  secret_data = google_service_account_key.my_service_account_key.private_key
 } 

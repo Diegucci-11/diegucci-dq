@@ -17,11 +17,7 @@ import os
 @functions_framework.http
 def qae_publisher(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    print(os.environ.get('DQ_KEY'))
-    print("---------------------------")
-    print(json.loads(os.environ.get('DQ_KEY')))
-    print("---------------------------")
-    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(json.dumps(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
     print("Cliente definido!")
     # gauth = GoogleAuth()
