@@ -72,9 +72,9 @@ def yml_publisher(request):
             print(binding)
             for columna, valor_celda in fila[8:].items():
                 if valor_celda == 'x':
-                    binding += f"\t\t- {df.iloc[1][columna]}\n"
+                    binding += f"\t\t- {df.iloc[0][columna]}\n"
                 else:
-                    binding += f"\t\t- {df.iloc[1][columna]}:\n\t\t\t{df.iloc[2][columna]}: {valor_celda}\n"
+                    binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
             
             print("---------------------------------------------------")
             print(binding)
