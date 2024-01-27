@@ -27,5 +27,6 @@ steps:
             '--region=europe-west3',
             '--source=Codigo/QAE/qae_publisher', 
             '--trigger-http',
-            '--runtime=python39'
+            '--runtime=python39',
+            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
           ]

@@ -30,4 +30,5 @@ apis_list = [
     "iam.googleapis.com",
     "dataplex.googleapis.com",
     "dataproc.googleapis.com",
+    "composer.googleapis.com",
   ]
