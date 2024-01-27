@@ -29,7 +29,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff HEAD~1 -- Codigo/QAE; then
+        if git diff HEAD -- Codigo/QAE; then
           echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
