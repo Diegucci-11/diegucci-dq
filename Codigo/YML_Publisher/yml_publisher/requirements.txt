@@ -3,3 +3,4 @@ gspread
 pydrive
 google-cloud-secret-manager
 google-cloud-storage
+pandas
