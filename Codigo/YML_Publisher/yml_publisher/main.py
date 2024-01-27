@@ -37,13 +37,13 @@ def yml_publisher(request):
     
     output_yaml += "row_filters: \n"
     for filter in filters:
-        output_yaml += "\t" + filter + "\n\n"
+        output_yaml += "\t" + str(filter) + "\n\n"
     
     print(output_yaml)
 
     output_yaml += "rules: \n"
     for rule in rules:
-        output_yaml += "\t" + rule + "\n\n"
+        output_yaml += "\t" + str(rule) + "\n\n"
     
     print(output_yaml)
 
