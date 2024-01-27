@@ -2,6 +2,7 @@ steps:
   # Paso 1: Ejecutar las pruebas unitarias
   - name: 'python:3.9'
     entrypoint: 'bash'
+    id: testing_functions
     args:
       - '-c'
       - |
@@ -19,8 +20,10 @@ steps:
             '--source=Codigo/QAE/qae_notification', 
             '--trigger-topic=qae_topic',
             '--runtime=python39'
+            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
           ]
-  
+    waitFor: ['testing_functions']
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'qae_publisher',
@@ -28,5 +31,6 @@ steps:
             '--source=Codigo/QAE/qae_publisher', 
             '--trigger-http',
             '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
+            '--set-secrets=data_quality_key'
           ]
+    waitFor: ['testing_functions']
