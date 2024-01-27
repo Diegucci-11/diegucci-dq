@@ -10,6 +10,9 @@ import datetime
 import json
 from google.cloud import secretmanager
 from google.cloud import storage
+from markupsafe import escape
+import re
+import os
 
 @functions_framework.http
 def qae_publisher(request):
