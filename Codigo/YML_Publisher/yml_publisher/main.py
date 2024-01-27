@@ -20,16 +20,22 @@ def yml_publisher(request):
     file_name = "CEEP_YML_"+dateNow_name+".yml"
 
     #Incluir el id del repo del drive de test donde se quiera almacenar los yaml del proyecto
-    id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
+    # id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
 
-    credentials_json = json.loads(get_password('credenciales_ceep'))
+    # credentials_json = json.loads(get_password('credenciales_ceep'))
     credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
     client = gspread.authorize(credentials)
-    gauth = GoogleAuth()
-    gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
-    drive = GoogleDrive(gauth)
+    # gauth = GoogleAuth()
+    # gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
+    # drive = GoogleDrive(gauth)
 
-    sheet = client.open('MatrixInput_v1.1')
+    spreadsheet = client.open('MatrixInput_v1.1')
+
+    reglas = spreadsheet.worksheet('Reglas')
+    rules = reglas.col_values(11)
+
+    
+
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
     # sheet_instance_tablas = sheet.get_worksheet(15)
     # values_list = sheet_instance_tablas.col_values(1)
