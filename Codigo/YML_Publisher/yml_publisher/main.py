@@ -27,16 +27,16 @@ def yml_publisher(request):
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     
     reglas = spreadsheet.worksheet('Reglas')
-    rules = reglas.range('K2:K').values_list()
+    rules = reglas.range('K2:K')
     
     filtros = spreadsheet.worksheet('Filtros_Aut')
-    filters = filtros.range('D3:D').values_list()
-    # column_d_values = [cell.value for cell in range_d if cell.value.strip()]
+    filters = filtros.range('D3:D')
+    filters_values = [cell.value for cell in filters if cell.value.strip()]
 
     output_yaml = "rule_dimensions:\n\t- Exactitud\n\t- Completitud\n\t- Consistencia\n\t- Integridad\n\t- Disponibilidad\n\t- Unicidad\n\t- Validez\n\n"
     
     output_yaml += "row_filters: \n"
-    for filter in filters:
+    for filter in filters_values:
         output_yaml += "\t" + str(filter) + "\n\n"
     
     print(output_yaml)
@@ -49,6 +49,25 @@ def yml_publisher(request):
 
     output_yaml += "rule_bindings: \n"
     
+    # DGQO_TIENDA_NOMBRE:
+    #     entity_uri: bigquery://projects/diegucci-dq/locations/europe-southwest1/datasets/Dataset_test/tables/Tienda
+    #     column_id: nombre
+    #     row_filter_id: NO_FILTER
+    #     reference_columns_id: Tienda
+    #     rule_ids:
+
+    #     - NOT_NULL_SIMPLE
+
+    #     - NOT_BLANK
+
+    #     metadata:
+    #     project: DQ_Test
+    #     layer: RAW
+    #     bu: ES
+    #     enginetype: CORE
+
+
+
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
