@@ -29,7 +29,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff HEAD^ -- Codigo/QAE; then
+        if git diff HEAD~1 -- Codigo/QAE; then
           echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
@@ -45,9 +45,9 @@ steps:
       - |
         if git diff HEAD^ -- Codigo/QID; then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
-          gcloud builds submit --config Codigo/QID/CI-CD/cicd_qid.yaml .
         else
           echo "Se detectaron cambios en Codigo/QID. Se ejecutará el paso de compilación."
+          gcloud builds submit --config Codigo/QID/CI-CD/cicd_qid.yaml .
         fi
     waitFor: ['service_account']
 
