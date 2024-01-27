@@ -57,13 +57,11 @@ def yml_publisher(request):
 
     tablas = spreadsheet.worksheet('Tablas')
 
-    project_id = tablas.range('B4').value()
+    project_id = tablas.get('B4').value
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = tablas.range('B:C').get_all_values()
     df_tablas.dropna(how='all', axis=0, inplace=True)
-
-    
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
