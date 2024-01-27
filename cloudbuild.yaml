@@ -23,7 +23,7 @@ steps:
     id: 'build-4'
     waitFor: ['build-2']
 
-  - name: Check for changes in Codigo/QAE directory
+  - name: check-changes-qae
     id: check-changes-qae
     entrypoint: 'bash'
     args:
