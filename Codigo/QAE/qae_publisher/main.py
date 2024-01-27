@@ -66,7 +66,7 @@ def qae_publisher(request):
     # export_qid.Upload()
     # with open(file_name, 'w') as f:
     #     f.write(output_list)
-    # return ""
+    return ""
 
 def get_password(clave):
     client = secretmanager.SecretManagerServiceClient()
