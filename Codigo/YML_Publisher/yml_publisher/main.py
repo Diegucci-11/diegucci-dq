@@ -66,7 +66,7 @@ def yml_publisher(request):
         binding = ""
         if(fila[0] is not None and fila[0].strip() != ''):
             dataset = "FFF"
-            for fila_tablas in df_tablas.iterrows():
+            for i, fila_tablas in df_tablas.iterrows():
                 if(fila_tablas[1] == fila[0]):
                     dataset = fila_tablas[1]
             binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
