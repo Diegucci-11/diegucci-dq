@@ -14,7 +14,7 @@ from google.cloud import secretmanager
 
 @functions_framework.http
 def qid_publisher(request):
-# afdsfad
+
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
 
