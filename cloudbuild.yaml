@@ -58,6 +58,7 @@ steps:
     args:
       - '-c'
       - |
+        echo "Hola ^"
         if git diff 'HEAD^' HEAD -- Codigo/QID; then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
         else
