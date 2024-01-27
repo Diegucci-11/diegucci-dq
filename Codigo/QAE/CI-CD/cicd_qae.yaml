@@ -17,7 +17,7 @@ steps:
             'functions', 'deploy', 'qae_notification',
             '--region=europe-west3',
             '--source=Codigo/QAE/qae_notification', 
-            '--trigger-topic=ceep-test-topic',
+            '--trigger-topic=qae_topic',
             '--runtime=python39'
           ]
   

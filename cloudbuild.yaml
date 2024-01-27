@@ -29,7 +29,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff --quiet HEAD^ -- Codigo/QAE; then
+        if git diff HEAD^ -- Codigo/QAE; then
           echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
@@ -43,7 +43,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff --quiet HEAD^ -- Codigo/QID; then
+        if git diff HEAD^ -- Codigo/QID; then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QID. Se ejecutará el paso de compilación."
@@ -57,7 +57,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff --quiet HEAD^ -- Codigo/YML_Publisher; then
+        if git diff HEAD^ -- Codigo/YML_Publisher; then
           echo "No hay cambios en Codigo/YML_Publisher. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/YML_Publisher. Se ejecutará el paso de compilación."
