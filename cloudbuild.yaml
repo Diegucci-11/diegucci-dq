@@ -58,6 +58,7 @@ steps:
     args:
       - '-c'
       - |
+        git fetch
         git log
         if ./test.sh; then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
