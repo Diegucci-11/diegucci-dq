@@ -54,11 +54,19 @@ def yml_publisher(request):
     print(df.shape)
 
     df.dropna(how='all', axis=0, inplace=True)
-    # df.dropna(how='all', axis=1, subset=df.columns[8:], inplace=True)
 
-    project_id = "diegucci-dq"
-    location = "europe-southwest1"
-    dataset = "Dataset_test"
+    tablas = spreadsheet.worksheet('Tablas')
+
+    project_id = tablas.range('B4').value()
+    location = "europe-southwest1" # NECESARIO?
+
+    df_tablas = tablas.range('B:C').get_all_values()
+    df_tablas.dropna(how='all', axis=0, inplace=True)
+
+    dataset = "FFF"
+    for fila_tablas in df_tablas.iterrows():
+        if(fila_tablas[1] == "fila[0]"):
+            dataset = fila_tablas[1]
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
@@ -86,23 +94,6 @@ def yml_publisher(request):
         output_yaml += binding
 
     # print(output_yaml)
-
-    # DGQO_TIENDA_NOMBRE:
-    #     entity_uri: bigquery://projects/diegucci-dq/locations/europe-southwest1/datasets/Dataset_test/tables/Tienda
-    #     column_id: nombre
-    #     row_filter_id: NO_FILTER
-    #     reference_columns_id: Tienda
-    #     rule_ids:
-
-    #     - NOT_NULL_SIMPLE
-
-    #     - NOT_BLANK
-
-    #     metadata:
-    #     project: DQ_Test
-    #     layer: RAW
-    #     bu: ES
-    #     enginetype: CORE
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     return ""
