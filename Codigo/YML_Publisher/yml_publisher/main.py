@@ -57,7 +57,9 @@ def yml_publisher(request):
 
     tablas = spreadsheet.worksheet('Tablas')
 
-    project_id = tablas.get('B4').value
+    project_id = tablas.get('B4')
+    print(tablas.get('B4'))
+    print(tablas.cell('B4').value)
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = tablas.range('B:C').get_all_values()
