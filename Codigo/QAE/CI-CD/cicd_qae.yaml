@@ -33,5 +33,8 @@ steps:
             '--runtime=python39',
             '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
             '--set-secrets=DQ_KEY=data_quality_key:latest'
+            '--set-env-vars=QAE_BUCKET=qae_bucket'
+            '--set-env-vars=QAE_SQL=qae_sql'
+            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
           ]
     waitFor: ['testing_functions']

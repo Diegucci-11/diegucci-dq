@@ -18,7 +18,7 @@ import os
 def qae_publisher(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     # id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
-    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('clave_cuenta_servicio')), scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
 
     # credentials_json = json.loads(get_password('data_quality_key'))
     # credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
@@ -32,7 +32,7 @@ def qae_publisher(request):
     # file_name = "qae_test"
     # export_qid = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
 
-    spreadsheet = client.open('MatrixInput_v1.1')
+    spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     sheet = spreadsheet.worksheet('Tablas')
 
     nombreProducto = str(sheet.get('B2')).replace("[","").replace("]","").replace("'","")
@@ -60,8 +60,8 @@ def qae_publisher(request):
     "ERROR(CONCAT(CURRENT_DATETIME(), \" Se han identificado \", issues_found, \" errores de calidad. &&&\\n\", severity_list)))\n"\
     "FROM alerts;\n"
 
-    bucket_name = "qae_bucket"
-    destination_blob_name = "qae_test"
+    bucket_name = os.environ.get('QAE_BUCKET')
+    destination_blob_name = os.environ.get('QAE_SQL')
 
     upload_blob(bucket_name, output_list, destination_blob_name)
 # asdfsdf
@@ -71,11 +71,11 @@ def qae_publisher(request):
     #     f.write(output_list)
     return ""
 
-def get_password(clave):
-    client = secretmanager.SecretManagerServiceClient()
-    secret_name = f"projects/409016403024/secrets/{clave}/versions/2"
-    response = client.access_secret_version(name=secret_name)
-    return response.payload.data.decode("utf-8")
+# def get_password(clave):
+#     client = secretmanager.SecretManagerServiceClient()
+#     secret_name = f"projects/409016403024/secrets/{clave}/versions/2"
+#     response = client.access_secret_version(name=secret_name)
+#     return response.payload.data.decode("utf-8")
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
     storage_client = storage.Client()
