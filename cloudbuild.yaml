@@ -23,7 +23,7 @@ steps:
     id: 'build-4'
     waitFor: ['build-2']
 
-  - name: check-changes-qae
+  - name: 'gcr.io/cloud-builders/gcloud'
     id: check-changes-qae
     entrypoint: 'bash'
     args:
