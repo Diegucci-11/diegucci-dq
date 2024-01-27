@@ -55,8 +55,6 @@ def yml_publisher(request):
     df.dropna(how='all', axis=0, inplace=True)
     df.dropna(how='all', axis=1, inplace=True)
 
-    print(df)
-
     project_id = "diegucci-dq"
     location = "europe-southwest1"
     dataset = "Dataset_test"
@@ -69,6 +67,12 @@ def yml_publisher(request):
             binding += f"\t\tcolumn_id: {fila[1]}\n"
             binding += f"\t\trow_filter_id: {fila[7]}\n"
             binding += "\t\trule_ids:\n"
+
+            for columna, valor_celda in fila[8:].items():
+                if valor_celda == 'x':
+                    binding += f"\t\t- {df.iloc[1][columna]}\n"
+                else:
+                    binding += f"\t\t- {df.iloc[1][columna]}:\n{df.iloc[2][columna]}: {valor_celda}\n"
         
         output_yaml += binding
 
