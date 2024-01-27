@@ -72,7 +72,7 @@ def qae_publisher(request):
 
 def get_password(clave):
     client = secretmanager.SecretManagerServiceClient()
-    secret_name = f"projects/409016403024/secrets/{clave}/versions/1"
+    secret_name = f"projects/409016403024/secrets/{clave}/versions/2"
     response = client.access_secret_version(name=secret_name)
     return response.payload.data.decode("utf-8")
 
