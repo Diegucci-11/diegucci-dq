@@ -24,7 +24,7 @@ def qid_publisher(request):
     gauth = GoogleAuth()
     gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
     drive = GoogleDrive(gauth)
-
+# asfddfs
     dateNow_name = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
     file_name = "QID" + dateNow_name
     export_qid = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
