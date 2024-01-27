@@ -43,7 +43,7 @@ steps:
     args:
       - '-c'
       - |
-        if git diff HEAD^ -- Codigo/QID; then
+        if git diff HEAD -- Codigo/QID; then
           echo "No hay cambios en Codigo/QID. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/QID. Se ejecutará el paso de compilación."
@@ -57,27 +57,12 @@ steps:
     args:
       - '-c'
       - |
-        if git diff HEAD^ -- Codigo/YML_Publisher; then
+        if git diff HEAD -- Codigo/YML_Publisher; then
           echo "No hay cambios en Codigo/YML_Publisher. No se ejecutará el paso de compilación."
         else
           echo "Se detectaron cambios en Codigo/YML_Publisher. Se ejecutará el paso de compilación."
           gcloud builds submit --config Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml .
         fi
     waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
-  #   id: 'build-5'
-  #   waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
-  #   id: 'build-6'
-  #   waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml', '.']
-  #   id: 'build-7'
-  #   waitFor: ['service_account']
 
   
