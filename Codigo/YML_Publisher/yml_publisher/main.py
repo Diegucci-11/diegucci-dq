@@ -68,13 +68,14 @@ def yml_publisher(request):
             dataset = "FFF"
             for i, fila_tablas in df_tablas.iterrows():
                 if(fila_tablas[1] == fila[0]):
-                    dataset = fila_tablas[1]
+                    dataset = fila_tablas[0]
             binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
             binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"\t\tcolumn_id: {fila[1]}\n"
             binding += f"\t\trow_filter_id: {fila[7]}\n"
             binding += "\t\trule_ids:\n"
             for columna, valor_celda in fila[8:].items():
+                binding += "\n"
                 if valor_celda == 'x':
                     binding += f"\t\t- {df.iloc[0][columna]}\n"
                 elif valor_celda is not None and valor_celda.strip() != "":
@@ -82,7 +83,7 @@ def yml_publisher(request):
                         binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
                     else:
                         binding += f"\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
-                binding += "\n"
+                
         binding += "\n\n\t\tmetadata:\n"
         binding += f"\t\tproject:{project_id}\n"
         binding += f"\t\tcapa:{fila[5]}\n"
