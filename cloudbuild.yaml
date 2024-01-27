@@ -23,11 +23,24 @@ steps:
     id: 'build-4'
     waitFor: ['build-2']
 
+  - name: Check for changes in Codigo/QAE directory
+    id: check-changes-qae
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if git diff --quiet HEAD^ -- Codigo/QAE; then
+          echo "::set-output name=changes::false"
+        else
+          echo "::set-output name=changes::true"
+        fi
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
     id: 'build-5'
     waitFor: ['build-2']
-    
+    condition: steps.check-changes-qae.outputs.changes == 'true'
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
     id: 'build-6'

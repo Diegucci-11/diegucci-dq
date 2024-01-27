@@ -1,5 +1,4 @@
 id_project = "diegucci-dq"
-number_project = ""
 region = "europe-west3"
 programming_language = "python311"
 service_account = "dataquality"

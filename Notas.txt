@@ -2,3 +2,8 @@ Crear antes la service-account de terraform-admin !?
 Crear bucket tf_backend_dq
 Habilitar la API de cloud resource manager y Cloud Build
 Configurar Cloud Build con GitHub
+
+
+Cómo utilizar el main.tf global? 
+Hacer un tfvars por módulo!! 
+Utilizar git-diff! 
