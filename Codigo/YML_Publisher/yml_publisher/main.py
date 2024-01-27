@@ -32,8 +32,12 @@ def yml_publisher(request):
     spreadsheet = client.open('MatrixInput_v1.1')
 
     reglas = spreadsheet.worksheet('Reglas')
-    rules = reglas.col_values(11)
-
+    rules = reglas.range('K2:K')
+    for rule in rules:
+        print(rule)
+    
+    filtros = spreadsheet.worksheet('Filtros_Aut')
+    filters = filtros.range('D3:D')
     
 
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0

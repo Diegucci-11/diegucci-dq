@@ -8,10 +8,10 @@ steps:
   #   id: 'pubsub_topic'
   #   waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
-  #   id: 'service_account'
-  #   waitFor: ['enable_apis']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
+    id: 'service_account'
+    # waitFor: ['enable_apis']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
@@ -26,7 +26,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
     id: 'check-changes-qae'
-    # waitFor: ['service_account']
+    waitFor: ['service_account']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   id: check-changes-qae
