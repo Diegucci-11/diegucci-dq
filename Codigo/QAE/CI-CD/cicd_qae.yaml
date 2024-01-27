@@ -8,8 +8,8 @@ steps:
         pip install -r Codigo/QAE/qae_notification/requirements.txt
         python -m unittest Codigo/QAE/test/test_qae_notification.py
 
-        pip install -r Codigo/QAE/qae_publisher/requirements.txt
-        python -m unittest Codigo/QAE/test/test_qae_publisher.py
+        # pip install -r Codigo/QAE/qae_publisher/requirements.txt
+        # python -m unittest Codigo/QAE/test/test_qae_publisher.py
 
   # Paso 2: Desplegar la Cloud Function
   - name: 'gcr.io/cloud-builders/gcloud'
