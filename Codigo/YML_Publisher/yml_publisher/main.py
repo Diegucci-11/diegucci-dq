@@ -29,21 +29,21 @@ def yml_publisher(request):
     gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
     drive = GoogleDrive(gauth)
 
-    sheet = client.open('CEEP_MatrixInput_v1.0')
+    sheet = client.open('MatrixInput_v1.1')
     # Incluir el número de la pestaña de la plantilla, donde está situada "yaml_semifinal", empezando por 0
-    sheet_instance_tablas = sheet.get_worksheet(15)
-    values_list = sheet_instance_tablas.col_values(1)
-    output_list = " ".join(str(x) for x in values_list)
-    export_yaml = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
-    export_yaml.SetContentString(output_list)
-    export_yaml.Upload()
-    with open(file_name, 'w') as f:
-        f.write(output_list)
+    # sheet_instance_tablas = sheet.get_worksheet(15)
+    # values_list = sheet_instance_tablas.col_values(1)
+    # output_list = " ".join(str(x) for x in values_list)
+    # export_yaml = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
+    # export_yaml.SetContentString(output_list)
+    # export_yaml.Upload()
+    # with open(file_name, 'w') as f:
+    #     f.write(output_list)
 
     return ""
 
-def get_password(clave):
-    client = secretmanager.SecretManagerServiceClient()
-    secret_name = f"projects/513602888593/secrets/{clave}/versions/1"
-    response = client.access_secret_version(name=secret_name)
-    return response.payload.data.decode("utf-8")
+# def get_password(clave):
+#     client = secretmanager.SecretManagerServiceClient()
+#     secret_name = f"projects/513602888593/secrets/{clave}/versions/1"
+#     response = client.access_secret_version(name=secret_name)
+#     return response.payload.data.decode("utf-8")
