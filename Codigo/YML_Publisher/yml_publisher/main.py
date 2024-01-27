@@ -51,9 +51,10 @@ def yml_publisher(request):
     all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
     df = pd.DataFrame(all_values_matrix_input[2:])
+    print(df.shape)
 
     df.dropna(how='all', axis=0, inplace=True)
-    df.dropna(how='all', axis=1, subset=df.columns[8:], inplace=True)
+    # df.dropna(how='all', axis=1, subset=df.columns[8:], inplace=True)
 
     project_id = "diegucci-dq"
     location = "europe-southwest1"
@@ -79,6 +80,11 @@ def yml_publisher(request):
             print(binding)
         
         output_yaml += binding
+
+        output_yaml += "\n\t\tmetadata:\n"
+        output_yaml += f"\t\tproject:{project_id}\n"
+        output_yaml += f"\t\tcapa:{fila[5]}\n"
+        output_yaml += f"\t\tbu:{fila[6]}\n\n"
 
     # print(output_yaml)
 
