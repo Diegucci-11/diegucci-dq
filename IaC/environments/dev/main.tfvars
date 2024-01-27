@@ -5,7 +5,7 @@ programming_language = "python311"
 service_account = "dataquality"
 name_secret = "data_quality_key"
 qae_topic = "qae_topic"
-name_dataplex_lake = "quality_tasks_lake"
+name_dataplex_lake = "quality-tasks-lake"
 
 name_function_qae_notification = "qae_notification"
 
