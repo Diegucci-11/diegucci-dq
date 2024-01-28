@@ -18,7 +18,7 @@ def qid_publisher(request):
     
     reglas = spreadsheet.worksheet('Reglas').get_all_values()
     dataFrame = pd.DataFrame(reglas)
-    df_reglas = dataFrame.iloc[:, [2, 8, 9]]
+    df_reglas = dataFrame.iloc[1:, [2, 8, 9]]
     df_reglas.dropna(how='all', axis=0, inplace=True)
     print(df_reglas)
 
