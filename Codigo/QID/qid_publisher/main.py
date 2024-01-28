@@ -37,10 +37,10 @@ def qid_publisher(request):
     action_list = ",CASE\n\n"
     message_list = ",CASE\n\n"
     for indice_fila, fila in df_reglas.iterrows():
-      if dataFrame.fila[0] != "":
-        severity_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN " + dataFrame.fila[1][0:1]  + "\n"
-        action_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN " + dataFrame.fila[2][0:1]  + "\n"
-        message_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
+      if fila[0] != "":
+        severity_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[1][0:1]  + "\n"
+        action_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[2][0:1]  + "\n"
+        message_list += "WHEN rule_id = \"" + fila[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
 
     severity_list += "END severity\n"
     action_list += "END action\n"
