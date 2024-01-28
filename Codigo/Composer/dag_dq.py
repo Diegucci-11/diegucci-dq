@@ -228,7 +228,7 @@ def _get_dataplex_task() -> str:
         return "ERROR"
 
 with models.DAG(
-        'dag_dq_1',
+        'dag_dq_2',
         catchup=False,
         default_args=default_args,
         schedule_interval=datetime.timedelta(days=1)) as dag:
