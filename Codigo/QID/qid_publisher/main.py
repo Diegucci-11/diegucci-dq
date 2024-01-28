@@ -20,7 +20,8 @@ def qid_publisher(request):
     dataFrame = pd.DataFrame(reglas)
     df_reglas = dataFrame.iloc[:, [2, 8, 9]]
     df_reglas.dropna(how='all', axis=0, inplace=True)
-    
+    print(df_reglas)
+
     tablas = spreadsheet.worksheet('Tablas')
     datasetName = tablas.cell(5, 2).value
 
@@ -38,6 +39,7 @@ def qid_publisher(request):
     action_list = ",CASE\n\n"
     message_list = ",CASE\n\n"
     for indice_fila, fila in df_reglas.iterrows():
+      print(fila[1])
       print(fila[0])
       print("----------------------------------------------")
       if fila[0] != "" and fila[0] is not None:
