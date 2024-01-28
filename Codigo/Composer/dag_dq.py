@@ -155,7 +155,7 @@ EXAMPLE_TASK_BODY = {
 }
 
 # for best practices
-# YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
+YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
 # default arguments for the dag
 default_args = {
@@ -165,8 +165,8 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    # 'retry_delay': datetime.timedelta(minutes=5),
-    'start_date': datetime(2021, 1, 1),
+    'retry_delay': datetime.timedelta(minutes=5),
+    'start_date': YESTERDAY,
 }
 
 
