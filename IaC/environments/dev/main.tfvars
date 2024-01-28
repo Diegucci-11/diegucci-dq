@@ -6,6 +6,8 @@ name_secret = "data_quality_key"
 qae_topic = "qae_topic"
 name_dataplex_lake = "quality-tasks-lake"
 
+project_number = "409016403024"
+
 name_function_qae_notification = "qae_notification"
 
 name_quality_bucket = "yml_bucket"

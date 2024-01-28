@@ -26,6 +26,12 @@ resource "google_project_iam_member" "secret_accessor_role" {
   member  = "serviceAccount:${google_service_account.data_quality_service_account.email}"
 }
 
+resource "google_project_iam_member" "composer_extv2_role" {
+  project = var.id_project
+  role    = "roles/composer.ServiceAgentV2Ext"
+  member  = "serviceAccount:service-${var.project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+}
+
 resource "google_service_account_key" "my_service_account_key" {
   service_account_id = google_service_account.data_quality_service_account.name
 }
