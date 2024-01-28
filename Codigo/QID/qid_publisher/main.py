@@ -19,7 +19,11 @@ def qid_publisher(request):
     reglas = spreadsheet.worksheet('Reglas').get_all_values()
     dataFrame = pd.DataFrame(reglas)
     df_reglas = dataFrame.iloc[:, [2, 8, 9]]
-    
+    print(df_reglas.shape)
+
+    df_reglas.dropna(how='all', axis=0, inplace=True)
+    print(df_reglas.shape)
+    print(df_reglas)
     tablas = spreadsheet.worksheet('Tablas')
     datasetName = tablas.cell(5, 2).value
 
@@ -37,7 +41,7 @@ def qid_publisher(request):
     action_list = ",CASE\n\n"
     message_list = ",CASE\n\n"
     for indice_fila, fila in df_reglas.iterrows():
-      if fila[0] != "":
+      if fila[0] != "" and fila[0] is not None:
         severity_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[1][0:1]  + "\n"
         action_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[2][0:1]  + "\n"
         message_list += "WHEN rule_id = \"" + fila[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
