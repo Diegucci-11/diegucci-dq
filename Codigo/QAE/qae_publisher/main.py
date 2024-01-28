@@ -1,17 +1,9 @@
 import functions_framework
 import requests
-import pandas as pd
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 from google.oauth2 import service_account
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import datetime
 import json
-from google.cloud import secretmanager
 from google.cloud import storage
-from markupsafe import escape
-import re
 import os
 
 @functions_framework.http
@@ -21,37 +13,36 @@ def qae_publisher(request):
     client = gspread.authorize(credentials)
 
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
-    sheet = spreadsheet.worksheet('Tablas')
+    tablas = spreadsheet.worksheet('Tablas')
+    
+    dataset = tablas.cell(5, 2).value
+    product_name = tablas.cell(2, 2).value
+    environment = tablas.cell(3, 2).value
+    project_id = tablas.cell(4, 2).value
+    location = tablas.cell(6, 2).value
 
-    nombreProducto = str(sheet.get('B2')).replace("[","").replace("]","").replace("'","")
-    entornoGCP = str(sheet.get('B3')).replace("[","").replace("]","").replace("'","")
-    proyectoGCP = str(sheet.get('B4')).replace("[","").replace("]","").replace("'","")
-    datasetGCP = str(sheet.get('B5')).replace("[","").replace("]","").replace("'","")
-    lozalizaciónGCP = str(sheet.get('B6')).replace("[","").replace("]","").replace("'","")
-
-    output_list = "# Autor: QAE_Publisher\n"\
+    output_qae = "# Autor: QAE_Publisher\n"\
     "# Modulo: QAE\n"\
     "#   - Notifica por email a los usuarios establecidos cuando ocurre algún error\n" \
     "# Version: 1.1\n"\
-    "# Proyecto: " + proyectoGCP + "\n"\
-    "# Entorno: " + entornoGCP + "\n"\
-    "# Localizacion: " + lozalizaciónGCP + "\n"\
-    "# Producto: " + nombreProducto + "\n\n\n"\
+    "# Proyecto: " + project_id + "\n"\
+    "# Entorno: " + environment + "\n"\
+    "# Localizacion: " + location + "\n"\
+    "# Producto: " + product_name + "\n\n\n"\
     "WITH alerts AS(\n"\
     "SELECT\n"\
     "CURRENT_DATETIME() as ts_notification\n"\
     ",array_to_string(array_agg(concat(severity) IGNORE NULLS), \"\\n\") as severity_list\n"\
     ",array_length(array_agg(severity IGNORE NULLS)) as issues_found\n"\
-    "FROM `" + datasetGCP + ".dq_summary_errors`\n"\
+    "FROM `" + dataset + ".dq_summary_errors`\n"\
     "WHERE CURRENT_DATE() = date(execution_ts))\n"\
     "SELECT if(alerts.issues_found is null, \"No hay errores en la calidad de los datos\", \n"\
     "ERROR(CONCAT(CURRENT_DATETIME(), \" Se han identificado \", issues_found, \" errores de calidad. &&&\\n\", severity_list)))\n"\
     "FROM alerts;\n"
+    
+    print(output_qae)
 
-    bucket_name = os.environ.get('QAE_BUCKET')
-    destination_blob_name = os.environ.get('QAE_SQL')
-
-    upload_blob(bucket_name, output_list, destination_blob_name)
+    upload_blob(os.environ.get('QAE_BUCKET'), output_qae, os.environ.get('QAE_SQL'))
     return ""
 
 def upload_blob(bucket_name, output_list, destination_blob_name):

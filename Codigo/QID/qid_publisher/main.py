@@ -21,7 +21,7 @@ def qid_publisher(request):
     df_reglas = dataFrame.iloc[:, [2, 8, 9]]
     
     tablas = spreadsheet.worksheet('Tablas')
-    datasetName = tablas.cell(6, 2).value
+    datasetName = tablas.cell(5, 2).value
 
     output_qid = "# Autor: QID_Publisher\n"\
     "# Modulo: QID Quality Intelligence Decision\n"\
@@ -50,10 +50,7 @@ def qid_publisher(request):
 
     print(output_qid)
 
-    bucket_name = os.environ.get('QID_BUCKET')
-    destination_blob_name = os.environ.get('QID_SQL')
-
-    upload_blob(bucket_name, output_qid, destination_blob_name)
+    upload_blob(os.environ.get('QID_BUCKET'), output_qid, os.environ.get('QID_SQL'))
     return ""
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
