@@ -15,7 +15,7 @@ import json
 import requests
 import os
 import time
-from datetime import datetime
+# from datetime import datetime
 from google.cloud import storage
 
 from airflow.models.dag import DAG
@@ -165,7 +165,7 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': datetime.timedelta(minutes=5),
+    # 'retry_delay': datetime.timedelta(minutes=5),
     'start_date': datetime(2021, 1, 1),
 }
 
