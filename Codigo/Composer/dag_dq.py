@@ -14,28 +14,22 @@ from airflow.operators.python import (
     PythonOperator,
 )
 
-actual_month = datetime.now()
-month_number = actual_month.strftime('%Y%m')
+DAG_ID = "dag_dq_flow_1"
 
-DAG_ID = "dag_bigtable_tables_4"
+BUCKET_YML = "yml_bucket"
+BUCKET_QID = "qid_bucket"
+BUCKET_QAE = "qae_bucket"
 
-# DATASET_BRONZE = "brz_sales_cashiers"
-# DATASET_SILVER = "slv_sales_cashiers"
-
-# BUCKET_NAME = "sales-esp-dev-dinamic-tables-sql"
-
-BUCKET_NAME = "QAE_bucket"
-BRZ_SQL_PATH = "qid_sql.sql"
-SLV_SQL_PATH = "qae_sql.sql"
-
-brz_sql = ""
-slv_sql = ""
+YML = "yml_test.yml"
+QID_SQL = "qid_sql.sql"
+QAE_SQL = "qae_sql.sql"
 
 client = storage.Client()
 
-bucket = client.bucket(BUCKET_NAME)
-brz_sql = bucket.blob(BRZ_SQL_PATH).download_as_text().format(TABLE_NAME_BRZ, month_number)
-slv_sql = bucket.blob(SLV_SQL_PATH).download_as_text().format(TABLE_NAME_SLV, month_number)
+bucket_qid = client.bucket(BUCKET_QID)
+bucket_qae = client.bucket(BUCKET_QAE)
+qid_sql = bucket_qid.blob(QID_SQL).download_as_text()
+qae_sql = BUCKET_QAE.blob(QAE_SQL).download_as_text()
 
 # def recuperar_sql_gcs():
 #     client = storage.Client()
@@ -51,7 +45,7 @@ with DAG(
     schedule="0 0 1 * *",
     start_date=datetime(2021, 1, 1),
     catchup=False,
-    tags=[],
+    tags=["QID", "QAE", "Dataplex"],
 ) as dag:
 
 
@@ -62,7 +56,7 @@ with DAG(
     #     gcp_conn_id='google_cloud_storage_default',
     # )
 
-    dataplex_task = 
+    # dataplex_task = 
 
     qid_execution = BigQueryInsertJobOperator(
         task_id="qid_execution",
