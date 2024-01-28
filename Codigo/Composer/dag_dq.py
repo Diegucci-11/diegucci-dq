@@ -119,7 +119,7 @@ SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 # CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum" # The Cloud Storage path containing the prebuilt data quality executable artifact hashsum. There is one bucket per GCP region.
 CONFIGS_BUCKET_NAME = "yml_bucket"
 CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/yml_test.yml"
-DATAPLEX_TASK_ID = "task_test_1"
+DATAPLEX_TASK_ID = "task-test-1"
 TRIGGER_SPEC_TYPE = "ON_DEMAND"
 DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
 GCP_PROJECT_ID = "diegucci-dq"
@@ -229,7 +229,7 @@ def _get_dataplex_task() -> str:
         return "ERROR"
 
 with models.DAG(
-        'clouddq_airflow_example',
+        'dag_dq_1',
         catchup=False,
         default_args=default_args,
         schedule_interval=datetime.timedelta(days=1)) as dag:
