@@ -34,3 +34,5 @@ apis_list = [
     "dataproc.googleapis.com",
     "composer.googleapis.com",
   ]
+
+env_name = "env-test-1"

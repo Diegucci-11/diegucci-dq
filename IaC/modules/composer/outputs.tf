@@ -1,4 +1,3 @@
-# output "enabled_apis" {
-#   description = "It indicates that all APIs have been enabled succesfully"
-#   value       = true
-# }
+output "composer_bucket_name" {
+  value = google_composer_environment.environment_creation.config.gcs_bucket
+}

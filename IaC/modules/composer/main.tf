@@ -3,9 +3,9 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_composer_environment" "test" {
-  name   = "env-test-1"
-  region = "europe-west3"
+resource "google_composer_environment" "environment_creation" {
+  name   = var.env_name
+  region = var.region
   config {
     software_config {
       image_version = "composer-2-airflow-2"
