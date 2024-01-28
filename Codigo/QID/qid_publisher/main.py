@@ -39,13 +39,13 @@ def qid_publisher(request):
     action_list = ",CASE\n\n"
     message_list = ",CASE\n\n"
     for indice_fila, fila in df_reglas.iterrows():
-      print(fila[1])
-      print(fila[0])
+      print(fila.iloc[1])
+      print(fila.iloc[0])
       print("----------------------------------------------")
       if fila[0] != "" and fila[0] is not None:
-        severity_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[1][0:1]  + "\n"
-        action_list += "WHEN rule_id = \"" + fila[0] + "\" THEN " + fila[2][0:1]  + "\n"
-        message_list += "WHEN rule_id = \"" + fila[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
+        severity_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[1][0:1]  + "\n"
+        action_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[2][0:1]  + "\n"
+        message_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
 
     severity_list += "END severity\n"
     action_list += "END action\n"
