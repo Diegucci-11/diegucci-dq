@@ -4,3 +4,4 @@ pydrive
 numpy
 pandas
 google-cloud-secret-manager
+google-cloud-storage

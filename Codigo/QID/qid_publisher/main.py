@@ -1,47 +1,29 @@
 import functions_framework
 import requests
 import pandas as pd
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 from google.oauth2 import service_account
 import gspread
 import json
-from oauth2client.service_account import ServiceAccountCredentials
-import datetime
-from markupsafe import escape
-import re
-from google.cloud import secretmanager
+import os
+from google.cloud import storage
 
 @functions_framework.http
 def qid_publisher(request):
-
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-    id_drive_repo = '1hWEdMgihOB4UU6Z7q0LltyC5tQ_cSFqM'
 
-    credentials_json = json.loads(get_password('credenciales_ceep'))
-    credentials = service_account.Credentials.from_service_account_info(credentials_json, scopes=SCOPES)
+    credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    gauth = GoogleAuth()
-    gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, SCOPES)
-    drive = GoogleDrive(gauth)
-# asfddfs
-    dateNow_name = datetime.datetime.now().strftime('%Y_%m_%d_%H%M%S')
-    file_name = "QID" + dateNow_name
-    export_qid = drive.CreateFile({'parents': [{'id': id_drive_repo}], 'title': file_name})
 
-    spreadsheet = client.open('CEEP_MatrixInput_v1.0')
-    sheet = spreadsheet.worksheet('Reglas')
+    spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
+    
+    reglas = spreadsheet.worksheet('Reglas').get_all_values()
+    dataFrame = pd.DataFrame(reglas)
+    df_reglas = dataFrame.iloc[:, [2, 8, 9]]
+    
+    tablas = spreadsheet.worksheet('Tablas')
+    datasetName = tablas.cell(6, 2).value
 
-    df = pd.DataFrame()
-    for a, row in enumerate(sheet.get_all_values()):
-        if row[1] != '':
-            df[a] = row
-
-    dataFrame = pd.DataFrame()
-    dataFrame[0] = df.T[2]
-    dataFrame[1] = df.T[8]
-    dataFrame[2] = df.T[9]
-    output_list = "# Autor: CEEP_QID_Publisher\n"\
+    output_qid = "# Autor: QID_Publisher\n"\
     "# Modulo: QID Quality Intelligence Decision\n"\
     "#   - Genera tabla dq_summary_errors con los registros que han detectado algún error\n"\
     "#   - Enriquece la tabla con columnas de severidad, acción y mensaje\n"\
@@ -49,41 +31,33 @@ def qid_publisher(request):
     "# Configuración: \n"\
     "#   - severity: 0 - LOW, 1 - MEDIUM, 2 - HIGH\n"\
     "#   - action: 0 - NOTIFY, 1 - WARNING, 2 - ALERT\n\n\n"\
-    "select *\n"\
-    ",CASE\n"
+    "select * \n"
 
-    for i in range(1, len(dataFrame)):
-      if dataFrame.iloc[i][0] != "":
-        output_list += "WHEN rule_id = \"" + dataFrame.iloc[i][0] + "\" THEN " + dataFrame.iloc[i][1][0:1]  + "\n"
+    severity_list = ",CASE\n\n"
+    action_list = ",CASE\n\n"
+    message_list = ",CASE\n\n"
+    for indice_fila, fila in df_reglas.iterrows():
+      if dataFrame.fila[0] != "":
+        severity_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN " + dataFrame.fila[1][0:1]  + "\n"
+        action_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN " + dataFrame.fila[2][0:1]  + "\n"
+        message_list += "WHEN rule_id = \"" + dataFrame.fila[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
 
-    output_list += "END severity\n,CASE\n\n"
+    severity_list += "END severity\n"
+    action_list += "END action\n"
+    message_list += "END message\n"
+    output_qid += severity_list + action_list + message_list
+    output_qid += "FROM " + datasetName + ".dq_summary\nWHERE failed_count > 0;"
 
-    for i in range(1, len(dataFrame)):
-      if dataFrame.iloc[i][0] != "":
-        output_list += "WHEN rule_id = \"" + dataFrame.iloc[i][0] + "\" THEN " + dataFrame.iloc[i][2][0:1]  + "\n"
+    bucket_name = os.environ.get('QID_BUCKET')
+    destination_blob_name = os.environ.get('QID_SQL')
 
-    output_list += "END action\n,CASE\n\n"
-
-    for i in range(1, len(dataFrame)):
-      if dataFrame.iloc[i][0] != "":
-        output_list += "WHEN rule_id = \"" + dataFrame.iloc[i][0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
-
-    sheet = spreadsheet.worksheet('Tablas')
-
-    datasetName = str(sheet.get('B6'))
-    datasetName = datasetName.replace("[","").replace("]","").replace("'","")
-
-    output_list += "END message\nFROM `" + datasetName + ".dq_summary`\nWHERE failed_count > 0;"
-
-    export_qid.SetContentString(output_list)
-    export_qid.Upload()
-    with open(file_name, 'w') as f:
-      f.write(output_list)
-
+    upload_blob(bucket_name, output_qid, destination_blob_name)
     return ""
 
-def get_password(clave):
-    client = secretmanager.SecretManagerServiceClient()
-    secret_name = f"projects/513602888593/secrets/{clave}/versions/1"
-    response = client.access_secret_version(name=secret_name)
-    return response.payload.data.decode("utf-8")
+def upload_blob(bucket_name, output_list, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_string(output_list)
+
+    print(f"Archivo {destination_blob_name} subido al bucket {bucket_name}.")

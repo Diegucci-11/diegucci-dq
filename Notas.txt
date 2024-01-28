@@ -7,3 +7,9 @@ Configurar Cloud Build con GitHub
 Cómo utilizar el main.tf global? 
 Hacer un tfvars por módulo!! 
 Utilizar git-diff! 
+
+
+
+Yaml_Pub -> QID_Pub -> QAE_Pub
+De forma asíncrona pero con wait() al final
+Llamar con variables de control por si hay q ejecutar el QID/QAE_Pub o no
