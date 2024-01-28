@@ -15,3 +15,12 @@ De forma asíncrona pero con wait() al final
 Llamar con variables de control por si hay q ejecutar el QID/QAE_Pub o no
 Se puede congelar el excel hasta que se han cargado los datos? 
 Guardar clave service-account desde TF -> formato json o legible desde CF
+
+Generar el DAG de Composer
+Verificar la legibilidad de los files del bucket!! 
+DAG:
+ - Generar la tarea, programarla?
+ - Ejecutar el QID
+ - Ejecutar el QAE
+ - Automatizar la parte del trigger sin Pubsub?? 
+
