@@ -8,9 +8,14 @@ steps:
   #   id: 'pubsub_topic'
   #   waitFor: ['enable_apis']
 
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
+  #   id: 'service_account'
+    # waitFor: ['enable_apis']
+
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
-    id: 'service_account'
+    args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
+    id: 'composer'
     # waitFor: ['enable_apis']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
