@@ -112,11 +112,10 @@ DATAPLEX_PROJECT_ID = "diegucci-dq"
 DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
-# PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "your-public-bucket-with-clouddq-executable-and-hashsum" # Public Cloud Storage bucket containing the prebuilt data quality executable artifact and hashsum. There is one bucket per GCP region.
-# SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
-# # Public Cloud Storage bucket containing the driver code for executing data quality job. There is one bucket per GCP region.
-# CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip" # The Cloud Storage path containing the prebuilt data quality executable artifact. There is one bucket per GCP region.
-# CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum" # The Cloud Storage path containing the prebuilt data quality executable artifact hashsum. There is one bucket per GCP region.
+PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
+SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
+CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip"
+CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
 CONFIGS_BUCKET_NAME = "yml_bucket"
 CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/yml_test.yml"
 DATAPLEX_TASK_ID = "task-test-1"
@@ -129,13 +128,13 @@ GCP_BQ_REGION = "europe-west3"
 FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
 
 EXAMPLE_TASK_BODY = {
-    # "spark": {
-    #     "python_script_file": SPARK_FILE_FULL_PATH,
-    #     "file_uris": [CLOUDDQ_EXECUTABLE_FILE_PATH,
-    #                   CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH,
-    #                   CONFIGS_PATH
-    #                   ]
-    # },
+    "spark": {
+        "python_script_file": SPARK_FILE_FULL_PATH,
+        "file_uris": [CLOUDDQ_EXECUTABLE_FILE_PATH,
+                      CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH,
+                      CONFIGS_PATH
+                      ]
+    },
     "execution_spec": {
         "service_account": SERVICE_ACC,
         "args": {
