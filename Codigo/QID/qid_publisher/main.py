@@ -48,6 +48,8 @@ def qid_publisher(request):
     output_qid += severity_list + action_list + message_list
     output_qid += "FROM " + datasetName + ".dq_summary\nWHERE failed_count > 0;"
 
+    print(output_qid)
+
     bucket_name = os.environ.get('QID_BUCKET')
     destination_blob_name = os.environ.get('QID_SQL')
 
