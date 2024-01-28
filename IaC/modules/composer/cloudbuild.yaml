@@ -10,8 +10,19 @@ steps:
     - 'COMPOSER_BUCKET_NAME=$COMPOSER_BUCKET_NAME'
     dir: 'IaC/modules/composer'
 
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['cp', 'Codigo/Composer/dag_dq.py', 'gs://$COMPOSER_BUCKET_NAME/dags/dag.py']
+  #   waitFor: ['env-creation']
+  
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['cp', 'Codigo/Composer/dag_dq.py', 'gs://$COMPOSER_BUCKET_NAME/dags/dag.py']
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo $COMPOSER_BUCKET_NAME 
     waitFor: ['env-creation']
 
-  
+
+
+
+
