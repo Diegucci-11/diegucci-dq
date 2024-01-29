@@ -63,33 +63,26 @@ def yml_publisher(request):
             for i, fila_tablas in df_tablas.iterrows():
                 if(fila_tablas[1] == fila[0]):
                     dataset = fila_tablas[0]
-            binding += "\t" + fila[0].upper() + "_" + fila[1].upper() + ":\n"
-            binding += f"\t\tentity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
-            binding += f"\t\tcolumn_id: {fila[1]}\n"
-            binding += f"\t\trow_filter_id: {fila[7]}\n"
-            binding += "\t\trule_ids:\n"
+            binding += "  " + fila[0].upper() + "_" + fila[1].upper() + ":\n"
+            binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            binding += f"    column_id: {fila[1]}\n"
+            binding += f"    row_filter_id: {fila[7]}\n"
+            binding += "    rule_ids:\n"
             for columna, valor_celda in fila[8:].items():
-                binding += "\n"
                 if valor_celda == 'x':
-                    binding += f"\t\t- {df.iloc[0][columna]}\n"
+                    binding += f"\n      - {df.iloc[0][columna]}\n\n"
                 elif valor_celda is not None and valor_celda.strip() != "":
                     if df.iloc[0][columna] != "" and df.iloc[0][columna] is not None:
-                        binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
+                        binding += f"      - {df.iloc[0][columna]}:\n        {df.iloc[1][columna]}: {valor_celda}\n"
                     else:
-                        binding += f"\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
-            binding += "\n\n\t\tmetadata:\n"
-            binding += f"\t\tproject:{project_id}\n"
-            binding += f"\t\tcapa:{fila[5]}\n"
-            binding += f"\t\tbu:{fila[6]}\n\n"
+                        binding += f"        {df.iloc[1][columna]}: {valor_celda}\n"
+            binding += "    metadata:\n"
+            binding += f"      project: {project_id}\n"
+            binding += f"      capa: {fila[5]}\n"
+            binding += f"      bu: {fila[6]}\n\n"
 
         # print(binding)
         output_yaml += binding
-
-    # print(output_yaml)
-    # file_name_test = "yml_test_2.yml"
-    # with open(file_name_test, 'w') as f:
-    #         f.write(output_yaml)
-    # subir_Bucket(file_name_test)
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     return ""
@@ -101,12 +94,3 @@ def upload_blob(bucket_name, output_list, destination_blob_name):
     blob.upload_from_string(output_list)
 
     print(f"Archivo {destination_blob_name} subido al bucket {bucket_name}.")
-
-def subir_Bucket(file_name):
-    client = storage.Client()
-    bucket_name = os.environ.get('YML_BUCKET')
-    destination_blob_name = "yml_test_2.yml"
-
-    bucket = client.get_bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(file_name)
