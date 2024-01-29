@@ -49,7 +49,8 @@ def yml_publisher(request):
     tablas = spreadsheet.worksheet('Tablas')
 
     project_id = tablas.cell(4, 2).value
-    location = "europe-southwest1" # NECESARIO?
+    # location = "europe-southwest1" # NECESARIO?
+    location = "europe-west3" # NECESARIO?
 
     df_tablas = pd.DataFrame(tablas.get('B:C'))
     df_tablas = df_tablas.iloc[11:]
@@ -63,8 +64,8 @@ def yml_publisher(request):
                 if(fila_tablas[1] == fila[0]):
                     dataset = fila_tablas[0]
             binding += "  " + fila[0].upper() + "_" + fila[1].upper() + ":\n"
-            # binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
-            binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
+            binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            # binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"    column_id: {fila[1]}\n"
             binding += f"    row_filter_id: {fila[7]}\n"
             binding += "    rule_ids:"
