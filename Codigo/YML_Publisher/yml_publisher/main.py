@@ -28,9 +28,9 @@ def yml_publisher(request):
     filters = filtros.range('D3:D')
     filters_values = [cell.value for cell in filters if cell.value.strip()]
 
-    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n  "
+    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n"
     
-    output_yaml += "row_filters: \n"
+    output_yaml += "row_filters:\n"
     for filter in filters_values:
         output_yaml += "  " + str(filter) + "\n\n"
     
@@ -76,7 +76,7 @@ def yml_publisher(request):
                         binding += f"      - {df.iloc[0][columna]}:\n        {df.iloc[1][columna]}: {valor_celda}\n"
                     else:
                         binding += f"        {df.iloc[1][columna]}: {valor_celda}\n"
-            binding += "    metadata:\n"
+            binding += "\n\n    metadata:\n"
             binding += f"      project: {project_id}\n"
             binding += f"      capa: {fila[5]}\n"
             binding += f"      bu: {fila[6]}\n\n"
