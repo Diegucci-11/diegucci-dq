@@ -71,7 +71,7 @@ def yml_publisher(request):
             binding += "    rule_ids:\n"
             for columna, valor_celda in fila[8:].items():
                 if valor_celda == 'x':
-                    binding += f"\n      - {df.iloc[0][columna]}\n\n"
+                    binding += f"\n      - {df.iloc[0][columna]}\n"
                 elif valor_celda is not None and valor_celda.strip() != "":
                     if df.iloc[0][columna] != "" and df.iloc[0][columna] is not None:
                         binding += f"      - {df.iloc[0][columna]}:\n        {df.iloc[1][columna]}: {valor_celda}\n"
