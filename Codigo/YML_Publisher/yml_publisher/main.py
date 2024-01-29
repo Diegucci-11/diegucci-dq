@@ -28,15 +28,15 @@ def yml_publisher(request):
     filters = filtros.range('D3:D')
     filters_values = [cell.value for cell in filters if cell.value.strip()]
 
-    output_yaml = "rule_dimensions:\n\t- Exactitud\n\t- Completitud\n\t- Consistencia\n\t- Integridad\n\t- Disponibilidad\n\t- Unicidad\n\t- Validez\n\n"
+    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n  "
     
     output_yaml += "row_filters: \n"
     for filter in filters_values:
-        output_yaml += str(filter) + "\n\n"
+        output_yaml += "  " + str(filter) + "\n\n"
     
     output_yaml += "rules: \n"
     for rule in rules_values:
-        output_yaml += str(rule) + "\n\n"
+        output_yaml += "  " + str(rule) + "\n\n"
     
     output_yaml += "rule_bindings: \n"
     
@@ -64,7 +64,8 @@ def yml_publisher(request):
                 if(fila_tablas[1] == fila[0]):
                     dataset = fila_tablas[0]
             binding += "  " + fila[0].upper() + "_" + fila[1].upper() + ":\n"
-            binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            # binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"    column_id: {fila[1]}\n"
             binding += f"    row_filter_id: {fila[7]}\n"
             binding += "    rule_ids:\n"
