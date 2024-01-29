@@ -85,10 +85,10 @@ def yml_publisher(request):
         output_yaml += binding
 
     # print(output_yaml)
-        
-    with open(file_name, 'w') as f:
+    file_name_test = "yml_test_2.yml"
+    with open(file_name_test, 'w') as f:
             f.write(output_yaml)
-    subir_Bucket(file_name)
+    subir_Bucket(file_name_test)
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     return ""
@@ -104,7 +104,7 @@ def upload_blob(bucket_name, output_list, destination_blob_name):
 def subir_Bucket(file_name):
     client = storage.Client()
     bucket_name = os.environ.get('YML_BUCKET')
-    destination_blob_name = "yml_test_2.yml.yml"
+    destination_blob_name = "yml_test_2.yml"
 
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)

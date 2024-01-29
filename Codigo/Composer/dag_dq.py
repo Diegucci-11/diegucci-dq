@@ -109,7 +109,7 @@ from airflow.operators.python import (
 
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
-DATAPLEX_REGION = "europe-west1"
+DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
@@ -228,7 +228,7 @@ def _get_dataplex_task() -> str:
         return "ERROR"
 
 with models.DAG(
-        'dag_dq_2',
+        'dag_dq_3',
         catchup=False,
         default_args=default_args,
         schedule_interval=datetime.timedelta(days=1)) as dag:
