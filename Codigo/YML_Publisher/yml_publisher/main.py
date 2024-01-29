@@ -52,9 +52,8 @@ def yml_publisher(request):
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = pd.DataFrame(tablas.get('B:C'))
-    print(df_tablas.shape)
+    df_tablas = df_tablas.iloc[13:]
     df_tablas.dropna(how='all', axis=0, inplace=True)
-    print(df_tablas.shape)
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
