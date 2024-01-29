@@ -124,7 +124,7 @@ DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
 GCP_PROJECT_ID = "diegucci-dq"
 GCP_BQ_DATASET_ID = "Dataset_test"
 TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
-GCP_BQ_REGION = "europe-west3"
+GCP_BQ_REGION = "europe-southwest1"
 FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
 
 EXAMPLE_TASK_BODY = {
@@ -232,7 +232,6 @@ with models.DAG(
         catchup=False,
         default_args=default_args,
         schedule_interval=datetime.timedelta(days=1)) as dag:
-    print("v2")
 
     start_op = BashOperator(
         task_id="start_task",
