@@ -28,17 +28,17 @@ def yml_publisher(request):
     filters = filtros.range('D3:D')
     filters_values = [cell.value for cell in filters if cell.value.strip()]
 
-    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n"
+    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n\n"
     
-    output_yaml += "row_filters:\n"
+    output_yaml += "row_filters:\n\n"
     for filter in filters_values:
         output_yaml += "  " + str(filter) + "\n\n"
     
-    output_yaml += "rules: \n"
+    output_yaml += "rules:\n\n"
     for rule in rules_values:
         output_yaml += "  " + str(rule) + "\n\n"
     
-    output_yaml += "rule_bindings: \n"
+    output_yaml += "rule_bindings: \n\n"
     
     all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
@@ -67,15 +67,15 @@ def yml_publisher(request):
             binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"    column_id: {fila[1]}\n"
             binding += f"    row_filter_id: {fila[7]}\n"
-            binding += "    rule_ids:\n"
+            binding += "    rule_ids:"
             for columna, valor_celda in fila[8:].items():
                 if valor_celda == 'x':
-                    binding += f"\n      - {df.iloc[0][columna]}\n"
+                    binding += f"\n\n      - {df.iloc[0][columna]}"
                 elif valor_celda is not None and valor_celda.strip() != "":
                     if df.iloc[0][columna] != "" and df.iloc[0][columna] is not None:
-                        binding += f"      - {df.iloc[0][columna]}:\n        {df.iloc[1][columna]}: {valor_celda}\n"
+                        binding += f"\n\n      - {df.iloc[0][columna]}:\n          {df.iloc[1][columna]}: {valor_celda}"
                     else:
-                        binding += f"        {df.iloc[1][columna]}: {valor_celda}\n"
+                        binding += f"\n          {df.iloc[1][columna]}: {valor_celda}"
             binding += "\n\n    metadata:\n"
             binding += f"      project: {project_id}\n"
             binding += f"      capa: {fila[5]}\n"
