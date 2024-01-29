@@ -1,16 +1,8 @@
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 from google.oauth2 import service_account
 import gspread
 import datetime
-import base64
-import smtplib
 import os
 import json
-from oauth2client.service_account import ServiceAccountCredentials
-from markupsafe import escape
-import re
-from google.cloud import secretmanager
 from google.cloud import storage
 import functions_framework
 import pandas as pd
@@ -89,10 +81,14 @@ def yml_publisher(request):
         binding += f"\t\tcapa:{fila[5]}\n"
         binding += f"\t\tbu:{fila[6]}\n\n"
 
-        print(binding)
+        # print(binding)
         output_yaml += binding
 
     # print(output_yaml)
+        
+    with open(file_name, 'w') as f:
+            f.write(output_yaml)
+    subir_Bucket(file_name)
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     return ""
@@ -104,3 +100,12 @@ def upload_blob(bucket_name, output_list, destination_blob_name):
     blob.upload_from_string(output_list)
 
     print(f"Archivo {destination_blob_name} subido al bucket {bucket_name}.")
+
+def subir_Bucket(file_name):
+    client = storage.Client()
+    bucket_name = os.environ.get('YML_BUCKET')
+    destination_blob_name = "yml_test_2.yml.yml"
+
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(file_name)

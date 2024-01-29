@@ -109,7 +109,7 @@ from airflow.operators.python import (
 
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
-DATAPLEX_REGION = "europe-west3"
+DATAPLEX_REGION = "europe-west1"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
