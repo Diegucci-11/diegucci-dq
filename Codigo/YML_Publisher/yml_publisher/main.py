@@ -52,9 +52,7 @@ def yml_publisher(request):
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = pd.DataFrame(tablas.get('B:C'))
-    print(df_tablas)
-    df_tablas = df_tablas.iloc[12:]
-    print(df_tablas)
+    df_tablas = df_tablas.iloc[11:]
     df_tablas.dropna(how='all', axis=0, inplace=True)
 
     for indice_fila, fila in df.iloc[2:].iterrows():
@@ -65,8 +63,8 @@ def yml_publisher(request):
                 if(fila_tablas[1] == fila[0]):
                     dataset = fila_tablas[0]
             binding += "  " + fila[0].upper() + "_" + fila[1].upper() + ":\n"
-            binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
-            # binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
+            # binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
+            binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"    column_id: {fila[1]}\n"
             binding += f"    row_filter_id: {fila[7]}\n"
             binding += "    rule_ids:"
