@@ -32,11 +32,11 @@ def yml_publisher(request):
     
     output_yaml += "row_filters: \n"
     for filter in filters_values:
-        output_yaml += "\t" + str(filter) + "\n\n"
+        output_yaml += str(filter) + "\n\n"
     
     output_yaml += "rules: \n"
     for rule in rules_values:
-        output_yaml += "\t" + str(rule) + "\n\n"
+        output_yaml += str(rule) + "\n\n"
     
     output_yaml += "rule_bindings: \n"
     
@@ -52,7 +52,9 @@ def yml_publisher(request):
     location = "europe-southwest1" # NECESARIO?
 
     df_tablas = pd.DataFrame(tablas.get('B:C'))
+    print(df_tablas.shape)
     df_tablas.dropna(how='all', axis=0, inplace=True)
+    print(df_tablas.shape)
 
     for indice_fila, fila in df.iloc[2:].iterrows():
         binding = ""
@@ -75,20 +77,19 @@ def yml_publisher(request):
                         binding += f"\t\t- {df.iloc[0][columna]}:\n\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
                     else:
                         binding += f"\t\t\t{df.iloc[1][columna]}: {valor_celda}\n"
-                
-        binding += "\n\n\t\tmetadata:\n"
-        binding += f"\t\tproject:{project_id}\n"
-        binding += f"\t\tcapa:{fila[5]}\n"
-        binding += f"\t\tbu:{fila[6]}\n\n"
+            binding += "\n\n\t\tmetadata:\n"
+            binding += f"\t\tproject:{project_id}\n"
+            binding += f"\t\tcapa:{fila[5]}\n"
+            binding += f"\t\tbu:{fila[6]}\n\n"
 
         # print(binding)
         output_yaml += binding
 
     # print(output_yaml)
-    file_name_test = "yml_test_2.yml"
-    with open(file_name_test, 'w') as f:
-            f.write(output_yaml)
-    subir_Bucket(file_name_test)
+    # file_name_test = "yml_test_2.yml"
+    # with open(file_name_test, 'w') as f:
+    #         f.write(output_yaml)
+    # subir_Bucket(file_name_test)
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
     return ""
