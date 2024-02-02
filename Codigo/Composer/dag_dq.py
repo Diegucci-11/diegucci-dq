@@ -36,7 +36,7 @@ import pandas_gbq
 
 # recuperar_sql_gcs()
     
-DAG_ID = "dag_dq_flow_1"
+DAG_ID = "dag_dq_flow_2"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -271,5 +271,5 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-# dataplex_task_success >> qid_execution >> qae_execution
-dataplex_task_success >> qid_execution
+dataplex_task_success >> qid_execution >> qae_execution
+# dataplex_task_success >> qid_execution

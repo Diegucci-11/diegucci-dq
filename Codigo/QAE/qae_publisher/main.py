@@ -36,8 +36,7 @@ def qae_publisher(request):
     ",array_length(array_agg(severity IGNORE NULLS)) as issues_found\n"\
     "FROM `" + dataset + ".dq_summary_errors`\n"\
     "WHERE CURRENT_DATE() = date(execution_ts))\n"\
-    "SELECT if(alerts.issues_found is null, \"No hay errores en la calidad de los datos\", \n"\
-    "ERROR(CONCAT(CURRENT_DATETIME(), \" Se han identificado \", issues_found, \" errores de calidad. &&&\\n\", severity_list)))\n"\
+    "SELECT if(alerts.issues_found is null, \"0\", severity_list)\n"\
     "FROM alerts;\n"
     
     print(output_qae)
