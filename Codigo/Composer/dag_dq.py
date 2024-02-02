@@ -59,7 +59,7 @@ client = storage.Client()
 bucket_qid = client.bucket(BUCKET_QID)
 bucket_qae = client.bucket(BUCKET_QAE)
 qid_sql = bucket_qid.blob(QID_SQL).download_as_text()
-qae_sql = BUCKET_QAE.blob(QAE_SQL).download_as_text()
+qae_sql = bucket_qae.blob(QAE_SQL).download_as_text()
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
 DATAPLEX_REGION = "europe-west3"
