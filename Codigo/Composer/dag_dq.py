@@ -27,14 +27,6 @@ from airflow.operators.python import (
 )
 import pandas_gbq
 
-
-def ejecutar_consulta(**kwargs):
-    query = kwargs.get('query')
-    df = pandas_gbq.read_gbq(query, project_id='tu-proyecto-id')
-
-    print(df)
-
-
 # def recuperar_sql_gcs():
 #     client = storage.Client()
 
@@ -107,6 +99,11 @@ EXAMPLE_TASK_BODY = {
 }
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
+
+def ejecutar_qae():
+    df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
+
+    print(df)
 
 default_args = {
     'owner': 'Clouddq Airflow task Example',
@@ -263,8 +260,7 @@ with models.DAG(
 
     qae_execution = PythonOperator(
         task_id='qae_execution',
-        python_callable=ejecutar_consulta,
-        op_kwargs={'query': qae_sql},
+        python_callable=ejecutar_qae,
         dag=dag,
     )
 
