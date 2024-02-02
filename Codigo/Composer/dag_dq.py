@@ -36,7 +36,7 @@ import pandas_gbq
 
 # recuperar_sql_gcs()
     
-DAG_ID = "dag_dq_flow_2"
+DAG_ID = "dag_dq_flow_3"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -100,9 +100,12 @@ EXAMPLE_TASK_BODY = {
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
+errores = True
+
 def ejecutar_qae():
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
-
+    if(df[0][0] == '0'):
+        errores = False
     print(df)
 
 default_args = {

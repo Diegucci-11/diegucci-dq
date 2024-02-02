@@ -65,7 +65,6 @@ def yml_publisher(request):
                     dataset = fila_tablas[0]
             binding += "  " + fila[0].upper() + "_" + fila[1].upper() + ":\n"
             binding += f"    entity_uri: bigquery://projects/{project_id}/locations/{location}/datasets/{dataset}/tables/{fila[0]}\n"
-            # binding += f"    entity_uri: bigquery://projects/{project_id}/datasets/{dataset}/tables/{fila[0]}\n"
             binding += f"    column_id: {fila[1]}\n"
             binding += f"    row_filter_id: {fila[7]}\n"
             binding += "    rule_ids:"
@@ -82,7 +81,6 @@ def yml_publisher(request):
             binding += f"      capa: {fila[5]}\n"
             binding += f"      bu: {fila[6]}\n\n"
 
-        # print(binding)
         output_yaml += binding
 
     upload_blob(os.environ.get('YML_BUCKET'), output_yaml, file_name)
