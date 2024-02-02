@@ -36,7 +36,15 @@ def ejecutar_consulta(**kwargs):
     print(df)
 
 
+# def recuperar_sql_gcs():
+#     client = storage.Client()
 
+#     bucket = client.bucket(BUCKET_NAME)
+#     brz_sql = bucket.blob(BRZ_SQL_PATH).download_as_text().format(TABLE_NAME_BRZ, month_number)
+#     slv_sql = bucket.blob(SLV_SQL_PATH).download_as_text().format(TABLE_NAME_SLV, month_number)
+
+# recuperar_sql_gcs()
+    
 DAG_ID = "dag_dq_flow_1"
 
 BUCKET_YML = "yml_bucket"
@@ -54,42 +62,6 @@ bucket_qae = client.bucket(BUCKET_QAE)
 qid_sql = bucket_qid.blob(QID_SQL).download_as_text()
 qae_sql = BUCKET_QAE.blob(QAE_SQL).download_as_text()
 
-# def recuperar_sql_gcs():
-#     client = storage.Client()
-
-#     bucket = client.bucket(BUCKET_NAME)
-#     brz_sql = bucket.blob(BRZ_SQL_PATH).download_as_text().format(TABLE_NAME_BRZ, month_number)
-#     slv_sql = bucket.blob(SLV_SQL_PATH).download_as_text().format(TABLE_NAME_SLV, month_number)
-
-# recuperar_sql_gcs()
-
-with DAG(
-    DAG_ID, 
-    schedule="0 0 1 * *",
-    start_date=datetime(2021, 1, 1),
-    catchup=False,
-    tags=["QID", "QAE", "Dataplex"],
-) as dag:
-
-
-    
-    
-
-    (dataplex_task >> qid_execution >> qae_execution)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 DATAPLEX_PROJECT_ID = "diegucci-dq"
 DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
@@ -100,11 +72,11 @@ CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{D
 CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
 CONFIGS_BUCKET_NAME = "yml_bucket"
 CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/yml_test.yml"
-DATAPLEX_TASK_ID = "task-test-1"
+DATAPLEX_TASK_ID = "quality-check-1"
 TRIGGER_SPEC_TYPE = "ON_DEMAND"
 DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
 GCP_PROJECT_ID = "diegucci-dq"
-GCP_BQ_DATASET_ID = "Dataset_test"
+GCP_BQ_DATASET_ID = "quality_dataset_test"
 TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
 GCP_BQ_REGION = "europe-southwest1"
 FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
@@ -135,10 +107,8 @@ EXAMPLE_TASK_BODY = {
     "description": "Clouddq Airflow Task"
 }
 
-# for best practices
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
-# default arguments for the dag
 default_args = {
     'owner': 'Clouddq Airflow task Example',
     'depends_on_past': False,
@@ -149,7 +119,6 @@ default_args = {
     'retry_delay': datetime.timedelta(minutes=5),
     'start_date': YESTERDAY,
 }
-
 
 def get_session_headers() -> dict:
     credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
@@ -165,7 +134,6 @@ def get_session_headers() -> dict:
     }
 
     return headers
-
 
 def get_clouddq_task_status() -> str:
     headers = get_session_headers()
@@ -185,7 +153,6 @@ def get_clouddq_task_status() -> str:
             return task_status
     else:
         return "FAILED"
-
 
 def _get_dataplex_job_state() -> str:
     task_status = get_clouddq_task_status()
@@ -210,10 +177,13 @@ def _get_dataplex_task() -> str:
         return "ERROR"
 
 with models.DAG(
-        'dag_dq_3',
+        DAG_ID,
         catchup=False,
         default_args=default_args,
-        schedule_interval=datetime.timedelta(days=1)) as dag:
+        schedule="0 0 1 * *",
+        start_date=datetime(2021, 1, 1),
+        # schedule_interval=datetime.timedelta(days=1)
+        ) as dag:
 
     start_op = BashOperator(
         task_id="start_task",
@@ -283,13 +253,13 @@ with models.DAG(
                 "query": qid_sql,
                 "useLegacySql": False,
                 "destinationTable": {
-                    "projectId": "diegucci-dq",
-                    "datasetId": "Dataset_test",
+                    "projectId": GCP_PROJECT_ID,
+                    "datasetId": GCP_BQ_DATASET_ID,
                     "tableId": "dq_summary_errors",
                 },
             }
         },
-        location="europe-west3",
+        location=GCP_BQ_REGION,
     )
 
     qae_execution = PythonOperator(
@@ -306,4 +276,5 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-dataplex_task_success >> qid_execution >> qae_execution
+# dataplex_task_success >> qid_execution >> qae_execution
+dataplex_task_success >> qid_execution
