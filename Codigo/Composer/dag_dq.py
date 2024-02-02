@@ -15,7 +15,6 @@ import json
 import requests
 import os
 import time
-# from datetime import datetime
 from google.cloud import storage
 
 from airflow.models.dag import DAG
