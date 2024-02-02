@@ -180,7 +180,7 @@ with models.DAG(
         catchup=False,
         default_args=default_args,
         schedule="0 0 1 * *",
-        start_date=datetime(2021, 1, 1),
+        start_date=datetime(2021, 1, 1)
         # schedule_interval=datetime.timedelta(days=1)
         ) as dag:
 
