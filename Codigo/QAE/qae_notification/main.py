@@ -53,7 +53,7 @@ def enviarCorreo(name, email, env, severity, product):
 
     body = body_template.format(nombre=name, producto=product, entorno=env, severidad=severity)
     gmail_user = "diegucci.sautter@gmail.com"
-    
+     
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.ehlo()
         smtp.login(gmail_user, "jevy iqnh lljn kldh")
