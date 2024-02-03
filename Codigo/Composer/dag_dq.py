@@ -267,6 +267,14 @@ with models.DAG(
         dag=dag,
     )
 
+    # invoke_function = CloudFunctionInvokeFunctionOperator(
+    #     task_id="invoke_function",
+    #     project_id=PROJECT_ID,
+    #     location=LOCATION,
+    #     input_data={},
+    #     function_id=SHORT_FUNCTION_NAME,
+    # )
+
 start_op >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task

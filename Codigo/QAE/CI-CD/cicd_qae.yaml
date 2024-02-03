@@ -18,9 +18,11 @@ steps:
             'functions', 'deploy', 'qae_notification',
             '--region=europe-west3',
             '--source=Codigo/QAE/qae_notification', 
-            '--trigger-topic=qae_topic',
+            '--trigger-http',
             '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
+            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
+            '--set-secrets=DQ_KEY=data_quality_key:latest',
+            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
           ]
     waitFor: ['testing_functions']
 
