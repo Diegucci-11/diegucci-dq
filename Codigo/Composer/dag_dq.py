@@ -9,6 +9,9 @@ from airflow.providers.google.cloud.operators.dataplex import (
     DataplexCreateTaskOperator,
     DataplexDeleteTaskOperator,
 )
+from airflow.providers.google.cloud.operators.functions import (
+    CloudFunctionInvokeFunctionOperator,
+)
 
 import google.auth
 import json
@@ -52,6 +55,10 @@ bucket_qid = client.bucket(BUCKET_QID)
 bucket_qae = client.bucket(BUCKET_QAE)
 qid_sql = bucket_qid.blob(QID_SQL).download_as_text()
 qae_sql = bucket_qae.blob(QAE_SQL).download_as_text()
+
+
+CLOUD_FUNCTION_PROJECT_ID = "diegucci-dq"
+CLOUD_FUNCTION_REGION = "europe-west3"
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
 DATAPLEX_REGION = "europe-west3"
@@ -101,12 +108,29 @@ EXAMPLE_TASK_BODY = {
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
 errores = True
-
+data = []
 def ejecutar_qae():
+    global errores
+    global data
+
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
-    if(df[0][0] == '0'):
-        errores = False
     print(df)
+    print("------------------------------------------")
+    print(df.iloc[0, 0])
+    if(df.iloc[0, 0] == '0'):
+        errores = False
+    else:
+        print(df.iloc[0].tolist())
+        print("------------------------------------------")
+        data = df.iloc[0].tolist()
+        invoke_function = CloudFunctionInvokeFunctionOperator(
+            task_id="invoke_function",
+            project_id=CLOUD_FUNCTION_PROJECT_ID,
+            location=CLOUD_FUNCTION_REGION,
+            input_data={"data": json.dumps(data)},
+            function_id="qae_notification",
+        )
+        invoke_function.execute()
 
 default_args = {
     'owner': 'Clouddq Airflow task Example',
@@ -267,13 +291,13 @@ with models.DAG(
         dag=dag,
     )
 
-    # invoke_function = CloudFunctionInvokeFunctionOperator(
-    #     task_id="invoke_function",
-    #     project_id=PROJECT_ID,
-    #     location=LOCATION,
-    #     input_data={},
-    #     function_id=SHORT_FUNCTION_NAME,
-    # )
+    invoke_function = CloudFunctionInvokeFunctionOperator(
+        task_id="invoke_function",
+        project_id=CLOUD_FUNCTION_PROJECT_ID,
+        location=CLOUD_FUNCTION_REGION,
+        input_data={"data": json.dumps(data)},
+        function_id="qae_notification",
+    )
 
 start_op >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
@@ -283,4 +307,3 @@ dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
 dataplex_task_success >> qid_execution >> qae_execution
-# dataplex_task_success >> qid_execution

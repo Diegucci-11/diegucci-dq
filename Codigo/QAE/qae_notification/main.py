@@ -16,12 +16,17 @@ import functions_framework
 @functions_framework.http
 def qae_notification(request):
 
-    # json_data = request.get_json()
+    json_data = request.get_json()
+    print("------------------------------------------")
+    print(request)
+    print("------------------------------------------")
+    print(json_data)
+    print("------------------------------------------")
 
     # data_json = json.loads(data)
     # men_error = (data_json['errorStatus']['message']).replace('\r','')
     # mensaje = men_error.split('&&&')
-    json_data = [1, 2, 3, 2, 3, 1, 2]
+    # json_data = [1, 2, 3, 2, 3, 1, 2]
     severidad = json_data
 
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']

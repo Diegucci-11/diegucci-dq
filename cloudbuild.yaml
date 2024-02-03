@@ -13,9 +13,9 @@ steps:
   #   id: 'service_account'
     # waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
-  #   id: 'composer'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
+    id: 'composer'
     # waitFor: ['enable_apis']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
