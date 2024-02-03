@@ -13,7 +13,7 @@ from email.message import EmailMessage
 import re
 import functions_framework
 
-@functions_framework.cloud_event
+@functions_framework.http
 def qae_notification(request):
 
     # json_data = request.get_json()
