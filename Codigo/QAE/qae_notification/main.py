@@ -45,8 +45,7 @@ def qae_notification(request):
             if fila[1] not in correos_utilizados and (int(fila[3][0:1]) in severidad) and fila[2] == env:
                 print("Entro en segundo if")
                 enviarCorreo(fila[0], fila[1], fila[2], fila[3], product)
-                correos_utilizados[i] = fila[1]
-                i+=1
+                correos_utilizados.append(fila[1])
     return ""
 
 def enviarCorreo(name, email, env, severity, product):
