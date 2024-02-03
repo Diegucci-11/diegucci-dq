@@ -117,7 +117,7 @@ def ejecutar_qae():
     print(df)
     print("------------------------------------------")
     print(df.iloc[0, 0])
-    if(df.iloc[0, 0] == 0):
+    if(df.iloc[0, 0] == '0'):
         print("No hay errores")
         errores = False
     else:
