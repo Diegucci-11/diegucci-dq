@@ -40,7 +40,7 @@ def qae_notification(request):
     correos_utilizados = []
     i = 0
     print(df_correos)
-    for indice_fila, fila in enumerate(correos.get_all_values()):
+    for indice_fila, fila in df_correos.iloc[1:].iterrows():
         if fila[1] != '' and fila[1] is not None:
             if fila[1] not in correos_utilizados and (int(fila[3][0:1]) in severidad) and fila[2] == env:
                 print("Entro en segundo if")
