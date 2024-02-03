@@ -27,14 +27,12 @@ def qae_notification(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
-    print("Cuenta de servicio loggeada")
+    
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     correos = spreadsheet.worksheet('Correos')
     tablas = spreadsheet.worksheet('Tablas')
     product = tablas.cell(2, 2).value
     env = tablas.cell(3, 2).value
-
-    print("Acceso a Matrix Input")
 
     df_correos = pd.DataFrame(correos.get('A:D'))
     df_correos.dropna(how='all', axis=0, inplace=True)
@@ -44,8 +42,9 @@ def qae_notification(request):
     print(df_correos)
     for indice_fila, fila in enumerate(correos.get_all_values()):
         if fila[1] != '' and fila[1] is not None:
-            print("Entro en primer if")
-            if fila[1] not in correos_utilizados and fila[3] in severidad and fila[2] == env:
+            print("printeo fila3...")
+            print(fila[3][0:1])
+            if fila[1] not in correos_utilizados and fila[3][0:1] in severidad and fila[2] == env:
                 print("Entro en segundo if")
                 enviarCorreo(fila[0], fila[1], fila[2], fila[3], product)
                 correos_utilizados[i] = fila[1]
