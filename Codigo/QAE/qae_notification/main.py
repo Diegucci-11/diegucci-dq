@@ -27,27 +27,33 @@ def qae_notification(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
     client = gspread.authorize(credentials)
-
+    print("Cuenta de servicio loggeada")
     spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
     correos = spreadsheet.worksheet('Correos')
     tablas = spreadsheet.worksheet('Tablas')
     product = tablas.cell(2, 2).value
     env = tablas.cell(3, 2).value
 
+    print("Acceso a Matrix Input")
+
     df_correos = pd.DataFrame(correos.get('A:D'))
     df_correos.dropna(how='all', axis=0, inplace=True)
     df_correos = df_correos.sort_values(by=df_correos.columns[3], ascending=False)
     correos_utilizados = []
     i = 0
+    print(df_correos)
     for indice_fila, fila in enumerate(correos.get_all_values()):
         if fila[1] != '' and fila[1] is not None:
+            print("Entro en primer if")
             if fila[1] not in correos_utilizados and fila[3] in severidad and fila[2] == env:
+                print("Entro en segundo if")
                 enviarCorreo(fila[0], fila[1], fila[2], fila[3], product)
                 correos_utilizados[i] = fila[1]
                 i+=1
     return ""
 
 def enviarCorreo(name, email, env, severity, product):
+    print("Entra en función enviarCorreo")
     with open('template.html', 'r') as file:
         body_template = file.read()
 
@@ -57,6 +63,7 @@ def enviarCorreo(name, email, env, severity, product):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.ehlo()
         smtp.login(gmail_user, "jevy iqnh lljn kldh")
+        print("Loggeo correcto en gmail")
         try:
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -67,6 +74,7 @@ def enviarCorreo(name, email, env, severity, product):
             msg['Bcc'] = ''
             smtp.send_message(msg)
             smtp.close()
+            print("Mensaje enviado correctamente")
         except:
             print("Error en el envio del correo!")
 
