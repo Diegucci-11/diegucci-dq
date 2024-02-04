@@ -107,7 +107,6 @@ EXAMPLE_TASK_BODY = {
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
-
 def qae_notification(data):
     print("Entro en qae_notification!!")
     if data:

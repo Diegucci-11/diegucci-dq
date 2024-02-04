@@ -33,7 +33,7 @@ def qid_publisher(request):
     "# Configuración: \n"\
     "#   - severity: 0 - LOW, 1 - MEDIUM, 2 - HIGH\n"\
     "#   - action: 0 - NOTIFY, 1 - WARNING, 2 - ALERT\n\n\n"\
-    "insert into dq_summary_errors select * \n"
+    "insert into quality_dataset_test.dq_summary_errors select * \n"
 
     severity_list = ",CASE\n\n"
     action_list = ",CASE\n\n"
