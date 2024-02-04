@@ -15,7 +15,7 @@ import functions_framework
 
 @functions_framework.http
 def qae_notification(request):
-
+    print("------------------------------------------")
     json_data = request.get_json()
     print("------------------------------------------")
     print(request)

@@ -108,11 +108,22 @@ EXAMPLE_TASK_BODY = {
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
 def qae_notification(data):
-    print("Entro en qae_notification!!")
     if data:
-        print("Activo función!!")
-        bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
-        os.system(bash_command)
+        # print("Activo función!!")
+        # bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
+        # os.system(bash_command)
+        url = 'URL_DE_TU_CLOUD_FUNCTION'
+        data_post = {'data': data}
+        data_json = json.dumps(data_post)
+        headers = {'Content-Type': 'application/json'}
+
+        response = requests.post(url, data=data_json, headers=headers)
+
+        if response.status_code == 200:
+            print("La solicitud fue exitosa")
+            print("Respuesta de la Cloud Function:", response.text)
+        else:
+            print("La solicitud falló con el código de estado:", response.status_code)
 
 def ejecutar_qae():
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
