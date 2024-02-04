@@ -43,9 +43,9 @@ steps:
   #   id: 'check-changes-yml-publisher'
     # waitFor: ['service_account']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
-    id: 'check-changes-config-gs'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
+  #   id: 'check-changes-config-gs'
     # waitFor: ['service_account']
 
   # - name: 'gcr.io/cloud-builders/gcloud'

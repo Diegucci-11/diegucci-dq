@@ -27,7 +27,7 @@ def qae_notification(request):
     # men_error = (data_json['errorStatus']['message']).replace('\r','')
     # mensaje = men_error.split('&&&')
     # json_data = [1, 2, 3, 2, 3, 1, 2]
-    severidad = json_data
+    severidad = json_data['data']
 
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
