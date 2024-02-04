@@ -109,7 +109,9 @@ YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
 
 def qae_notification(data):
+    print("Entro en qae_notification!!")
     if data:
+        print("Activo función!!")
         bash_command = f"gcloud functions call mi_cloud_function --data '{json.dumps(data)}'"
         os.system(bash_command)
 
