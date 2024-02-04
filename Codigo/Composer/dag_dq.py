@@ -111,7 +111,7 @@ def qae_notification(data):
     print("Entro en qae_notification!!")
     if data:
         print("Activo función!!")
-        bash_command = f"gcloud functions call mi_cloud_function --data '{json.dumps(data)}'"
+        bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
         os.system(bash_command)
 
 def ejecutar_qae():
