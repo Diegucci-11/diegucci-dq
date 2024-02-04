@@ -17,9 +17,7 @@ steps:
             '--source=Codigo/Config_GS/config_gs', 
             '--trigger-http',
             '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
-            '--set-secrets=DQ_KEY=data_quality_key:latest',
-            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
+            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com'
           ]
     # waitFor: ['testing_functions']
 

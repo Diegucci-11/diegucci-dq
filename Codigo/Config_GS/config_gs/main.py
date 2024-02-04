@@ -9,6 +9,9 @@ def config_gs(request):
     info = {}
 
     for dataset in datasets:
+        if dataset.dataset_id in ['quality_dataset_test']:
+                continue
+        
         dataset_info = {}
         dataset_id = dataset.dataset_id
         dataset_ref = client.dataset(dataset_id)
