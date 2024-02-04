@@ -112,7 +112,7 @@ def qae_notification(data):
         # print("Activo función!!")
         # bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
         # os.system(bash_command)
-        url = 'URL_DE_TU_CLOUD_FUNCTION'
+        url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/qae_notification'
         data_post = {'data': data}
         data_json = json.dumps(data_post)
         headers = {'Content-Type': 'application/json'}
