@@ -273,11 +273,11 @@ with models.DAG(
             "query": {
                 "query": qid_sql,
                 "useLegacySql": False,
-                "destinationTable": {
-                    "projectId": GCP_PROJECT_ID,
-                    "datasetId": GCP_BQ_DATASET_ID,
-                    "tableId": "dq_summary_errors",
-                },
+                # "destinationTable": {
+                #     "projectId": GCP_PROJECT_ID,
+                #     "datasetId": GCP_BQ_DATASET_ID,
+                #     "tableId": "dq_summary_errors",
+                # },
             }
         },
         location=GCP_BQ_REGION,
