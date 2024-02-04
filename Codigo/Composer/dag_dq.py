@@ -108,23 +108,27 @@ EXAMPLE_TASK_BODY = {
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
 
+def qae_notification(data):
+    if data:
+        bash_command = f"gcloud functions call mi_cloud_function --data '{json.dumps(data)}'"
+        os.system(bash_command)
+
 def ejecutar_qae():
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
     if(str(df.iloc[0, 0]).strip() == '0'):
         print("No hay errores")
     else:
         print("Envío email!")
-        print(df.iloc[0].tolist())
-        print("------------------------------------------")
+        return df.iloc[0].tolist()
         data = df.iloc[0].tolist()
-        invoke_function = CloudFunctionInvokeFunctionOperator(
-            task_id="invoke_function",
-            project_id=CLOUD_FUNCTION_PROJECT_ID,
-            location=CLOUD_FUNCTION_REGION,
-            input_data={"data": json.dumps(data)},
-            function_id="qae_notification",
-        )
-        invoke_function.execute()
+        # invoke_function = CloudFunctionInvokeFunctionOperator(
+        #     task_id="invoke_function",
+        #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+        #     location=CLOUD_FUNCTION_REGION,
+        #     input_data={"data": json.dumps(data)},
+        #     function_id="qae_notification",
+        # )
+        # invoke_function.execute()
 
 default_args = {
     'owner': 'Clouddq Airflow task Example',
@@ -285,6 +289,13 @@ with models.DAG(
         dag=dag,
     )
 
+    qae_notification_task = PythonOperator(
+        task_id='qae_notification_task',
+        python_callable=qae_notification,
+        op_kwargs={'data': "{{ ti.xcom_pull(task_ids='qae_execution') }}"},
+        dag=dag,
+    )
+
 start_op >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task
@@ -292,4 +303,4 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-dataplex_task_success >> qid_execution >> qae_execution
+dataplex_task_success >> qid_execution >> qae_execution >> qae_notification_task
