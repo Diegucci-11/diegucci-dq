@@ -107,19 +107,15 @@ EXAMPLE_TASK_BODY = {
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
-errores = True
+
 data = []
 def ejecutar_qae():
     global errores
     global data
 
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
-    print(df)
-    print("------------------------------------------")
-    print(df.iloc[0, 0])
     if(str(df.iloc[0, 0]).strip() == '0'):
         print("No hay errores")
-        errores = False
     else:
         print("Envío email!")
         print(df.iloc[0].tolist())
@@ -293,13 +289,13 @@ with models.DAG(
         dag=dag,
     )
 
-    invoke_function = CloudFunctionInvokeFunctionOperator(
-        task_id="invoke_function",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": json.dumps(data)},
-        function_id="qae_notification",
-    )
+    # invoke_function = CloudFunctionInvokeFunctionOperator(
+    #     task_id="invoke_function",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": json.dumps(data)},
+    #     function_id="qae_notification",
+    # )
 
 start_op >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]

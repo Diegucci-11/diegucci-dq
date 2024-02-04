@@ -17,6 +17,9 @@ def config_gs(request):
         tables_info = {}
 
         for table in tables:
+            if table.table_id in ['dq_summary', 'dq_summary_errors']:
+                continue
+
             table_info = {}
             table_ref = dataset_ref.table(table.table_id)
             table = client.get_table(table_ref)
