@@ -295,11 +295,27 @@ with models.DAG(
         location=GCP_BQ_REGION,
     )
 
-    qae_execution = PythonOperator(
-        task_id='qae_execution',
-        python_callable=ejecutar_qae,
-        dag=dag,
+    qae_execution = BigQueryInsertJobOperator(
+        task_id="qae_execution",
+        configuration={
+            "query": {
+                "query": qae_sql,
+                "useLegacySql": False,
+                "destinationTable": {
+                    "projectId": GCP_PROJECT_ID,
+                    "datasetId": GCP_BQ_DATASET_ID,
+                    "tableId": "dq_qae_temp_table",
+                },
+            }
+        },
+        location=GCP_BQ_REGION,
     )
+
+    # qae_execution = PythonOperator(
+    #     task_id='qae_execution',
+    #     python_callable=ejecutar_qae,
+    #     dag=dag,
+    # )
 
     qae_notification_task = PythonOperator(
         task_id='qae_notification_task',
