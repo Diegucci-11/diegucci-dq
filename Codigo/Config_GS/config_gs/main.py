@@ -59,11 +59,11 @@ def config_gs(request):
     columna=2
     cells_to_update = []
 
-    for dataset in datasets:
-        dataset_id = dataset.dataset_id
-        dataset_ref = client.dataset(dataset_id)
-        tables = list(client.list_tables(dataset_ref))
-        for table in tables:
+    for dataset in client.list_datasets():
+        # dataset_id = dataset.dataset_id
+        # dataset_ref = client.dataset(dataset_id)
+        # tables = list(client.list_tables(dataset_ref))
+        for table in client.list_tables(dataset.reference):
             table_ref = client.get_table(table.reference)
 
             fields_info = ', '.join([field.name for field in table_ref.schema])
