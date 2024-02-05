@@ -68,8 +68,8 @@ def config_gs(request):
 
             fields_info = ', '.join([field.name for field in table_ref.schema])
 
-            cells_to_update.append((fila, columna, dataset.name))
-            cells_to_update.append((fila, columna + 1, table.name))
+            cells_to_update.append((fila, columna, dataset.dataset_id))
+            cells_to_update.append((fila, columna + 1, table.table_id))
             cells_to_update.append((fila, columna + 2, fields_info))
             fila += 1
 
