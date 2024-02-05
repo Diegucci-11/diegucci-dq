@@ -57,7 +57,7 @@ def config_gs(request):
     sheet = spreadsheet.worksheet('Tablas')
     fila=20
     columna=2
-    cells_to_update = []
+    values_to_update = []
 
     for dataset in client.list_datasets():
         # dataset_id = dataset.dataset_id
@@ -68,13 +68,22 @@ def config_gs(request):
 
             fields_info = ', '.join([field.name for field in table_ref.schema])
 
-            cells_to_update.append((fila, columna, dataset.dataset_id))
-            cells_to_update.append((fila, columna + 1, table.table_id))
-            cells_to_update.append((fila, columna + 2, fields_info))
-            fila += 1
+            values_to_update.append([dataset.dataset_id, table.table_id, fields_info])
 
-    values_to_update = [{'range': f'B{fila}:D{fila}', 'values': [[dataset.name, table.name, fields_info]]} for fila, _, _ in cells_to_update]
-    sheet.update_cells(values_to_update)
+    # Escribir los valores en la hoja de cálculo
+    num_rows = len(values_to_update)
+    cell_range = f'B1:D{num_rows}'  # Definir el rango de celdas para actualizar
+    sheet.update(cell_range, values_to_update)
+
+
+
+    #         cells_to_update.append((fila, columna, dataset.dataset_id))
+    #         cells_to_update.append((fila, columna + 1, table.table_id))
+    #         cells_to_update.append((fila, columna + 2, fields_info))
+    #         fila += 1
+
+    # values_to_update = [{'range': f'B{fila}:D{fila}', 'values': [[dataset.name, table.name, fields_info]]} for fila, _, _ in cells_to_update]
+    # sheet.update_cells(values_to_update)
 
     return "hola"
 
