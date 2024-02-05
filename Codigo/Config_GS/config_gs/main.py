@@ -10,7 +10,8 @@ import json
 @functions_framework.http
 def config_gs(request):
     client = bigquery.Client()
-    # datasets = list(client.list_datasets())
+
+    datasets = list(client.list_datasets())
     # info = {}
 
     # for dataset in datasets:
@@ -58,7 +59,7 @@ def config_gs(request):
     columna=2
     cells_to_update = []
 
-    for dataset in client.list_datasets():
+    for dataset in datasets:
         for table in client.list_tables(dataset.reference):
             table_ref = client.get_table(table.reference)
 
