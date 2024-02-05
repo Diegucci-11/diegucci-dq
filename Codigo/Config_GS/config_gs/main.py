@@ -60,7 +60,7 @@ def config_gs(request):
     cells_to_update = []
 
     for dataset in datasets:
-        for table in client.list_tables(dataset.reference):
+        for table in list(client.list_tables(dataset.reference)):
             table_ref = client.get_table(table.reference)
 
             fields_info = ', '.join([field.name for field in table_ref.schema])

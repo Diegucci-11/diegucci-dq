@@ -23,7 +23,8 @@ from google.cloud import storage
 from airflow.models.dag import DAG
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryInsertJobOperator,
-    BigQueryGetDataOperator
+    BigQueryGetDataOperator,
+    BigQueryCreateEmptyTableOperator
 )
 
 from airflow.operators.python import (
@@ -296,6 +297,18 @@ with models.DAG(
         location=GCP_BQ_REGION,
     )
 
+    CreateTable = BigQueryCreateEmptyTableOperator(
+        task_id="BigQueryCreateEmptyTableOperator_task",
+        dataset_id=GCP_BQ_DATASET_ID,
+        table_id="dq_qae_temp_table",
+        project_id=GCP_PROJECT_ID,
+        schema_fields=[
+            {"name": "temp", "type": "ARRAY<INT64>"},
+        ],
+        gcp_conn_id="airflow-conn-id-account",
+        google_cloud_storage_conn_id="airflow-conn-id",
+    )
+
     qae_execution = BigQueryInsertJobOperator(
         task_id="qae_execution",
         configuration={
@@ -328,12 +341,12 @@ with models.DAG(
     #     dag=dag,
     # )
 
-    qae_notification_task = PythonOperator(
-        task_id='qae_notification_task',
-        python_callable=qae_notification,
-        op_kwargs={'data': "{{ ti.xcom_pull(task_ids='qae_execution') }}"},
-        dag=dag,
-    )
+    # qae_notification_task = PythonOperator(
+    #     task_id='qae_notification_task',
+    #     python_callable=qae_notification,
+    #     op_kwargs={'data': "{{ ti.xcom_pull(task_ids='qae_execution') }}"},
+    #     dag=dag,
+    # )
 
 start_op >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
