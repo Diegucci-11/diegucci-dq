@@ -22,7 +22,7 @@ def config_gs(request):
     #     dataset_id = dataset.dataset_id
     #     dataset_ref = client.dataset(dataset_id)
 
-    #     tables = list(client.list_tables(dataset_ref))
+        
     #     tables_info = {}
 
     #     for table in tables:
@@ -60,7 +60,8 @@ def config_gs(request):
     cells_to_update = []
 
     for dataset in datasets:
-        for table in list(client.list_tables(dataset.reference)):
+        tables = list(client.list_tables(dataset.reference))
+        for table in tables:
             table_ref = client.get_table(table.reference)
 
             fields_info = ', '.join([field.name for field in table_ref.schema])
