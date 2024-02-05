@@ -50,9 +50,9 @@ def config_gs(request):
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 
     credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('DQ_KEY')), scopes=SCOPES)
-    client = gspread.authorize(credentials)
+    client_gsheet = gspread.authorize(credentials)
 
-    spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
+    spreadsheet = client_gsheet.open(os.environ.get('MATRIX_FILE'))
     
     sheet = spreadsheet.worksheet('Tablas')
     fila=20
