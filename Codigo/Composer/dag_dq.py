@@ -23,6 +23,7 @@ from google.cloud import storage
 from airflow.models.dag import DAG
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryInsertJobOperator,
+    BigQueryGetDataOperator
 )
 
 from airflow.operators.python import (
@@ -311,6 +312,16 @@ with models.DAG(
         location=GCP_BQ_REGION,
     )
 
+    get_data = BigQueryGetDataOperator(
+        task_id="get_data_qae",
+        dataset_id=GCP_BQ_DATASET_ID,
+        table_id="dq_qae_temp_table",
+        project_id=GCP_PROJECT_ID,
+        # max_results=100,
+        selected_fields="temp",
+        # gcp_conn_id="airflow-conn-id",
+    )
+    
     # qae_execution = PythonOperator(
     #     task_id='qae_execution',
     #     python_callable=ejecutar_qae,

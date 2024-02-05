@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 import gspread
 import os
 import json
-import pandas as pd
+# import pandas as pd
 
 @functions_framework.http
 def config_gs(request):
