@@ -22,22 +22,22 @@ provider "google" {
 #   depends_on = [google_storage_bucket.bucket_functions_code_asdf]
 # }
 
-resource "google_storage_bucket_object" "object" {
-  name   = "qid_publisher.zip"
-  bucket = var.name_qid_bucket
-  source = "qid_publisher.zip"
-}
+# resource "google_storage_bucket_object" "object" {
+#   name   = "qid_publisher.zip"
+#   bucket = var.name_qid_bucket
+#   source = "qid_publisher.zip"
+# }
 
 resource "google_cloudfunctions2_function" "qid_notification" {
   name          = var.name_function_qid_notification
   location      = var.region
   build_config {
     runtime     = var.programming_language
-    entry_point = "qid_publisher"
+    entry_point = "qae_publisher"
     source {
       storage_source {
         bucket  = var.name_qid_bucket
-        object  = google_storage_bucket_object.object.name
+        object  = "function-source.zip"
       }
     }
   }
@@ -49,7 +49,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     environment_variables = {
       QID_BUCKET    = var.name_qid_bucket
       QID_SQL       = "qid_sql.sql"
-      MATRIX_FILE   = "MatrixInput_v1.1"
+      MATRIX_FILE   = var.matrix_input_file
     }
     secret_environment_variables {
       key        = "DQ_KEY"

@@ -33,3 +33,8 @@ variable "service_account" {
   description = "email of the service account"
   type        = string
 }
+
+variable "matrix_input_file" {
+  description = "name of the matrix input file"
+  type        = string
+}
