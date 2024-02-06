@@ -28,3 +28,13 @@ variable "name_secret" {
   description = "Name for the secret of the service-account key"
   type        = string
 }
+
+variable "name_qid_bucket" {
+  description = "Name for the bucket which contains the qid code"
+  type        = string
+}
+
+variable "service_account" {
+  description = "email of the service account"
+  type        = string
+}
