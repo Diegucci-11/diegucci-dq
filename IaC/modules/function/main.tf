@@ -22,6 +22,12 @@ provider "google" {
 #   depends_on = [google_storage_bucket.bucket_functions_code_asdf]
 # }
 
+resource "google_storage_bucket_object" "object" {
+  name   = "qid_publisher.zip"
+  bucket = var.name_qid_bucket
+  source = "qid_publisher.zip"
+}
+
 resource "google_cloudfunctions2_function" "qid_notification" {
   name          = var.name_function_qid_notification
   location      = var.region
@@ -31,7 +37,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     source {
       storage_source {
         bucket  = var.name_qid_bucket
-        object  = "qid_publisher.zip"
+        object  = google_storage_bucket_object.object.name
       }
     }
   }
