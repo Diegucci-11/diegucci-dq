@@ -28,18 +28,18 @@ steps:
   #   id: 'dataplex_lake'
   #   waitFor: ['enable_apis']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-    id: 'qid_function'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+  #   id: 'qid_function'
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
   #   id: 'check-changes-qae'
     # waitFor: ['service_account']s
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
-  #   id: 'check-changes-qiq'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
+    id: 'check-changes-qiq'
     # waitFor: ['service_account']
 
   # - name: 'gcr.io/cloud-builders/gcloud'

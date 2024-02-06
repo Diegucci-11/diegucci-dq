@@ -54,7 +54,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     secret_environment_variables {
       key        = "DQ_KEY"
       project_id = var.id_project
-      secret     = "data_quality_key"
+      secret     = var.name_secret
       version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
