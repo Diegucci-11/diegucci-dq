@@ -29,15 +29,15 @@ def qae_publisher(request):
     "# Entorno: " + environment + "\n"\
     "# Localizacion: " + location + "\n"\
     "# Producto: " + product_name + "\n\n\n"\
-    "WITH alerts AS(\n"\
     "SELECT\n"\
     "CURRENT_DATETIME() as ts_notification\n"\
     ",array_to_string(array_agg(concat(severity) IGNORE NULLS), \"\\n\") as severity_list\n"\
     ",array_length(array_agg(severity IGNORE NULLS)) as issues_found\n"\
     "FROM `" + dataset + ".dq_summary_errors`\n"\
-    "WHERE CURRENT_DATE() = date(execution_ts))\n"\
-    "SELECT if(alerts.issues_found is null, \"0\", severity_list)\n"\
-    "FROM alerts;\n"
+    "WHERE CURRENT_DATE() = date(execution_ts)\n"
+    # "SELECT if(alerts.issues_found is null, \"0\", severity_list)\n"\
+    # "SELECT severity_list)\n"\
+    # "FROM alerts;\n"
     
     print(output_qae)
 
