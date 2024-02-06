@@ -23,3 +23,7 @@ variable "name_qae_bucket" {
   type        = string
 }
 
+variable "name_functions_bucket" {
+  description = "Nombre del bucket para guardar los códigos de las funciones"
+  type        = string
+}

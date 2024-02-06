@@ -20,3 +20,9 @@ resource "google_storage_bucket" "qae_bucket" {
   location      = var.region     
   force_destroy = true               
 }
+
+resource "google_storage_bucket" "functions_bucket" {
+  name          = var.name_functions_bucket  
+  location      = var.region     
+  force_destroy = true               
+}

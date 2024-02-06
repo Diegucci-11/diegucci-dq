@@ -18,9 +18,9 @@ steps:
   #   id: 'composer'
     # waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
-  #   id: 'storage'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
+    id: 'storage'
   #   waitFor: ['enable_apis']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
@@ -37,9 +37,9 @@ steps:
   #   id: 'check-changes-qae'
     # waitFor: ['service_account']s
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
-    id: 'check-changes-qiq'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
+  #   id: 'check-changes-qiq'
     # waitFor: ['service_account']
 
   # - name: 'gcr.io/cloud-builders/gcloud'

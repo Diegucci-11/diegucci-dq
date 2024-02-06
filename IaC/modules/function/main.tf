@@ -37,7 +37,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     source {
       storage_source {
         bucket  = var.name_qid_bucket
-        object  = "function-source.zip"
+        object  = "qid_publisher.zip"
       }
     }
   }
