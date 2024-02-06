@@ -46,7 +46,10 @@ resource "google_cloudfunctions2_function" "qid_notification" {
       MATRIX_FILE   = "MatrixInput_v1.1"
     }
     secret_environment_variables {
-      DQ_KEY = "data_quality_key:latest"
+      key        = "DQ_KEY"
+      project_id = var.id_project
+      secret     = "data_quality_key"
+      version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
     service_account_email = var.service_account
