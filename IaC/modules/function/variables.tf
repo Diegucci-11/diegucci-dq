@@ -28,11 +28,3 @@ variable "name_secret" {
   description = "Name for the secret of the service-account key"
   type        = string
 }
-
-variable "dependencies_apis" {
-  type    = bool
-}
-
-variable "dependencies_service_account" {
-  type    = bool
-}
