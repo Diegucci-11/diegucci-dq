@@ -52,7 +52,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
       version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
-    service_account_email = var.service_account
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
 

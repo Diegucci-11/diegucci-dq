@@ -15,7 +15,6 @@ name_quality_bucket = "yml_bucket"
 name_qid_bucket = "qid_bucket"
 name_qae_bucket = "qae_bucket"
 
-service_account = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 # bucket for tfstate
 tf_backend = "tf_backend_dq"
 
