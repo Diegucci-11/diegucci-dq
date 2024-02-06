@@ -303,7 +303,9 @@ with models.DAG(
         table_id="dq_qae_temp_table",
         project_id=GCP_PROJECT_ID,
         schema_fields=[
-            {"name": "temp", "type": "ARRAY<INT64>"},
+            {"name": "ts_notification", "type": "TIMESTAMP"},
+            {"name": "severity_list", "type": "STRING"},
+            {"name": "issues_found", "type": "INT64"},
         ],
         # gcp_conn_id="airflow-conn-id-account",
         # google_cloud_storage_conn_id="airflow-conn-id",
@@ -331,7 +333,7 @@ with models.DAG(
         table_id="dq_qae_temp_table",
         project_id=GCP_PROJECT_ID,
         # max_results=100,
-        selected_fields="temp",
+        selected_fields="severity_list",
         # gcp_conn_id="airflow-conn-id",
     )
     
