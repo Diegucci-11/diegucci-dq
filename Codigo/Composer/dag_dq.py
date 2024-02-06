@@ -212,13 +212,13 @@ def _get_dataplex_task() -> str:
         return "ERROR"
 
 with models.DAG(
-        DAG_ID,
-        catchup=False,
-        default_args=default_args,
-        # schedule="0 0 1 * *",
-        # start_date=datetime(2021, 1, 1)
-        schedule_interval=datetime.timedelta(days=1)
-        ) as dag:
+    DAG_ID,
+    catchup=False,
+    default_args=default_args,
+    # schedule="0 0 1 * *",
+    # start_date=datetime(2021, 1, 1)
+    schedule_interval=datetime.timedelta(days=1)
+    ) as dag:
 
     start_op = BashOperator(
         task_id="start_task",

@@ -1,0 +1,8 @@
+steps:
+  - name: 'hashicorp/terraform:1.6.6'
+    args: ['init']
+    dir: 'IaC/modules/function'
+    
+  - name: 'hashicorp/terraform:1.6.6'
+    args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
+    dir: 'IaC/modules/function'

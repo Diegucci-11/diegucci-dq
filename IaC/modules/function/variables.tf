@@ -3,8 +3,8 @@ variable "id_project" {
   type        = string
 }
 
-variable "name_function_qae_notification"{
-  description = "Name for the qae_notification function"
+variable "name_function_qid_notification"{
+  description = "Name for the qid_notification function"
   type        = string
 }
 
