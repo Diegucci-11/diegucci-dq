@@ -337,13 +337,13 @@ with models.DAG(
         # gcp_conn_id="airflow-conn-id",
     )
     
-    invoke_function = CloudFunctionInvokeFunctionOperator(
-        task_id="invoke_function",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": json.dumps(get_data_qae.output)},
-        function_id="qae_notification",
-    )
+    # invoke_function = CloudFunctionInvokeFunctionOperator(
+    #     task_id="invoke_function",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": json.dumps(get_data_qae.output)},
+    #     function_id="qae_notification",
+    # )
     # qae_execution = PythonOperator(
     #     task_id='qae_execution',
     #     python_callable=ejecutar_qae,
@@ -364,4 +364,5 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> invoke_function
+dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae 
+# >> invoke_function
