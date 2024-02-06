@@ -16,7 +16,7 @@ name_function_qid_notification = "qid_publisher"
 name_quality_bucket = "yml_bucket"
 name_qid_bucket = "qid_bucket"
 name_qae_bucket = "qae_bucket"
-name_functions_bucket = "functions_bucket"
+name_functions_bucket = "functions_dq_bucket"
 
 # bucket for tfstate
 tf_backend = "tf_backend_dq"
