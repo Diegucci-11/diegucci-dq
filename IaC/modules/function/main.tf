@@ -27,7 +27,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
   location      = var.region
   build_config {
     runtime     = var.programming_language
-    entry_point = "qid_publisher"
+    entry_point = "main"
     source {
       storage_source {
         bucket  = var.name_qid_bucket
@@ -41,7 +41,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     available_cpu      = "0.583"
     timeout_seconds    = 500
     environment_variables = {
-      QID_BUCKET    = "qid_bucket"
+      QID_BUCKET    = var.name_qid_buckets
       QID_SQL       = "qid_sql.sql"
       MATRIX_FILE   = "MatrixInput_v1.1"
     }
