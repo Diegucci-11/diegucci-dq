@@ -54,9 +54,9 @@ steps:
   #     - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
   #   dir: 'IaC/modules/storage'
 
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'qid_publisher.zip', 'gs://functions_dq_bucket/']
-    dir: 'IaC/modules/storage'
+  # - name: 'gcr.io/cloud-builders/gsutil'
+  #   args: ['cp', 'qid_publisher.zip', 'gs://functions_dq_bucket/']
+  #   dir: 'IaC/modules/storage'
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   entrypoint: 'bash'
@@ -65,13 +65,13 @@ steps:
   #     - 'gsutil cp qid_publisher.zip gs://functions_dq_bucket/'
   #   dir: 'IaC/modules/storage'
 
-  # - name: 'gcr.io/cloud-builders/gsutil'
-  #   args: 
-  #     - 'cp'
-  #     - 'qid_publisher.zip'
-  #     - 'qae_publisher.zip'
-  #     # - 'qae_notification.zip'
-  #     # - 'yml_publisher.zip'
-  #     # - 'config_gs.zip'
-  #     - 'functions_dq_bucket'
-  #   dir: 'IaC/modules/storage'
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: 
+      - 'cp'
+      - 'qid_publisher.zip'
+      - 'qae_publisher.zip'
+      # - 'qae_notification.zip'
+      # - 'yml_publisher.zip'
+      # - 'config_gs.zip'
+      - 'gs://functions_dq_bucket/'
+    dir: 'IaC/modules/storage'
