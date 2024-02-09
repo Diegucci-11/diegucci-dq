@@ -28,8 +28,10 @@ steps:
     args:
       - '-c'
       - |
-        apt-get update && apt-get install -y zip
+        # apt-get update && apt-get install -y zip
         zip -r qae_publisher.zip ./../../../Codigo/QAE/qae_publisher
+    dir: 'IaC/modules/storage'
+
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
