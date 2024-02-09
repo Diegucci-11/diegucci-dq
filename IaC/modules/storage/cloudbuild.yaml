@@ -20,31 +20,31 @@ steps:
       - '-c'
       - |
         apt-get update && apt-get install -y zip
-        zip -r qid_publisher.zip ../../../Codigo/QID/qid_publisher
+        zip -r qid_publisher.zip ./../../../Codigo/QID/qid_publisher
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'zip -r qae_publisher.zip ../../../Codigo/QID/qae_publisher'
+      - 'zip -r qae_publisher.zip ./../../../Codigo/QAE/qae_publisher'
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'zip -r qae_notification.zip ../../../Codigo/QID/qae_notification'
+      - 'zip -r qae_notification.zip ./../../../Codigo/QAE/qae_notification'
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'zip -r yml_publisher.zip ../../../Codigo/QID/yml_publisher'
+      - 'zip -r yml_publisher.zip ./../../../Codigo/YML_Publisher/yml_publisher'
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'zip -r config_gs.zip ../../../Codigo/QID/config_gs'
+      - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
 
   - name: 'gcr.io/cloud-builders/gsutil'
     args: 
