@@ -54,16 +54,16 @@ steps:
   #     - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
   #   dir: 'IaC/modules/storage'
 
-  # - name: 'gcr.io/cloud-builders/gsutil'
-  #   args: ['cp', 'qid_publisher.zip', 'functions_dq_bucket']
-  #   dir: 'IaC/modules/storage'
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'gsutil cp qid_publisher.zip gs://functions_dq_bucket/'
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['cp', 'qid_publisher.zip', 'gs://functions_dq_bucket/']
     dir: 'IaC/modules/storage'
+
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - 'gsutil cp qid_publisher.zip gs://functions_dq_bucket/'
+  #   dir: 'IaC/modules/storage'
 
   # - name: 'gcr.io/cloud-builders/gsutil'
   #   args: 
