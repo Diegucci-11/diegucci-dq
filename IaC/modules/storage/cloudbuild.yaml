@@ -22,7 +22,7 @@ steps:
         apt-get update && apt-get install -y zip
         zip -r qid_publisher.zip ./../../../Codigo/QID/qid_publisher/
         pwd
-        ls
+        ls -all
     dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -65,3 +65,4 @@ steps:
       # - 'yml_publisher.zip'
       # - 'config_gs.zip'
       - 'functions_dq_bucket'
+    dir: 'IaC/modules/storage'
