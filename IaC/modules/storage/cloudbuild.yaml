@@ -7,12 +7,12 @@ steps:
     args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
     dir: 'IaC/modules/storage'
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        export BUCKET_NAME=$(grep name_functions_bucket ../../environments/dev/main.tfvars | cut -d '=' -f2 | tr -d '[:space:]')
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       export BUCKET_NAME=$(grep name_functions_bucket ../../environments/dev/main.tfvars | cut -d '=' -f2 | tr -d '[:space:]')
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
@@ -52,4 +52,4 @@ steps:
       - 'qae_notification.zip'
       - 'yml_publisher.zip'
       - 'config_gs.zip'
-      - '$BUCKET_NAME'
+      - 'functions_dq_bucket'
