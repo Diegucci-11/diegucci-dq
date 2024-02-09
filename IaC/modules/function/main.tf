@@ -33,11 +33,11 @@ resource "google_cloudfunctions2_function" "qid_notification" {
   location      = var.region
   build_config {
     runtime     = var.programming_language
-    entry_point = "qae_publisher"
+    entry_point = "qid_publisher"
     source {
       storage_source {
-        bucket  = var.name_qid_bucket
-        object  = "qid_publisher.zip"
+        bucket  = var.name_functions_bucket
+        object  = "qid_publisher.zip" # PENDIENTE DE PARAMETRIZAR
       }
     }
   }
@@ -52,13 +52,13 @@ resource "google_cloudfunctions2_function" "qid_notification" {
       MATRIX_FILE   = var.matrix_input_file
     }
     secret_environment_variables {
-      key        = "DQ_KEY"
+      key        = "DQ_KEY" # PENDIENTE DE PARAMETRIZAR
       project_id = var.id_project
       secret     = var.name_secret
       version    = "latest"
     }
-    ingress_settings = "ALLOW_ALL"
-    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+    ingress_settings = "ALLOW_ALL" # PARAMETRIZAR? 
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com" # HACER DE OTRA FORMA?
   }
 }
 

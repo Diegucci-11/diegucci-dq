@@ -11,7 +11,7 @@ matrix_input_file = "MatrixInput_v1.1"
 project_number = "409016403024"
 
 name_function_qae_notification = "qae_notification"
-name_function_qid_notification = "qid_publisher"
+name_function_qid_notification = "qid_publisher2"
 
 name_quality_bucket = "yml_bucket"
 name_qid_bucket = "qid_bucket"
