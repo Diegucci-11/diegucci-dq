@@ -30,7 +30,7 @@ steps:
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-  #   id: 'qid_function'
+  #   id: 'functions'
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
