@@ -21,6 +21,8 @@ steps:
       - |
         apt-get update && apt-get install -y zip
         zip -r qid_publisher.zip ./../../../Codigo/QID/qid_publisher/
+        pwd
+        ls
     dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -33,33 +35,33 @@ steps:
     dir: 'IaC/modules/storage'
 
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'zip -r qae_notification.zip ./../../../Codigo/QAE/qae_notification'
-    dir: 'IaC/modules/storage'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - 'zip -r qae_notification.zip ./../../../Codigo/QAE/qae_notification'
+  #   dir: 'IaC/modules/storage'
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'zip -r yml_publisher.zip ./../../../Codigo/YML_Publisher/yml_publisher'
-    dir: 'IaC/modules/storage'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - 'zip -r yml_publisher.zip ./../../../Codigo/YML_Publisher/yml_publisher'
+  #   dir: 'IaC/modules/storage'
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
-    dir: 'IaC/modules/storage'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
+  #   dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gsutil'
     args: 
       - 'cp'
       - 'qid_publisher.zip'
       - 'qae_publisher.zip'
-      - 'qae_notification.zip'
-      - 'yml_publisher.zip'
-      - 'config_gs.zip'
+      # - 'qae_notification.zip'
+      # - 'yml_publisher.zip'
+      # - 'config_gs.zip'
       - 'functions_dq_bucket'
