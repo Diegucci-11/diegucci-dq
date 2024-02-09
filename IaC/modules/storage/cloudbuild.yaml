@@ -21,7 +21,7 @@ steps:
       - |
         apt-get update && apt-get install -y zip
         # zip -r qid_publisher.zip ./../../../Codigo/QID/qid_publisher/
-        zip -r qid_publisher.zip storage
+        zip qid_publisher.zip variables.tf
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
