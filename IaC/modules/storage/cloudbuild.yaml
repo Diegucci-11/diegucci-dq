@@ -28,7 +28,7 @@ steps:
     args:
       - '-c'
       - |
-        # apt-get update && apt-get install -y zip
+        apt-get update && apt-get install -y zip
         zip -r qae_publisher.zip ./../../../Codigo/QAE/qae_publisher
     dir: 'IaC/modules/storage'
 
@@ -38,18 +38,21 @@ steps:
     args:
       - '-c'
       - 'zip -r qae_notification.zip ./../../../Codigo/QAE/qae_notification'
+    dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - 'zip -r yml_publisher.zip ./../../../Codigo/YML_Publisher/yml_publisher'
+    dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - 'zip -r config_gs.zip ./../../../Codigo/Config_GS/config_gs'
+    dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gsutil'
     args: 
