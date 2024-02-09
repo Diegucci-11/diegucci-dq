@@ -27,7 +27,9 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - 'zip -r qae_publisher.zip ./../../../Codigo/QAE/qae_publisher'
+      - |
+        apt-get update && apt-get install -y zip
+        zip -r qae_publisher.zip ./../../../Codigo/QAE/qae_publisher
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
