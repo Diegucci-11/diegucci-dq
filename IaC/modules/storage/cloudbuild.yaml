@@ -57,12 +57,15 @@ steps:
   #   dir: 'IaC/modules/storage'
 
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: 
-      - 'cp'
-      - 'qid_publisher.zip'
-      - 'qae_publisher.zip'
-      # - 'qae_notification.zip'
-      # - 'yml_publisher.zip'
-      # - 'config_gs.zip'
-      - 'functions_dq_bucket'
-    dir: 'IaC/modules/storage'
+    args: ['cp', 'qid_publisher.zip', 'functions_dq_bucket']
+
+  # - name: 'gcr.io/cloud-builders/gsutil'
+  #   args: 
+  #     - 'cp'
+  #     - 'qid_publisher.zip'
+  #     - 'qae_publisher.zip'
+  #     # - 'qae_notification.zip'
+  #     # - 'yml_publisher.zip'
+  #     # - 'config_gs.zip'
+  #     - 'functions_dq_bucket'
+  #   dir: 'IaC/modules/storage'
