@@ -11,7 +11,8 @@ steps:
     entrypoint: 'bash'
     args:
       - '-c'
-      - "BUCKET_NAME=$(grep name_functions_bucket ../../environments/dev/main.tfvars | cut -d '=' -f2 | tr -d '[:space:]')"
+      - |
+        export BUCKET_NAME=$(grep name_functions_bucket ../../environments/dev/main.tfvars | cut -d '=' -f2 | tr -d '[:space:]')
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
