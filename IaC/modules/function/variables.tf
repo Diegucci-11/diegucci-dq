@@ -38,3 +38,9 @@ variable "matrix_input_file" {
   description = "name of the matrix input file"
   type        = string
 }
+
+
+variable "name_functions_bucket" {
+  description = "name of the bucket which contains de functions code"
+  type        = string
+}
