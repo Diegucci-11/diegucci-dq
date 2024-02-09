@@ -34,6 +34,7 @@ resource "google_cloudfunctions2_function" "qid_notification" {
   build_config {
     runtime     = var.programming_language
     entry_point = "qid_publisher"
+    GOOGLE_FUNCTION_SOURCE = "main.py"
     source {
       storage_source {
         bucket  = var.name_functions_bucket
