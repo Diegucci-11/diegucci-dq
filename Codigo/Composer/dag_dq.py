@@ -33,7 +33,7 @@ from airflow.operators.python import (
 )
 import pandas_gbq
     
-DAG_ID = "dag_dq_flow_8"
+DAG_ID = "dag_dq_flow_9"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -120,8 +120,8 @@ def qae_notification_function(data):
         else:
             print("La solicitud falló con el código de estado:", response.status_code)
 
-def yml_publisher_function():
-    url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
+def yml_publisher_function(url):
+    # url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
     data_post = {'data': "data"}
     data_json = json.dumps(data_post)
     headers = get_session_headers()
@@ -163,7 +163,7 @@ default_args = {
 }
 
 def get_session_headers() -> dict:
-    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
+    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions", "https://www.googleapis.com/auth/cloudrun"])
     auth_req = google.auth.transport.requests.Request()
 
     credentials.refresh(auth_req)
@@ -236,6 +236,7 @@ with models.DAG(
     yml_publisher_f = PythonOperator(
         task_id='yml_publisher_f',
         python_callable=yml_publisher_function,
+        op_kwargs={'url': "https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher"},
         dag=dag,
     )
 
