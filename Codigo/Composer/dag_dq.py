@@ -102,7 +102,7 @@ EXAMPLE_TASK_BODY = {
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
-def qae_notification(data):
+def qae_notification_function(data):
     if data:
         # print("Activo función!!")
         # bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
@@ -204,6 +204,12 @@ def _get_dataplex_task() -> str:
     else:
         return "ERROR"
 
+def _get_qae_state(data) -> str:
+    if data: 
+        return "qae_notification"
+    else:
+        return "sin_errores"
+
 with models.DAG(
     DAG_ID,
     catchup=False,
@@ -217,29 +223,29 @@ with models.DAG(
         task_id="yml_publisher",
         project_id=CLOUD_FUNCTION_PROJECT_ID,
         location=CLOUD_FUNCTION_REGION,
-        # input_data={"data": json.dumps(get_data_qae.output)},
+        input_data={"data": "yml_pub"},
         function_id="yml_publisher",
     )
 
     qid_publisher = CloudFunctionInvokeFunctionOperator(
-        task_id="yml_publisher",
+        task_id="qid_publisher",
         project_id=CLOUD_FUNCTION_PROJECT_ID,
         location=CLOUD_FUNCTION_REGION,
-        # input_data={"data": json.dumps(get_data_qae.output)},
+        input_data={"data": "qid_pub"},
         function_id="qid_publisher",
     )
 
     qae_publisher = CloudFunctionInvokeFunctionOperator(
-        task_id="yml_publisher",
+        task_id="qae_publisher",
         project_id=CLOUD_FUNCTION_PROJECT_ID,
         location=CLOUD_FUNCTION_REGION,
-        # input_data={"data": json.dumps(get_data_qae.output)},
+        input_data={"data": "qae_pub"},
         function_id="qae_publisher",
     )
 
     start_op = BashOperator(
         task_id="start_task",
-        bash_command="echo start flow",
+        bash_command="echo 'start flow'",
         dag=dag,
     )
 
@@ -360,13 +366,27 @@ with models.DAG(
         deletion_dataset_table=f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{QAE_TEMP_TABLE}",
     )
     
-    # invoke_function = CloudFunctionInvokeFunctionOperator(
-    #     task_id="invoke_function",
-    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-    #     location=CLOUD_FUNCTION_REGION,
-    #     input_data={"data": json.dumps(get_data_qae.output)},
-    #     function_id="qae_notification",
-    # )
+    qae_task_state = BranchPythonOperator(
+        task_id="dataplex_task_state",
+        python_callable=_get_qae_state,
+        op_kwargs={'data': "{{ ti.xcom_pull(task_ids='get_data_qae') }}"},
+        provide_context=True,
+    )
+
+    sin_errores = BashOperator(
+        task_id="sin_errores",
+        bash_command="echo 'No hay errores de calidad'",
+        dag=dag,
+    )
+    
+    qae_notification = CloudFunctionInvokeFunctionOperator(
+        task_id="qae_notification",
+        project_id=CLOUD_FUNCTION_PROJECT_ID,
+        location=CLOUD_FUNCTION_REGION,
+        input_data={"data": json.dumps(get_data_qae.output)},
+        function_id="qae_notification",
+    )
+
     # qae_execution = PythonOperator(
     #     task_id='qae_execution',
     #     python_callable=ejecutar_qae,
@@ -388,4 +408,4 @@ dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
 dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> test
-# >> invoke_function
+test >> qae_task_state >> [sin_errores, qae_notification]

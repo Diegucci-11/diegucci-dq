@@ -48,7 +48,8 @@ def yml_publisher(request):
 
     tablas = spreadsheet.worksheet('Tablas')
 
-    project_id = tablas.cell(4, 2).value
+    # project_id = tablas.cell(4, 2).value
+    project_id = "asfd"
     # location = "europe-southwest1" # NECESARIO?
     location = "europe-west3" # NECESARIO?
 
