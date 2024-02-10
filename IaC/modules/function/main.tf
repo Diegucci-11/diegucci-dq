@@ -6,7 +6,7 @@ provider "google" {
 data "archive_file" "default" {
   type        = "zip"
   output_path = "qid_publisher.zip"
-  source_dir  = "../../../Codigo/QAE/qid_publisher"
+  source_dir  = "../../../Codigo/QID/qid_publisher"
 }
 
 resource "google_storage_bucket_object" "archive" {
