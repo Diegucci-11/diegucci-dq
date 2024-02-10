@@ -33,7 +33,7 @@ from airflow.operators.python import (
 )
 import pandas_gbq
     
-DAG_ID = "dag_dq_flow_9"
+DAG_ID = "dag_dq_flow_10"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -120,7 +120,7 @@ def qae_notification_function(data):
         else:
             print("La solicitud falló con el código de estado:", response.status_code)
 
-def yml_publisher_function(url):
+def invoke_function(url):
     # url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
     data_post = {'data': "data"}
     data_json = json.dumps(data_post)
@@ -235,7 +235,7 @@ with models.DAG(
 
     yml_publisher_f = PythonOperator(
         task_id='yml_publisher_f',
-        python_callable=yml_publisher_function,
+        python_callable=invoke_function,
         op_kwargs={'url': "https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher"},
         dag=dag,
     )
