@@ -24,7 +24,8 @@ from airflow.models.dag import DAG
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryInsertJobOperator,
     BigQueryGetDataOperator,
-    BigQueryCreateEmptyTableOperator
+    BigQueryCreateEmptyTableOperator,
+    BigQueryDeleteTableOperator
 )
 
 from airflow.operators.python import (
@@ -32,7 +33,7 @@ from airflow.operators.python import (
 )
 import pandas_gbq
     
-DAG_ID = "dag_dq_flow_4"
+DAG_ID = "dag_dq_flow_5"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -71,6 +72,7 @@ GCP_BQ_DATASET_ID = "quality_dataset_test"
 TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
 GCP_BQ_REGION = "europe-southwest1"
 FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
+QAE_TEMP_TABLE = "dq_qae_temp_table"
 
 EXAMPLE_TASK_BODY = {
     "spark": {
@@ -211,6 +213,30 @@ with models.DAG(
     schedule_interval=datetime.timedelta(days=1)
     ) as dag:
 
+    yml_publisher = CloudFunctionInvokeFunctionOperator(
+        task_id="yml_publisher",
+        project_id=CLOUD_FUNCTION_PROJECT_ID,
+        location=CLOUD_FUNCTION_REGION,
+        # input_data={"data": json.dumps(get_data_qae.output)},
+        function_id="yml_publisher",
+    )
+
+    qid_publisher = CloudFunctionInvokeFunctionOperator(
+        task_id="yml_publisher",
+        project_id=CLOUD_FUNCTION_PROJECT_ID,
+        location=CLOUD_FUNCTION_REGION,
+        # input_data={"data": json.dumps(get_data_qae.output)},
+        function_id="qid_publisher",
+    )
+
+    qae_publisher = CloudFunctionInvokeFunctionOperator(
+        task_id="yml_publisher",
+        project_id=CLOUD_FUNCTION_PROJECT_ID,
+        location=CLOUD_FUNCTION_REGION,
+        # input_data={"data": json.dumps(get_data_qae.output)},
+        function_id="qae_publisher",
+    )
+
     start_op = BashOperator(
         task_id="start_task",
         bash_command="echo start flow",
@@ -286,7 +312,7 @@ with models.DAG(
     create_dq_qae_temp_table = BigQueryCreateEmptyTableOperator(
         task_id="create_dq_qae_temp_table",
         dataset_id=GCP_BQ_DATASET_ID,
-        table_id="dq_qae_temp_table",
+        table_id=QAE_TEMP_TABLE,
         project_id=GCP_PROJECT_ID,
         schema_fields=[
             {"name": "ts_notification", "type": "TIMESTAMP"},
@@ -306,7 +332,7 @@ with models.DAG(
                 "destinationTable": {
                     "projectId": GCP_PROJECT_ID,
                     "datasetId": GCP_BQ_DATASET_ID,
-                    "tableId": "dq_qae_temp_table",
+                    "tableId": QAE_TEMP_TABLE,
                 },
             }
         },
@@ -316,7 +342,7 @@ with models.DAG(
     get_data_qae = BigQueryGetDataOperator(
         task_id="get_data_qae",
         dataset_id=GCP_BQ_DATASET_ID,
-        table_id="dq_qae_temp_table",
+        table_id=QAE_TEMP_TABLE,
         project_id=GCP_PROJECT_ID,
         # max_results=100,
         selected_fields="severity_list",
@@ -327,6 +353,11 @@ with models.DAG(
         task_id="test",
         bash_command="echo CONTENIDO DE LA TABLA: {{ task_instance.xcom_pull(task_ids='get_data_qae') }}",
         dag=dag,
+    )
+
+    delete_table = BigQueryDeleteTableOperator(
+        task_id="delete_view",
+        deletion_dataset_table=f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{QAE_TEMP_TABLE}",
     )
     
     # invoke_function = CloudFunctionInvokeFunctionOperator(
@@ -349,7 +380,7 @@ with models.DAG(
     #     dag=dag,
     # )
 
-start_op >> get_dataplex_task
+start_op >> yml_publisher >> qid_publisher >> qae_publisher >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task
 delete_dataplex_task >> create_dataplex_task
