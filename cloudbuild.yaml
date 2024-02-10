@@ -51,17 +51,3 @@ steps:
     args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
     id: 'check-changes-config-gs'
     # waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   id: check-changes-qae
-  #   entrypoint: 'bash'
-  #   args:
-  #     - '-c'
-  #     - |
-  #       if git diff HEAD\^ HEAD -- Codigo/QAE; then
-  #         echo "No hay cambios en Codigo/QAE. No se ejecutará el paso de compilación."
-  #       else
-  #         echo "Se detectaron cambios en Codigo/QAE. Se ejecutará el paso de compilación."
-  #         gcloud builds submit --config Codigo/QAE/CI-CD/cicd_qae.yaml .
-  #       fi
-  #   waitFor: ['service_account']
