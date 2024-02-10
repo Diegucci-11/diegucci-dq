@@ -33,7 +33,7 @@ from airflow.operators.python import (
 )
 import pandas_gbq
     
-DAG_ID = "dag_dq_flow_5"
+DAG_ID = "dag_dq_flow_6"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -367,7 +367,7 @@ with models.DAG(
     )
     
     qae_task_state = BranchPythonOperator(
-        task_id="dataplex_task_state",
+        task_id="qae_task_state",
         python_callable=_get_qae_state,
         op_kwargs={'data': "{{ ti.xcom_pull(task_ids='get_data_qae') }}"},
         provide_context=True,
