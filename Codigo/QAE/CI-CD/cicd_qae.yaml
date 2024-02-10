@@ -14,29 +14,41 @@ steps:
 
   # Paso 2: Desplegar la Cloud Function
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if gcloud functions describe qae_notification --project=diegucci-dq --region=europe-west3 > /dev/null 2>&1; then
+          echo "La función existe."
+        else
+          echo "La función no existe."
+          exit 1
+        fi
+    waitFor: ['testing_functions']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'qae_notification',
             '--region=europe-west3',
-            '--source=Codigo/QAE/qae_notification', 
-            '--trigger-http',
-            '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
-            '--set-secrets=DQ_KEY=data_quality_key:latest',
-            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
+            '--source=Codigo/QAE/qae_notification',
           ]
+    
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if gcloud functions describe qae_publisher --project=diegucci-dq --region=europe-west3 > /dev/null 2>&1; then
+          echo "La función existe."
+        else
+          echo "La función no existe."
+          exit 1
+        fi
     waitFor: ['testing_functions']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'qae_publisher',
             '--region=europe-west3',
-            '--source=Codigo/QAE/qae_publisher', 
-            '--trigger-http',
-            '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
-            '--set-secrets=DQ_KEY=data_quality_key:latest',
-            '--set-env-vars=QAE_BUCKET=qae_bucket',
-            '--set-env-vars=QAE_SQL=qae_sql.sql',
-            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
+            '--source=Codigo/QAE/qae_publisher',
           ]
-    waitFor: ['testing_functions']

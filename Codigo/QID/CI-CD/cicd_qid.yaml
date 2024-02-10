@@ -10,6 +10,18 @@ steps:
 
   # Paso 2: Desplegar la Cloud Function
   - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if gcloud functions describe qid_publisher --project=diegucci-dq --region=europe-west3 > /dev/null 2>&1; then
+          echo "La función existe."
+        else
+          echo "La función no existe."
+          exit 1
+        fi
+
+  - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'qid_publisher',
             '--region=europe-west3',

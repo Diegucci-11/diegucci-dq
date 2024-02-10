@@ -31,17 +31,8 @@ from airflow.operators.python import (
     PythonOperator,
 )
 import pandas_gbq
-
-# def recuperar_sql_gcs():
-#     client = storage.Client()
-
-#     bucket = client.bucket(BUCKET_NAME)
-#     brz_sql = bucket.blob(BRZ_SQL_PATH).download_as_text().format(TABLE_NAME_BRZ, month_number)
-#     slv_sql = bucket.blob(SLV_SQL_PATH).download_as_text().format(TABLE_NAME_SLV, month_number)
-
-# recuperar_sql_gcs()
     
-DAG_ID = "dag_dq_flow_3"
+DAG_ID = "dag_dq_flow_4"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -70,8 +61,8 @@ PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
 SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
 CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip"
 CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
-CONFIGS_BUCKET_NAME = "yml_bucket"
-CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/yml_test.yml"
+CONFIGS_BUCKET_NAME = BUCKET_YML
+CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/{YML}"
 DATAPLEX_TASK_ID = "quality-check-1"
 TRIGGER_SPEC_TYPE = "ON_DEMAND"
 DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
@@ -134,7 +125,7 @@ def ejecutar_qae():
     else:
         print("Envío email!")
         return df.iloc[0].tolist()
-        data = df.iloc[0].tolist()
+        # data = df.iloc[0].tolist()
         # invoke_function = CloudFunctionInvokeFunctionOperator(
         #     task_id="invoke_function",
         #     project_id=CLOUD_FUNCTION_PROJECT_ID,
@@ -222,7 +213,7 @@ with models.DAG(
 
     start_op = BashOperator(
         task_id="start_task",
-        bash_command="echo start",
+        bash_command="echo start flow",
         dag=dag,
     )
 
@@ -287,11 +278,6 @@ with models.DAG(
             "query": {
                 "query": qid_sql,
                 "useLegacySql": False,
-                # "destinationTable": {
-                #     "projectId": GCP_PROJECT_ID,
-                #     "datasetId": GCP_BQ_DATASET_ID,
-                #     "tableId": "dq_summary_errors",
-                # },
             }
         },
         location=GCP_BQ_REGION,
@@ -336,6 +322,12 @@ with models.DAG(
         selected_fields="severity_list",
         # gcp_conn_id="airflow-conn-id",
     )
+
+    test = BashOperator(
+        task_id="test",
+        bash_command="echo CONTENIDO DE LA TABLA: {{ task_instance.xcom_pull(task_ids='get_data_qae') }}",
+        dag=dag,
+    )
     
     # invoke_function = CloudFunctionInvokeFunctionOperator(
     #     task_id="invoke_function",
@@ -364,5 +356,5 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae 
+dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> test
 # >> invoke_function

@@ -5,23 +5,21 @@ Configurar Cloud Build con GitHub
 Dar permisos "Administrador de IAM de proyecto" a @cloudbuild... ?
 
 
-Cómo utilizar el main.tf global? 
-Hacer un tfvars por módulo!! 
-Utilizar git-diff! 
-
-
 
 Yaml_Pub -> QID_Pub -> QAE_Pub
 De forma asíncrona pero con wait() al final
-Llamar con variables de control por si hay q ejecutar el QID/QAE_Pub o no
+Llamar con variables de control por si hay q ejecutar el QID/QAE_Pub o no!?
 Se puede congelar el excel hasta que se han cargado los datos? 
-Guardar clave service-account desde TF -> formato json o legible desde CF
+Guardar clave service-account desde TF -> formato json o legible desde CF!!! HECHO A MANO!
+
+Falta parametrizar todos los yaml!!! 
 
 Generar el DAG de Composer
 Verificar la legibilidad de los files del bucket!! 
 DAG:
+ - Ejecutar todos los publisher! 
  - Generar la tarea, programarla?
  - Ejecutar el QID
  - Ejecutar el QAE
- - Automatizar la parte del trigger sin Pubsub?? 
+ - Automatizar la parte del trigger sin Pubsub?? SI 
 
