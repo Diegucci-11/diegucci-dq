@@ -3,19 +3,21 @@ region = "europe-west3"
 programming_language = "python311"
 service_account = "dataquality"
 name_secret = "data_quality_key"
-qae_topic = "qae_topic"
 name_dataplex_lake = "quality-tasks-lake"
 
 matrix_input_file = "MatrixInput_v1.1"
 
 project_number = "409016403024"
 
-name_function_qae_notification = "qae_notification"
-name_function_qid_notification = "qid_publisher2"
+name_function_qae_notification = "qae_notification2"
+name_function_qae_publisher = "qae_publisher2"
+name_function_qid_publisher = "qid_publisher2"
+name_function_yml_publisher = "yml_publisher2"
+name_function_config_gs = "config_gs"
 
-name_quality_bucket = "yml_bucket"
 name_qid_bucket = "qid_bucket"
 name_qae_bucket = "qae_bucket"
+name_yml_bucket = "yml_bucket"
 name_functions_bucket = "functions_dq_bucket"
 
 # bucket for tfstate
@@ -39,4 +41,5 @@ apis_list = [
     "composer.googleapis.com",
   ]
 
+# environment for composer
 env_name = "env-test-1"
