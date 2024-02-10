@@ -120,6 +120,20 @@ def qae_notification_function(data):
         else:
             print("La solicitud falló con el código de estado:", response.status_code)
 
+def yml_publisher_function():
+    url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
+    data_post = {'data': "data"}
+    data_json = json.dumps(data_post)
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.post(url, data=data_json, headers=headers)
+
+    if response.status_code == 200:
+        print("La solicitud fue exitosa")
+        print("Respuesta de la Cloud Function:", response.text)
+    else:
+        print("La solicitud falló con el código de estado:", response.status_code)
+
 def ejecutar_qae():
     df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
     if(str(df.iloc[0, 0]).strip() == '0'):
@@ -218,6 +232,12 @@ with models.DAG(
     # start_date=datetime(2021, 1, 1)
     schedule_interval=datetime.timedelta(days=1)
     ) as dag:
+
+    yml_publisher_f = PythonOperator(
+        task_id='yml_publisher_f',
+        python_callable=yml_publisher_function,
+        dag=dag,
+    )
 
     yml_publisher = CloudFunctionInvokeFunctionOperator(
         task_id="yml_publisher",
@@ -400,7 +420,7 @@ with models.DAG(
     #     dag=dag,
     # )
 
-start_op >> yml_publisher >> qid_publisher >> qae_publisher >> get_dataplex_task
+start_op >> yml_publisher_f >> qid_publisher >> qae_publisher >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task
 delete_dataplex_task >> create_dataplex_task
