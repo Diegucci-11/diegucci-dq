@@ -304,88 +304,88 @@ with models.DAG(
         dag=dag,
     )
 
-    qid_execution = BigQueryInsertJobOperator(
-        task_id="qid_execution",
-        configuration={
-            "query": {
-                "query": qid_sql,
-                "useLegacySql": False,
-            }
-        },
-        location=GCP_BQ_REGION,
-    )
+    # qid_execution = BigQueryInsertJobOperator(
+    #     task_id="qid_execution",
+    #     configuration={
+    #         "query": {
+    #             "query": qid_sql,
+    #             "useLegacySql": False,
+    #         }
+    #     },
+    #     location=GCP_BQ_REGION,
+    # )
 
-    create_dq_qae_temp_table = BigQueryCreateEmptyTableOperator(
-        task_id="create_dq_qae_temp_table",
-        dataset_id=GCP_BQ_DATASET_ID,
-        table_id=QAE_TEMP_TABLE,
-        project_id=GCP_PROJECT_ID,
-        schema_fields=[
-            {"name": "ts_notification", "type": "TIMESTAMP"},
-            {"name": "severity_list", "type": "STRING"},
-            {"name": "issues_found", "type": "INT64"},
-        ],
-        # gcp_conn_id="airflow-conn-id-account",
-        # google_cloud_storage_conn_id="airflow-conn-id",
-    )
+    # create_dq_qae_temp_table = BigQueryCreateEmptyTableOperator(
+    #     task_id="create_dq_qae_temp_table",
+    #     dataset_id=GCP_BQ_DATASET_ID,
+    #     table_id=QAE_TEMP_TABLE,
+    #     project_id=GCP_PROJECT_ID,
+    #     schema_fields=[
+    #         {"name": "ts_notification", "type": "TIMESTAMP"},
+    #         {"name": "severity_list", "type": "STRING"},
+    #         {"name": "issues_found", "type": "INT64"},
+    #     ],
+    #     # gcp_conn_id="airflow-conn-id-account",
+    #     # google_cloud_storage_conn_id="airflow-conn-id",
+    # )
 
-    qae_execution = BigQueryInsertJobOperator(
-        task_id="qae_execution",
-        configuration={
-            "query": {
-                "query": qae_sql,
-                "useLegacySql": False,
-                "destinationTable": {
-                    "projectId": GCP_PROJECT_ID,
-                    "datasetId": GCP_BQ_DATASET_ID,
-                    "tableId": QAE_TEMP_TABLE,
-                },
-            }
-        },
-        location=GCP_BQ_REGION,
-    )
+    # qae_execution = BigQueryInsertJobOperator(
+    #     task_id="qae_execution",
+    #     configuration={
+    #         "query": {
+    #             "query": qae_sql,
+    #             "useLegacySql": False,
+    #             "destinationTable": {
+    #                 "projectId": GCP_PROJECT_ID,
+    #                 "datasetId": GCP_BQ_DATASET_ID,
+    #                 "tableId": QAE_TEMP_TABLE,
+    #             },
+    #         }
+    #     },
+    #     location=GCP_BQ_REGION,
+    # )
 
-    get_data_qae = BigQueryGetDataOperator(
-        task_id="get_data_qae",
-        dataset_id=GCP_BQ_DATASET_ID,
-        table_id=QAE_TEMP_TABLE,
-        project_id=GCP_PROJECT_ID,
-        # max_results=100,
-        selected_fields="severity_list",
-        # gcp_conn_id="airflow-conn-id",
-    )
+    # get_data_qae = BigQueryGetDataOperator(
+    #     task_id="get_data_qae",
+    #     dataset_id=GCP_BQ_DATASET_ID,
+    #     table_id=QAE_TEMP_TABLE,
+    #     project_id=GCP_PROJECT_ID,
+    #     # max_results=100,
+    #     selected_fields="severity_list",
+    #     # gcp_conn_id="airflow-conn-id",
+    # )
 
-    test = BashOperator(
-        task_id="test",
-        bash_command="echo CONTENIDO DE LA TABLA: {{ task_instance.xcom_pull(task_ids='get_data_qae') }}",
-        dag=dag,
-    )
+    # test = BashOperator(
+    #     task_id="test",
+    #     bash_command="echo CONTENIDO DE LA TABLA: {{ task_instance.xcom_pull(task_ids='get_data_qae') }}",
+    #     dag=dag,
+    # )
 
-    delete_table = BigQueryDeleteTableOperator(
-        task_id="delete_view",
-        deletion_dataset_table=f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{QAE_TEMP_TABLE}",
-    )
+    # delete_table = BigQueryDeleteTableOperator(
+    #     task_id="delete_view",
+    #     deletion_dataset_table=f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{QAE_TEMP_TABLE}",
+    # )
     
-    qae_task_state = BranchPythonOperator(
-        task_id="qae_task_state",
-        python_callable=_get_qae_state,
-        op_kwargs={'data': "{{ ti.xcom_pull(task_ids='get_data_qae') }}"},
-        provide_context=True,
-    )
+    # qae_task_state = BranchPythonOperator(
+    #     task_id="qae_task_state",
+    #     python_callable=_get_qae_state,
+    #     op_kwargs={'data': "{{ ti.xcom_pull(task_ids='get_data_qae') }}"},
+    #     provide_context=True,
+    # )
 
-    sin_errores = BashOperator(
-        task_id="sin_errores",
-        bash_command="echo 'No hay errores de calidad'",
-        dag=dag,
-    )
+    # sin_errores = BashOperator(
+    #     task_id="sin_errores",
+    #     bash_command="echo 'No hay errores de calidad'",
+    #     dag=dag,
+    # )
     
-    qae_notification = CloudFunctionInvokeFunctionOperator(
-        task_id="qae_notification",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": json.dumps(get_data_qae.output)},
-        function_id="qae_notification",
-    )
+    # qae_notification = CloudFunctionInvokeFunctionOperator(
+    #     task_id="qae_notification",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": json.dumps(get_data_qae.output)},
+    #     function_id="qae_notification",
+    # )
 
     # qae_execution = PythonOperator(
     #     task_id='qae_execution',
@@ -407,5 +407,5 @@ delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> test
-test >> qae_task_state >> [sin_errores, qae_notification]
+# dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> test
+# test >> qae_task_state >> [sin_errores, qae_notification]
