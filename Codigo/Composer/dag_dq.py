@@ -33,7 +33,7 @@ from airflow.operators.python import (
 )
 import pandas_gbq
     
-DAG_ID = "dag_dq_flow_7"
+DAG_ID = "dag_dq_flow_8"
 
 BUCKET_YML = "yml_bucket"
 BUCKET_QID = "qid_bucket"
@@ -124,7 +124,7 @@ def yml_publisher_function():
     url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
     data_post = {'data': "data"}
     data_json = json.dumps(data_post)
-    headers = {'Content-Type': 'application/json'}
+    headers = get_session_headers()
 
     response = requests.post(url, data=data_json, headers=headers)
 
