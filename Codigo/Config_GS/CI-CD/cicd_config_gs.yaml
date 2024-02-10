@@ -10,10 +10,23 @@ steps:
   #       python -m unittest Codigo/Config_GS/test/test_config_gs.py
 
   # Paso 2: Desplegar la Cloud Function
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if gcloud functions describe config_gs --project=diegucci-dq > /dev/null 2>&1; then
+          echo "La función existe."
+        else
+          echo "La función no existe."
+          exit 1
+        fi
+
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'config_gs',
-            '--region=europe-west3',
+            # '--region=europe-west3',
             '--source=Codigo/Config_GS/config_gs', 
             # '--trigger-http',
             # '--runtime=python39',

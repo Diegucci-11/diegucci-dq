@@ -28,9 +28,9 @@ steps:
   #   id: 'dataplex_lake'
   #   waitFor: ['enable_apis']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-    id: 'functions'
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+  #   id: 'functions'
 
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']

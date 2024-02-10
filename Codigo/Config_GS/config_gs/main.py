@@ -29,7 +29,6 @@ def config_gs(request):
 
             values_to_update.append([dataset.dataset_id, table.table_id, fields_info])
 
-    num_rows = len(values_to_update)
     cell_range = f'B20:D'
     sheet.update(cell_range, values_to_update)
 
