@@ -163,7 +163,7 @@ default_args = {
 }
 
 def get_session_headers() -> dict:
-    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions", "https://www.googleapis.com/auth/cloudrun"])
+    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
     auth_req = google.auth.transport.requests.Request()
 
     credentials.refresh(auth_req)
@@ -240,29 +240,29 @@ with models.DAG(
         dag=dag,
     )
 
-    yml_publisher = CloudFunctionInvokeFunctionOperator(
-        task_id="yml_publisher",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": "yml_pub"},
-        function_id="yml_publisher",
-    )
+    # yml_publisher = CloudFunctionInvokeFunctionOperator(
+    #     task_id="yml_publisher",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": "yml_pub"},
+    #     function_id="yml_publisher",
+    # )
 
-    qid_publisher = CloudFunctionInvokeFunctionOperator(
-        task_id="qid_publisher",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": "qid_pub"},
-        function_id="qid_publisher",
-    )
+    # qid_publisher = CloudFunctionInvokeFunctionOperator(
+    #     task_id="qid_publisher",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": "qid_pub"},
+    #     function_id="qid_publisher",
+    # )
 
-    qae_publisher = CloudFunctionInvokeFunctionOperator(
-        task_id="qae_publisher",
-        project_id=CLOUD_FUNCTION_PROJECT_ID,
-        location=CLOUD_FUNCTION_REGION,
-        input_data={"data": "qae_pub"},
-        function_id="qae_publisher",
-    )
+    # qae_publisher = CloudFunctionInvokeFunctionOperator(
+    #     task_id="qae_publisher",
+    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
+    #     location=CLOUD_FUNCTION_REGION,
+    #     input_data={"data": "qae_pub"},
+    #     function_id="qae_publisher",
+    # )
 
     start_op = BashOperator(
         task_id="start_task",
@@ -421,7 +421,8 @@ with models.DAG(
     #     dag=dag,
     # )
 
-start_op >> yml_publisher_f >> qid_publisher >> qae_publisher >> get_dataplex_task
+start_op >> yml_publisher_f 
+# >> qid_publisher >> qae_publisher >> get_dataplex_task
 get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task
 delete_dataplex_task >> create_dataplex_task
