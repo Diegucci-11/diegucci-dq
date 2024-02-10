@@ -163,7 +163,7 @@ default_args = {
 }
 
 def get_session_headers() -> dict:
-    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
     auth_req = google.auth.transport.requests.Request()
 
     credentials.refresh(auth_req)
