@@ -3,30 +3,17 @@ provider "google" {
   region      = var.region
 }
 
-# resource "google_storage_bucket" "bucket_functions_code_asdf" {
-#   name          = "functions_code_asdf"  
-#   location      = var.region     
-#   force_destroy = true               
-# }
+data "archive_file" "default" {
+  type        = "zip"
+  output_path = "qid_publisher.zip"
+  source_dir  = "../../../Codigo/QAE/qid_publisher"
+}
 
-# resource "archive_file" "function_code_zip" {
-#   type        = "zip"
-#   output_path = "${path.module}/function_code.zip"
-#   source_dir  = "../../../Codigo/QAE/qae_notification"
-# }
-
-# resource "google_storage_bucket_object" "qae_notification2storage" {
-#   name   = "qae_notification"
-#   source = "function_code.zip"
-#   bucket = "functions_code_asdf" 
-#   depends_on = [google_storage_bucket.bucket_functions_code_asdf]
-# }
-
-# resource "google_storage_bucket_object" "object" {
-#   name   = "qid_publisher.zip"
-#   bucket = var.name_qid_bucket
-#   source = "qid_publisher.zip"
-# }
+resource "google_storage_bucket_object" "archive" {
+  name   = "qid_publisher.zip"
+  bucket = var.name_functions_bucket
+  source = data.archive_file.default.output_path
+}
 
 resource "google_cloudfunctions2_function" "qid_notification" {
   name          = var.name_function_qid_notification
@@ -34,7 +21,6 @@ resource "google_cloudfunctions2_function" "qid_notification" {
   build_config {
     runtime     = var.programming_language
     entry_point = "qid_publisher"
-    GOOGLE_FUNCTION_SOURCE = "main.py"
     source {
       storage_source {
         bucket  = var.name_functions_bucket
@@ -62,12 +48,3 @@ resource "google_cloudfunctions2_function" "qid_notification" {
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com" # HACER DE OTRA FORMA?
   }
 }
-
-# resource "google_cloudfunctions_function" "my_function" {
-#   name        = var.name_function_qae_notification
-#   runtime     = var.programming_language
-#   entry_point = "qae_notification"
-#   trigger_http = true
-
-#   source_code = "/path/to/your/source/code"  # Ruta local al código fuente
-# }
