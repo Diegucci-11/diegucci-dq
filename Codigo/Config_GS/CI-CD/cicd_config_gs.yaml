@@ -15,11 +15,11 @@ steps:
             'functions', 'deploy', 'config_gs',
             '--region=europe-west3',
             '--source=Codigo/Config_GS/config_gs', 
-            '--trigger-http',
-            '--runtime=python39',
-            '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
-            '--set-secrets=DQ_KEY=data_quality_key:latest',
-            '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
+            # '--trigger-http',
+            # '--runtime=python39',
+            # '--service-account=dataquality@diegucci-dq.iam.gserviceaccount.com',
+            # '--set-secrets=DQ_KEY=data_quality_key:latest',
+            # '--set-env-vars=MATRIX_FILE=MatrixInput_v1.1'
           ]
     # waitFor: ['testing_functions']
 

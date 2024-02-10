@@ -9,11 +9,11 @@ matrix_input_file = "MatrixInput_v1.1"
 
 project_number = "409016403024"
 
-name_function_qae_notification = "qae_notification2"
-name_function_qae_publisher = "qae_publisher2"
-name_function_qid_publisher = "qid_publisher2"
-name_function_yml_publisher = "yml_publisher2"
-name_function_config_gs = "config_gs2"
+name_function_qae_notification = "qae_notification"
+name_function_qae_publisher = "qae_publisher"
+name_function_qid_publisher = "qid_publisher"
+name_function_yml_publisher = "yml_publisher"
+name_function_config_gs = "config_gs"
 
 name_qid_bucket = "qid_bucket"
 name_qae_bucket = "qae_bucket"
