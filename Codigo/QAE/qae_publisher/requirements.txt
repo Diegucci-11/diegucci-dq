@@ -1,8 +1,0 @@
-functions-framework==3.*
-requests
-gspread
-pydrive
-pandas
-numpy
-google-cloud-secret-manager
-google-cloud-storage

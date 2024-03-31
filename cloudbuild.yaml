@@ -8,9 +8,9 @@ steps:
   #   id: 'pubsub_topic'
   #   waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
-  #   id: 'service_account'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
+    id: 'service_account'
     # waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -18,36 +18,21 @@ steps:
     id: 'composer'
     # waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
-  #   id: 'storage'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
+    id: 'storage'
   #   waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/dataplex_lake/cloudbuild.yaml', '.']
-  #   id: 'dataplex_lake'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/dataplex_lake/cloudbuild.yaml', '.']
+    id: 'dataplex_lake'
   #   waitFor: ['enable_apis']
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-  #   id: 'functions'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+    id: 'functions'
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/QAE/CI-CD/cicd_qae.yaml', '.']
-  #   id: 'check-changes-qae'
-    # waitFor: ['service_account']s
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/QID/CI-CD/cicd_qid.yaml', '.']
-  #   id: 'check-changes-qiq'
-    # waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/YML_Publisher/CI-CD/cicd_yml_publisher.yaml', '.']
-  #   id: 'check-changes-yml-publisher'
-    # waitFor: ['service_account']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
-  #   id: 'check-changes-config-gs'
-    # waitFor: ['service_account']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
+    id: 'check-changes-config-gs'
+    waitFor: ['service_account']
