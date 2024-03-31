@@ -8,7 +8,7 @@ variable "region" {
   type        = string
 }
 
-variable "name_quality_bucket" {
+variable "name_yml_bucket" {
   description = "Nombre del bucket para guardar yamls GCP"
   type        = string
 }

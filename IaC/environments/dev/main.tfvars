@@ -5,11 +5,11 @@ service_account = "dataquality"
 name_secret = "data_quality_key"
 name_dataplex_lake = "quality-tasks-lake"
 
-matrix_input_file = "MatrixInput_v1.1"
+matrix_input_file = "Matrix_Input_v2"
 
 project_number = "409016403024"
 
-name_function_config_gs = "config_gs"
+name_function_config_gs = "config_gs_2"
 
 name_yml_bucket = "yml_bucket"
 name_functions_bucket = "functions_dq_bucket"

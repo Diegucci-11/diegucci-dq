@@ -1,78 +1,76 @@
 from __future__ import annotations
 import datetime
-
-from airflow import models
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import BranchPythonOperator
-
-from airflow.providers.google.cloud.operators.dataplex import (
-    DataplexCreateTaskOperator,
-    DataplexDeleteTaskOperator,
-)
-from airflow.providers.google.cloud.operators.functions import (
-    CloudFunctionInvokeFunctionOperator,
-)
-
 import google.auth
 import json
 import requests
 import os
 import time
+import pandas as pd
+from google.cloud import bigquery
 from google.cloud import storage
-
-from airflow.models.dag import DAG
-from airflow.providers.google.cloud.operators.bigquery import (
-    BigQueryInsertJobOperator,
-    BigQueryGetDataOperator,
-    BigQueryCreateEmptyTableOperator,
-    BigQueryDeleteTableOperator
+from email.message import EmailMessage
+import smtplib
+from google.oauth2 import service_account
+import gspread
+from airflow import models
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import BranchPythonOperator
+from airflow.providers.google.cloud.operators.dataplex import (
+    DataplexCreateTaskOperator,
+    DataplexDeleteTaskOperator,
 )
+from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
+from airflow.operators.python import PythonOperator
+from airflow.operators.dummy_operator import DummyOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
+from google.cloud import secretmanager
 
-from airflow.operators.python import (
-    PythonOperator,
-)
-import pandas_gbq
-    
-DAG_ID = "dag_dq_flow_10"
-
-BUCKET_YML = "yml_bucket"
-BUCKET_QID = "qid_bucket"
-BUCKET_QAE = "qae_bucket"
+DAG_NAME = "dq_validation_dag_1"
 
 YML = "yml_test.yml"
-QID_SQL = "qid_sql.sql"
-QAE_SQL = "qae_sql.sql"
 
-client = storage.Client()
+SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 
-bucket_qid = client.bucket(BUCKET_QID)
-bucket_qae = client.bucket(BUCKET_QAE)
-qid_sql = bucket_qid.blob(QID_SQL).download_as_text()
-qae_sql = bucket_qae.blob(QAE_SQL).download_as_text()
+client = secretmanager.SecretManagerServiceClient()
+name_secret = "projects/409016403024/secrets/data_quality_key/versions/latest"
+response = client.access_secret_version(request={"name": name_secret})
+payload = response.payload.data.decode("UTF-8")
 
+credentials = service_account.Credentials.from_service_account_info(json.loads(payload), scopes=SCOPES)
+client = gspread.authorize(credentials)
+# spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
+spreadsheet = client.open("MatrixInput")
 
-CLOUD_FUNCTION_PROJECT_ID = "diegucci-dq"
-CLOUD_FUNCTION_REGION = "europe-west3"
+tablas_sheet = spreadsheet.worksheet('Tablas')
+reglas_sheet = spreadsheet.worksheet('Reglas')
+correos_sheet = spreadsheet.worksheet('Correos')
+filtros_sheet = spreadsheet.worksheet('Filtros')
 
-DATAPLEX_PROJECT_ID = "diegucci-dq"
-DATAPLEX_REGION = "europe-west3"
+dataset = tablas_sheet.cell(5, 2).value
+product_name = tablas_sheet.cell(2, 2).value
+environment = tablas_sheet.cell(3, 2).value
+project_id = tablas_sheet.cell(4, 2).value
+location = tablas_sheet.cell(6, 2).value
+
+DATAPLEX_PROJECT_ID = "	diegucci-dq"
+DATAPLEX_REGION = "europe-southwest1"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
 SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
 CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip"
 CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
-CONFIGS_BUCKET_NAME = BUCKET_YML
+CONFIGS_BUCKET_NAME = "yml_bucket"
 CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/{YML}"
-DATAPLEX_TASK_ID = "quality-check-1"
+DATAPLEX_TASK_ID = "dq-v2-check-1"
 TRIGGER_SPEC_TYPE = "ON_DEMAND"
 DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
-GCP_PROJECT_ID = "diegucci-dq"
-GCP_BQ_DATASET_ID = "quality_dataset_test"
+GCP_PROJECT_ID = project_id
+GCP_BQ_DATASET_ID = dataset
 TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
-GCP_BQ_REGION = "europe-southwest1"
+GCP_BQ_REGION = location
 FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
-QAE_TEMP_TABLE = "dq_qae_temp_table"
+ERRORS_TABLE = "dq_summary_errors"
 
 EXAMPLE_TASK_BODY = {
     "spark": {
@@ -102,65 +100,165 @@ EXAMPLE_TASK_BODY = {
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 
-def qae_notification_function(data):
-    if data:
-        # print("Activo función!!")
-        # bash_command = f"gcloud functions call qae_notification --data '{json.dumps(data)}'"
-        # os.system(bash_command)
-        url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/qae_notification'
-        data_post = {'data': data}
-        data_json = json.dumps(data_post)
-        headers = {'Content-Type': 'application/json'}
+def yml_publisher():
+    file_name = YML
+    
+    rules = reglas_sheet.range('H3:H')
+    rules_values = [str(cell.value) for cell in rules if cell.value.strip()]
 
-        response = requests.post(url, data=data_json, headers=headers)
+    filters = filtros_sheet.range('E3:E')
+    filters_values = [str(cell.value) for cell in filters if cell.value.strip()]
 
-        if response.status_code == 200:
-            print("La solicitud fue exitosa")
-            print("Respuesta de la Cloud Function:", response.text)
-        else:
-            print("La solicitud falló con el código de estado:", response.status_code)
+    output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n\n"
+    
+    output_yaml += "row_filters:\n\n  "
+    output_yaml += "\n\n  ".join(filters_values)
+    output_yaml += "\n\nrules:\n\n  "
+    output_yaml += "\n\n  ".join(rules_values)
+    output_yaml += "\n\nrule_bindings: \n\n"
+    
+    all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
-def invoke_function(url):
-    # url = 'https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher'
-    data_post = {'data': "data"}
-    data_json = json.dumps(data_post)
-    headers = get_session_headers()
+    df_matrix = pd.DataFrame(all_values_matrix_input[2:])
+    df_tablas = pd.DataFrame(tablas_sheet.get('A14:D'), columns=["Tabla", "Descripcion", "Proyecto", "Dataset"])
+    df_tablas = df_tablas.loc[:, ["Proyecto", "Dataset", "Tabla"]]
+    
+    df = pd.merge(df_tablas, df_matrix, how="right", left_on='Tabla', right_on=0)
+    df.drop(columns=['Tabla'], inplace=True)
 
-    response = requests.post(url, data=data_json, headers=headers)
+    for indice_fila, fila in df.iloc[2:].iterrows():
+        binding = ""
+        if(fila.iloc[2] is not None and fila.iloc[2].strip() != ''):
+            binding += "  " + fila.iloc[2].upper() + "_" + fila.iloc[3].upper() + ":\n"
+            binding += f"    entity_uri: bigquery://projects/{fila.iloc[0]}/locations/{location}/datasets/{fila.iloc[1]}/tables/{fila.iloc[2]}\n"
+            binding += f"    column_id: {fila.iloc[3]}\n"
+            binding += f"    row_filter_id: NO_FILTER\n"
+            binding += "    rule_ids:"
+            for columna, valor_celda in fila[9:].items():
+                if valor_celda.upper() == 'X':
+                    binding += f"\n\n      - {df.iloc[0][columna]}"
+                elif valor_celda is not None and valor_celda.strip() != "":
+                    if df.iloc[0][columna] is not None and df.iloc[0][columna].strip() != "":
+                        binding += f"\n\n      - {df.iloc[0][columna]}:\n          {df.iloc[1][columna]}: {valor_celda}"
+                    else:
+                        binding += f"\n          {df.iloc[1][columna]}: {valor_celda}"
+            binding += "\n\n    metadata:\n"
+            binding += f"      project: {project_id}\n"
+            binding += f"      capa: {fila.iloc[7]}\n"
+            binding += f"      bu: {fila.iloc[8]}\n\n"
 
-    if response.status_code == 200:
-        print("La solicitud fue exitosa")
-        print("Respuesta de la Cloud Function:", response.text)
-    else:
-        print("La solicitud falló con el código de estado:", response.status_code)
+        output_yaml += binding
 
-def ejecutar_qae():
-    df = pandas_gbq.read_gbq(qae_sql, project_id=GCP_PROJECT_ID, location=GCP_BQ_REGION)
-    if(str(df.iloc[0, 0]).strip() == '0'):
-        print("No hay errores")
-    else:
-        print("Envío email!")
-        return df.iloc[0].tolist()
-        # data = df.iloc[0].tolist()
-        # invoke_function = CloudFunctionInvokeFunctionOperator(
-        #     task_id="invoke_function",
-        #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-        #     location=CLOUD_FUNCTION_REGION,
-        #     input_data={"data": json.dumps(data)},
-        #     function_id="qae_notification",
-        # )
-        # invoke_function.execute()
+    upload_blob(CONFIGS_BUCKET_NAME, output_yaml, file_name)
 
-default_args = {
-    'owner': 'Clouddq Airflow task Example',
-    'depends_on_past': False,
-    'email': [''],
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': datetime.timedelta(minutes=5),
-    'start_date': YESTERDAY,
-}
+def qid_publisher():
+    rules = reglas_sheet.get_all_values()
+    dataFrame = pd.DataFrame(rules)
+    df_reglas = dataFrame.iloc[2:, [2, 8, 9]]
+    df_reglas.dropna(how='all', axis=0, inplace=True)
+
+    output_qid = f"""
+                    INSERT INTO {GCP_BQ_DATASET_ID}.{ERRORS_TABLE} select *\n
+                """
+    severity_list = ",CASE\n\n"
+    action_list = ",CASE\n\n"
+    message_list = ",CASE\n\n"
+    for indice_fila, fila in df_reglas.iterrows():
+      if fila.iloc[0] != "" and fila.iloc[0] is not None:
+        severity_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[1][0:1]  + "\n"
+        action_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[2][0:1]  + "\n"
+        message_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
+
+    severity_list += "END severity\n"
+    action_list += "END action\n"
+    message_list += "END message\n"
+    output_qid += severity_list + action_list + message_list
+    output_qid += f"FROM {dataset}.dq_summary WHERE failed_count > 0;"
+
+    return output_qid
+
+def qae_query():
+    client = bigquery.Client()
+    query = f"""
+                SELECT 
+                CURRENT_DATETIME() as ts_notification
+                ,array_agg(DISTINCT concat(severity) IGNORE NULLS) as severity_list
+                ,array_length(array_agg(severity IGNORE NULLS)) as issues_found
+                FROM {dataset}.{ERRORS_TABLE}
+                WHERE CURRENT_DATE() = date(execution_ts)
+            """
+
+    query_job = client.query(query)
+    df = query_job.to_dataframe()
+    severity = df['severity_list'].explode().tolist()
+    if(len(severity)>0):
+        severity = [int(x) for x in severity]
+        qae_notification(severity)
+
+def qae_notification(severidad_list):
+    df_correos = pd.DataFrame(correos_sheet.get('A3:D'), columns=["nombre", "correo", "entorno", "severidad"])
+    df_correos = df_correos[df_correos['severidad'].str[0].astype(int).isin(severidad_list)]
+    df_correos = df_correos[df_correos['entorno']==environment]
+
+    indices_max_severidad = df_correos.groupby('correo')['severidad'].idxmax()
+    df_max_severidad = df_correos.loc[indices_max_severidad]
+
+    for i, fila in df_max_severidad.iterrows():
+        enviarCorreo(fila.iloc[0], fila.iloc[1], fila.iloc[2], fila.iloc[3], product_name)
+
+def enviarCorreo(name, email, env, severity, product):
+    subject = "Errores en la Calidad de los Datos"
+    body = f"""<div style=\"max-width:600px; margin: 0 auto; padding: 20px; border: 1px solid #ffffff;\">
+                    <h1>ERRORES EN LA CALIDAD DE LOS DATOS</h1>
+                    <p>Hola {name},</p>
+                    <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
+                    <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
+                    <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
+                    <p>Para consultar detenidamente los errores utiliza el siguiente <a href="www.google.com">enlace</a></p>
+                </div>
+                <hr />
+                <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
+                    <strong>Data Quality</strong><br>
+                </div>
+            """
+
+    send_email(subject, body, email)
+
+def upload_blob(bucket_name, output_list, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_string(output_list)
+
+    print(f"Archivo {destination_blob_name} subido al bucket {bucket_name}.")
+
+def notify_errors(context):
+    subject = f"ERROR EN EL DAG {DAG_NAME}."
+    body = f"Some errors occurred during the execution of the DAG {DAG_NAME}."
+    print("Se ha producido un error en la tarea:", context['task_instance'])
+
+    send_email(subject, body, "diegucci.sautter@gmail.com")
+
+def send_email(subject, body, email):
+    email_from = "diegucci.sautter@gmail.com"
+    email_to = email
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.ehlo()
+        smtp.login(email_from, "piox fhiy stqi ywrm")
+        try:
+            msg = EmailMessage()
+            msg.set_content(body, subtype="html")
+            msg['Subject'] = subject
+            msg['From'] = email_from
+            msg['To'] = email_to
+            msg['Cc'] = ''
+            msg['Bcc'] = ''
+            smtp.send_message(msg)
+            smtp.close()
+            print("Mensaje enviado correctamente")
+        except:
+            print("Error en el envio del correo!")
 
 def get_session_headers() -> dict:
     credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
@@ -218,56 +316,27 @@ def _get_dataplex_task() -> str:
     else:
         return "ERROR"
 
-def _get_qae_state(data) -> str:
-    if data: 
-        return "qae_notification"
-    else:
-        return "sin_errores"
+default_args = {
+    'owner': 'Alcampo',
+    'retries': 0,
+    'start_date': YESTERDAY,
+}
 
 with models.DAG(
-    DAG_ID,
-    catchup=False,
+    DAG_NAME,
+    schedule="0 0 1 * *",
     default_args=default_args,
-    # schedule="0 0 1 * *",
-    # start_date=datetime(2021, 1, 1)
-    schedule_interval=datetime.timedelta(days=1)
+    on_failure_callback=notify_errors,
     ) as dag:
 
-    yml_publisher_f = PythonOperator(
-        task_id='yml_publisher_f',
-        python_callable=invoke_function,
-        op_kwargs={'url': "https://europe-west3-diegucci-dq.cloudfunctions.net/yml_publisher"},
-        dag=dag,
-    )
+    start_task = DummyOperator(task_id="start_task")
 
-    # yml_publisher = CloudFunctionInvokeFunctionOperator(
-    #     task_id="yml_publisher",
-    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-    #     location=CLOUD_FUNCTION_REGION,
-    #     input_data={"data": "yml_pub"},
-    #     function_id="yml_publisher",
-    # )
+    create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=GCP_BQ_DATASET_ID, location=GCP_BQ_REGION)
 
-    # qid_publisher = CloudFunctionInvokeFunctionOperator(
-    #     task_id="qid_publisher",
-    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-    #     location=CLOUD_FUNCTION_REGION,
-    #     input_data={"data": "qid_pub"},
-    #     function_id="qid_publisher",
-    # )
-
-    # qae_publisher = CloudFunctionInvokeFunctionOperator(
-    #     task_id="qae_publisher",
-    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-    #     location=CLOUD_FUNCTION_REGION,
-    #     input_data={"data": "qae_pub"},
-    #     function_id="qae_publisher",
-    # )
-
-    start_op = BashOperator(
-        task_id="start_task",
-        bash_command="echo 'start flow'",
-        dag=dag,
+    yml_publisher_task = PythonOperator(
+        task_id='yml_publisher_task',
+        python_callable=yml_publisher,
+        provide_context=True,
     )
 
     get_dataplex_task = BranchPythonOperator(
@@ -325,109 +394,258 @@ with models.DAG(
         dag=dag,
     )
 
-    # qid_execution = BigQueryInsertJobOperator(
-    #     task_id="qid_execution",
-    #     configuration={
-    #         "query": {
-    #             "query": qid_sql,
-    #             "useLegacySql": False,
-    #         }
-    #     },
-    #     location=GCP_BQ_REGION,
-    # )
-
-    # create_dq_qae_temp_table = BigQueryCreateEmptyTableOperator(
-    #     task_id="create_dq_qae_temp_table",
-    #     dataset_id=GCP_BQ_DATASET_ID,
-    #     table_id=QAE_TEMP_TABLE,
-    #     project_id=GCP_PROJECT_ID,
-    #     schema_fields=[
-    #         {"name": "ts_notification", "type": "TIMESTAMP"},
-    #         {"name": "severity_list", "type": "STRING"},
-    #         {"name": "issues_found", "type": "INT64"},
-    #     ],
-    #     # gcp_conn_id="airflow-conn-id-account",
-    #     # google_cloud_storage_conn_id="airflow-conn-id",
-    # )
-
-    # qae_execution = BigQueryInsertJobOperator(
-    #     task_id="qae_execution",
-    #     configuration={
-    #         "query": {
-    #             "query": qae_sql,
-    #             "useLegacySql": False,
-    #             "destinationTable": {
-    #                 "projectId": GCP_PROJECT_ID,
-    #                 "datasetId": GCP_BQ_DATASET_ID,
-    #                 "tableId": QAE_TEMP_TABLE,
-    #             },
-    #         }
-    #     },
-    #     location=GCP_BQ_REGION,
-    # )
-
-    # get_data_qae = BigQueryGetDataOperator(
-    #     task_id="get_data_qae",
-    #     dataset_id=GCP_BQ_DATASET_ID,
-    #     table_id=QAE_TEMP_TABLE,
-    #     project_id=GCP_PROJECT_ID,
-    #     # max_results=100,
-    #     selected_fields="severity_list",
-    #     # gcp_conn_id="airflow-conn-id",
-    # )
-
-    # test = BashOperator(
-    #     task_id="test",
-    #     bash_command="echo CONTENIDO DE LA TABLA: {{ task_instance.xcom_pull(task_ids='get_data_qae') }}",
-    #     dag=dag,
-    # )
-
-    # delete_table = BigQueryDeleteTableOperator(
-    #     task_id="delete_view",
-    #     deletion_dataset_table=f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{QAE_TEMP_TABLE}",
-    # )
+    qid_publisher_task = PythonOperator(
+        task_id='qid_publisher_task',
+        python_callable=qid_publisher,
+        provide_context=True,
+    )
     
-    # qae_task_state = BranchPythonOperator(
-    #     task_id="qae_task_state",
-    #     python_callable=_get_qae_state,
-    #     op_kwargs={'data': "{{ ti.xcom_pull(task_ids='get_data_qae') }}"},
-    #     provide_context=True,
-    # )
-
-    # sin_errores = BashOperator(
-    #     task_id="sin_errores",
-    #     bash_command="echo 'No hay errores de calidad'",
-    #     dag=dag,
-    # )
+    create_summary_errors = BigQueryInsertJobOperator(
+        task_id="create_summary_errors",
+        configuration={
+            "query": {
+                "query": f"""
+                            CREATE TABLE IF NOT EXISTS {GCP_BQ_DATASET_ID}.{ERRORS_TABLE} (
+                                invocation_id	STRING,
+                                execution_ts	TIMESTAMP,
+                                rule_binding_id	STRING,
+                                rule_id	STRING,
+                                table_id	STRING,
+                                column_id	STRING,
+                                dimension	STRING,
+                                metadata_json_string	STRING,
+                                configs_hashsum	STRING,
+                                dataplex_lake	STRING,
+                                dataplex_zone	STRING,
+                                dataplex_asset_id	STRING,
+                                dq_run_id	STRING,
+                                progress_watermark BOOLEAN,
+                                rows_validated	INT64,
+                                complex_rule_validation_errors_count	INT64,
+                                complex_rule_validation_success_flag	BOOLEAN,
+                                last_modified	TIMESTAMP,
+                                success_count	INT64,
+                                success_percentage	FLOAT64,
+                                failed_count	INT64,
+                                failed_percentage	FLOAT64,
+                                null_count	INT64,
+                                null_percentage	FLOAT64,
+                                failed_records_query	STRING,
+                                severity	INT64,
+                                action	INT64,
+                                message	STRING
+                            );
+                        """,
+                "useLegacySql": False,
+            }
+        },
+        location=GCP_BQ_REGION,
+    )
     
-    # qae_notification = CloudFunctionInvokeFunctionOperator(
-    #     task_id="qae_notification",
-    #     project_id=CLOUD_FUNCTION_PROJECT_ID,
-    #     location=CLOUD_FUNCTION_REGION,
-    #     input_data={"data": json.dumps(get_data_qae.output)},
-    #     function_id="qae_notification",
-    # )
+    qid_execution = BigQueryInsertJobOperator(
+        task_id="qid_execution",
+        configuration={
+            "query": {
+                "query": qid_publisher_task.output,
+                "useLegacySql": False,
+            }
+        },
+        location=GCP_BQ_REGION,
+    )
 
-    # qae_execution = PythonOperator(
-    #     task_id='qae_execution',
-    #     python_callable=ejecutar_qae,
-    #     dag=dag,
-    # )
+    qae_execution = PythonOperator(
+        task_id='qae_execution',
+        python_callable=qae_query,
+        provide_context=True,
+    )
 
-    # qae_notification_task = PythonOperator(
-    #     task_id='qae_notification_task',
-    #     python_callable=qae_notification,
-    #     op_kwargs={'data': "{{ ti.xcom_pull(task_ids='qae_execution') }}"},
-    #     dag=dag,
-    # )
+# PENDIENTE DE REFACTORIZAR! 
+    metadata_task = BigQueryInsertJobOperator(
+        task_id="metadata_task",
+        configuration={
+            "query": {
+                "query": """
+                TRUNCATE TABLE sales-esp-dev.dq_quality_results.labels_view;
+                    INSERT INTO sales-esp-dev.dq_quality_results.labels_view
+                        SELECT 
+                        table_schema as dataset_name, 
+                        table_name,
+                        CASE 
+                            WHEN REGEXP_CONTAINS(option_value, r'STRUCT\("owner",\s*("[^"]+"[^"]*)') 
+                                AND NOT REGEXP_CONTAINS(option_value, r'STRUCT\("country",\s*("[^"]+"[^"]*)') THEN true
+                            ELSE false
+                        END AS has_owner,
+                        CASE 
+                            WHEN REGEXP_CONTAINS(option_value, r'STRUCT\("country",\s*("[^"]+"[^"]*)') 
+                                AND NOT REGEXP_CONTAINS(option_value, r'STRUCT\("owner",\s*("[^"]+"[^"]*)') THEN true
+                            ELSE false
+                        END AS has_country
+                        FROM 
+                        `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS`
+                        WHERE 
+                        option_name = 'labels';
 
-start_op >> yml_publisher_f 
-# >> qid_publisher >> qae_publisher >> get_dataplex_task
-get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
+                TRUNCATE TABLE sales-esp-dev.dq_quality_results.nomenclature_view;
+                    INSERT INTO dq_quality_results.nomenclature_view
+                        WITH dataset_validation AS (
+                        SELECT
+                            SCHEMA_NAME AS dataset_name,
+                            '-' AS table_name,
+                            CASE 
+                            WHEN NOT REGEXP_CONTAINS(SCHEMA_NAME, r'^esp') THEN 'El nombre del dataset no tiene prefijo de país.'
+                            WHEN NOT REGEXP_CONTAINS(SCHEMA_NAME, r'(dev|test|pro)$') THEN 'El nombre del dataset no tiene sufijo de entorno.'
+                            WHEN REGEXP_CONTAINS(SCHEMA_NAME, r'[A-Z0-9]') THEN 'El nombre del dataset no debe contener mayúsculas ni números.'
+                            END AS message
+                        FROM
+                            `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`
+                        ),
+                        table_validation AS (
+                        SELECT
+                            table_schema AS dataset_name,
+                            table_name AS table_name,
+                            CASE 
+                            WHEN REGEXP_CONTAINS(table_name, r'[A-Z0-9]') THEN 'El nombre de la tabla no debe contener mayúsculas ni números.'
+                            END AS message
+                        FROM
+                            `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`
+                        )
+                        SELECT * FROM dataset_validation
+                        WHERE message IS NOT NULL
+                        UNION ALL
+                        SELECT * FROM table_validation
+                        WHERE message IS NOT NULL;
+
+                TRUNCATE TABLE sales-esp-dev.dq_quality_results.metrics_mtdata_view;
+                    INSERT INTO dq_quality_results.metrics_mtdata_view
+                        WITH nomenclature_dataset_count AS (
+                        SELECT 
+                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.nomenclature_view`
+                            WHERE table_name = '-') AS datasets_ok,
+                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`) AS total_datasets
+                        ),
+                        nomenclature_table_count AS (
+                        SELECT 
+                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.nomenclature_view`
+                            WHERE table_name != '-') AS tables_ok,
+                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
+                        ),
+                        labels_count AS (
+                        SELECT 
+                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.labels_view`
+                            WHERE has_owner = TRUE) AS owner_false,
+                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.labels_view`
+                            WHERE has_country = TRUE) AS country_false,
+                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
+                        )
+                        SELECT 
+                        (SELECT ROUND((1-(datasets_ok / total_datasets)) * 100, 2) FROM nomenclature_dataset_count) AS metric_datasets_nom,
+                        (SELECT ROUND((1-(tables_ok / total_tables)) * 100, 2) FROM nomenclature_table_count) AS metric_tables_nom,
+                        (SELECT ROUND((owner_false / total_tables) * 100, 2) FROM labels_count) AS metric_owner,
+                        (SELECT ROUND((country_false / total_tables) * 100, 2) FROM labels_count) AS metric_country;
+                    
+                TRUNCATE TABLE sales-esp-dev.dq_quality_results.decription_view;
+                    INSERT INTO dq_quality_results.decription_view
+                        WITH tables_slv AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS slv_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.TABLES) AS slv_tables_total
+                        ),
+                        tables_gld AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS gld_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.TABLES) AS gld_tables_total
+                        ),
+                        tables_fat AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS fat_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.TABLES) AS fat_tables_total
+                        ),
+                        tables_edm AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS edm_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.TABLES) AS edm_tables_total
+                        ),
+                        tables_other AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
+                            WHERE table_schema NOT IN ("esp_bqset_cashiers_slv_dev", "esp_bqset_cashiers_gld_dev", "esp_bqset_fat_dev", "esp_bqset_edm_dev")
+                            AND topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS other_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS other_tables_total
+                        ),
+                        tables_all AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS total_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS tables_total
+                        ),
+                        fields_slv AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS slv_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS slv_fields_total
+                        ),
+                        fields_gld AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS gld_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS gld_fields_total
+                        ),
+                        fields_fat AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS fat_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS fat_fields_total
+                        ),
+                        fields_edm AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS edm_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS edm_fields_total
+                        ),
+                        fields_other AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
+                            WHERE table_schema NOT IN ("esp_bqset_cashiers_slv_dev", "esp_bqset_cashiers_gld_dev", "esp_bqset_fat_dev", "esp_bqset_edm_dev")
+                            AND topt.description IS NOT NULL AND TRIM(topt.description) != '') AS other_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS other_fields_total
+                        ),
+                        fields_all AS (
+                        SELECT
+                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS total_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS fields_total
+                        )
+                        SELECT
+                        (SELECT ROUND(slv_tables_ok / slv_tables_total * 100, 2) FROM tables_slv) AS slv_tables,
+                        (SELECT ROUND(gld_tables_ok / gld_tables_total * 100, 2) FROM tables_gld) AS gld_tables,
+                        (SELECT ROUND(fat_tables_ok / fat_tables_total * 100, 2) FROM tables_fat) AS fat_tables,
+                        (SELECT ROUND(edm_tables_ok / edm_tables_total * 100, 2) FROM tables_edm) AS edm_tables,
+                        (SELECT ROUND(other_tables_ok / other_tables_total * 100, 2) FROM tables_other) AS other_tables,
+                        (SELECT ROUND(total_tables_ok / tables_total * 100, 2) FROM tables_all) AS all_tables,
+                        (SELECT ROUND(slv_fields_ok / slv_fields_total * 100, 2) FROM fields_slv) AS slv_fields,
+                        (SELECT ROUND(gld_fields_ok / gld_fields_total * 100, 2) FROM fields_gld) AS gld_fields,
+                        (SELECT ROUND(fat_fields_ok / fat_fields_total * 100, 2) FROM fields_fat) AS fat_fields,
+                        (SELECT ROUND(edm_fields_ok / edm_fields_total * 100, 2) FROM fields_edm) AS edm_fields,
+                        (SELECT ROUND(other_fields_ok / other_fields_total * 100, 2) FROM fields_other) AS other_fields,
+                        (SELECT ROUND(total_fields_ok / fields_total * 100, 2) FROM fields_all) AS all_fields;
+                    """,
+                "useLegacySql": False,
+            }
+        },
+        location="europe-southwest1",
+    )
+
+    end_task = DummyOperator(task_id="end_task")
+
+start_task >> create_dataset >> create_summary_errors
+start_task >> yml_publisher_task >> get_dataplex_task >> [dataplex_task_exists, dataplex_task_not_exists, dataplex_task_error]
 dataplex_task_exists >> delete_dataplex_task
 delete_dataplex_task >> create_dataplex_task
 dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
-# dataplex_task_success >> qid_execution >> create_dq_qae_temp_table >> qae_execution >> get_data_qae >> test
-# test >> qae_task_state >> [sin_errores, qae_notification]
+dataplex_task_success >> qid_publisher_task >> qid_execution >> qae_execution >> end_task

@@ -1,32 +1,32 @@
 steps:
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/apis/cloudbuild.yaml', '.']
-  #   id: 'enable_apis'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/apis/cloudbuild.yaml', '.']
+    id: 'enable_apis'
 
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/pubsub/cloudbuild.yaml', '.']
-  #   id: 'pubsub_topic'
-  #   waitFor: ['enable_apis']
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/pubsub/cloudbuild.yaml', '.']
+    id: 'pubsub_topic'
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
     id: 'service_account'
-    # waitFor: ['enable_apis']
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
     id: 'composer'
-    # waitFor: ['enable_apis']
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
     id: 'storage'
-  #   waitFor: ['enable_apis']
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/dataplex_lake/cloudbuild.yaml', '.']
     id: 'dataplex_lake'
-  #   waitFor: ['enable_apis']
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']

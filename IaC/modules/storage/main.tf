@@ -4,7 +4,7 @@ provider "google" {
 }
 
 resource "google_storage_bucket" "yml_bucket" {
-  name          = var.name_quality_bucket  
+  name          = var.name_yml_bucket  
   location      = var.region     
   force_destroy = true               
 }
