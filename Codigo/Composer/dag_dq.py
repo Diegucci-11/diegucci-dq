@@ -134,7 +134,7 @@ def yml_publisher():
             binding += f"    column_id: {fila.iloc[3]}\n"
             binding += f"    row_filter_id: NO_FILTER\n"
             binding += "    rule_ids:"
-            for columna, valor_celda in fila[9:].items():
+            for columna, valor_celda in fila[10:].items():
                 if valor_celda.upper() == 'X':
                     binding += f"\n\n      - {df.iloc[0][columna]}"
                 elif valor_celda is not None and valor_celda.strip() != "":
