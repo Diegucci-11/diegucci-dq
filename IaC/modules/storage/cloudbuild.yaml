@@ -26,10 +26,6 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     args: 
       - 'cp'
-      - 'qid_publisher.zip'
-      - 'qae_publisher.zip'
-      - 'qae_notification.zip'
-      - 'yml_publisher.zip'
       - 'config_gs.zip'
       - 'gs://functions_dq_bucket/' # PENDIENTE DE PARAMETRIZAR
     dir: 'IaC/modules/storage'
