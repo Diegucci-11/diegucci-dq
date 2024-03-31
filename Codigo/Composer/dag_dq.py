@@ -106,7 +106,7 @@ def yml_publisher():
     rules = reglas_sheet.range('H3:H')
     rules_values = [str(cell.value) for cell in rules if cell.value.strip()]
 
-    filters = filtros_sheet.range('E3:E')
+    filters = filtros_sheet.range('H3:H')
     filters_values = [str(cell.value) for cell in filters if cell.value.strip()]
 
     output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n\n"
@@ -132,7 +132,7 @@ def yml_publisher():
             binding += "  " + fila.iloc[2].upper() + "_" + fila.iloc[3].upper() + ":\n"
             binding += f"    entity_uri: bigquery://projects/{fila.iloc[0]}/locations/{location}/datasets/{fila.iloc[1]}/tables/{fila.iloc[2]}\n"
             binding += f"    column_id: {fila.iloc[3]}\n"
-            binding += f"    row_filter_id: NO_FILTER\n"
+            binding += f"    row_filter_id: {fila.iloc[9]}\n"
             binding += "    rule_ids:"
             for columna, valor_celda in fila[10:].items():
                 if valor_celda.upper() == 'X':

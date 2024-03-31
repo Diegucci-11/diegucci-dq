@@ -16,7 +16,7 @@ steps:
     args:
       - '-c'
       - |
-        if gcloud functions describe config_gs_2 --project=diegucci-dq --region=europe-west3 > /dev/null 2>&1; then
+        if gcloud functions describe config_gs_2 --project=diegucci-dq --region=europe-southwest1 > /dev/null 2>&1; then
           echo "La función existe."
         else
           echo "La función no existe."
@@ -26,7 +26,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
             'functions', 'deploy', 'config_gs_2',
-            '--region=europe-west3',
-            '--source=Codigo/Config_GS/config_gs_2', 
+            '--region=europe-southwest1',
+            '--source=Codigo/Config_GS/config_gs', 
           ]
 
