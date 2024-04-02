@@ -25,7 +25,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_2"
+DAG_NAME = "dq_validation_dag_3"
 
 YML = "yml_test.yml"
 
@@ -638,3 +638,4 @@ dataplex_task_not_exists >> create_dataplex_task
 create_dataplex_task >> dataplex_task_state
 dataplex_task_state >> [dataplex_task_success, dataplex_task_failed]
 dataplex_task_success >> qid_publisher_task >> qid_execution >> qae_execution >> end_task
+dataplex_task_success >> metadata_task >> end_task
