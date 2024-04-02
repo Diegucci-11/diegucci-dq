@@ -38,7 +38,6 @@ payload = response.payload.data.decode("UTF-8")
 
 credentials = service_account.Credentials.from_service_account_info(json.loads(payload), scopes=SCOPES)
 client = gspread.authorize(credentials)
-# spreadsheet = client.open(os.environ.get('MATRIX_FILE'))
 spreadsheet = client.open("MatrixInput")
 
 tablas_sheet = spreadsheet.worksheet('Tablas')
@@ -486,8 +485,9 @@ with models.DAG(
                         WHERE 
                         option_name = 'labels';
 
-                TRUNCATE TABLE sales-esp-dev.dq_quality_results.nomenclature_view;
-                    INSERT INTO dq_quality_results.nomenclature_view
+                -- TRUNCATE TABLE diegucci-dq.quality_dataset_test.nomenclature_view;
+                --    INSERT INTO diegucci-dq.quality_dataset_test.nomenclature_view
+                    CREATE TABLE diegucci-dq.quality_dataset_test.nomenclature_view AS 
                         WITH dataset_validation AS (
                         SELECT
                             SCHEMA_NAME AS dataset_name,
@@ -516,8 +516,9 @@ with models.DAG(
                         SELECT * FROM table_validation
                         WHERE message IS NOT NULL;
 
-                TRUNCATE TABLE sales-esp-dev.dq_quality_results.metrics_mtdata_view;
-                    INSERT INTO dq_quality_results.metrics_mtdata_view
+                -- TRUNCATE TABLE diegucci-dq.quality_dataset_test.metrics_mtdata_view;
+                --    INSERT INTO diegucci-dq.quality_dataset_test.metrics_mtdata_view
+                    CREATE TABLE diegucci-dq.quality_dataset_test.metrics_mtdata_view AS 
                         WITH nomenclature_dataset_count AS (
                         SELECT 
                         (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.nomenclature_view`
@@ -544,8 +545,9 @@ with models.DAG(
                         (SELECT ROUND((owner_false / total_tables) * 100, 2) FROM labels_count) AS metric_owner,
                         (SELECT ROUND((country_false / total_tables) * 100, 2) FROM labels_count) AS metric_country;
                     
-                TRUNCATE TABLE sales-esp-dev.dq_quality_results.decription_view;
-                    INSERT INTO dq_quality_results.decription_view
+                -- TRUNCATE TABLE diegucci-dq.quality_dataset_test.decription_view;
+                --    INSERT INTO diegucci-dq.quality_dataset_test.decription_view
+                    CREATE TABLE diegucci-dq.quality_dataset_test.decription_view AS
                         WITH tables_slv AS (
                         SELECT
                             (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
