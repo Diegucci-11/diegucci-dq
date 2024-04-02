@@ -25,7 +25,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_10"
+DAG_NAME = "dq_validation_dag_11"
 
 YML = "yml_test.yml"
 
@@ -52,7 +52,7 @@ project_id = tablas_sheet.cell(4, 2).value
 location = tablas_sheet.cell(6, 2).value
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
-DATAPLEX_REGION = "europe-southwest1"
+DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
@@ -68,7 +68,8 @@ GCP_PROJECT_ID = project_id
 GCP_BQ_DATASET_ID = dataset
 TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
 GCP_BQ_REGION = location
-FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
+# FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
+FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.dq_summary"
 ERRORS_TABLE = "dq_summary_errors"
 
 EXAMPLE_TASK_BODY = {
@@ -313,21 +314,6 @@ def _get_dataplex_task() -> str:
     elif res.status_code == 200:
         return "task_exist"
     else:
-        print(50 * "-")
-        print("Código de estado:", res.status_code)
-        print("URL de la solicitud:", res.url)
-        print("Encabezados de la respuesta:")
-        print(res.headers)
-        print("Contenido de la respuesta:")
-        print(res.text)
-        print("Cuerpo de la respuesta:")
-        print(res.json())
-        print("Codificación de caracteres:", res.encoding)
-        print("Historial de redireccionamiento:")
-        for resp in res.history:
-            print(resp.status_code, resp.url)
-        print(50 * "-")
-
         return "ERROR"
 
 default_args = {
