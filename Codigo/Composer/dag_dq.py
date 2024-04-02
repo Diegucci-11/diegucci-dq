@@ -25,7 +25,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_1"
+DAG_NAME = "dq_validation_dag_2"
 
 YML = "yml_test.yml"
 
@@ -38,7 +38,7 @@ payload = response.payload.data.decode("UTF-8")
 
 credentials = service_account.Credentials.from_service_account_info(json.loads(payload), scopes=SCOPES)
 client = gspread.authorize(credentials)
-spreadsheet = client.open("MatrixInput")
+spreadsheet = client.open("Matrix_Input_v2")
 
 tablas_sheet = spreadsheet.worksheet('Tablas')
 reglas_sheet = spreadsheet.worksheet('Reglas')
@@ -405,33 +405,33 @@ with models.DAG(
             "query": {
                 "query": f"""
                             CREATE TABLE IF NOT EXISTS {GCP_BQ_DATASET_ID}.{ERRORS_TABLE} (
-                                invocation_id	STRING,
-                                execution_ts	TIMESTAMP,
+                                invocation_id STRING,
+                                execution_ts TIMESTAMP,
                                 rule_binding_id	STRING,
                                 rule_id	STRING,
-                                table_id	STRING,
-                                column_id	STRING,
-                                dimension	STRING,
+                                table_id STRING,
+                                column_id STRING,
+                                dimension STRING,
                                 metadata_json_string	STRING,
                                 configs_hashsum	STRING,
-                                dataplex_lake	STRING,
-                                dataplex_zone	STRING,
-                                dataplex_asset_id	STRING,
-                                dq_run_id	STRING,
+                                dataplex_lake STRING,
+                                dataplex_zone STRING,
+                                dataplex_asset_id STRING,
+                                dq_run_id STRING,
                                 progress_watermark BOOLEAN,
                                 rows_validated	INT64,
-                                complex_rule_validation_errors_count	INT64,
-                                complex_rule_validation_success_flag	BOOLEAN,
-                                last_modified	TIMESTAMP,
-                                success_count	INT64,
-                                success_percentage	FLOAT64,
-                                failed_count	INT64,
+                                complex_rule_validation_errors_count INT64,
+                                complex_rule_validation_success_flag BOOLEAN,
+                                last_modified TIMESTAMP,
+                                success_count INT64,
+                                success_percentage FLOAT64,
+                                failed_count INT64,
                                 failed_percentage	FLOAT64,
-                                null_count	INT64,
+                                null_count INT64,
                                 null_percentage	FLOAT64,
-                                failed_records_query	STRING,
-                                severity	INT64,
-                                action	INT64,
+                                failed_records_query STRING,
+                                severity INT64,
+                                action INT64,
                                 message	STRING
                             );
                         """,
@@ -481,7 +481,7 @@ with models.DAG(
                             ELSE false
                         END AS has_country
                         FROM 
-                        `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS`
+                        `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS`
                         WHERE 
                         option_name = 'labels';
 
@@ -498,7 +498,7 @@ with models.DAG(
                             WHEN REGEXP_CONTAINS(SCHEMA_NAME, r'[A-Z0-9]') THEN 'El nombre del dataset no debe contener mayúsculas ni números.'
                             END AS message
                         FROM
-                            `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`
+                            `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`
                         ),
                         table_validation AS (
                         SELECT
@@ -508,7 +508,7 @@ with models.DAG(
                             WHEN REGEXP_CONTAINS(table_name, r'[A-Z0-9]') THEN 'El nombre de la tabla no debe contener mayúsculas ni números.'
                             END AS message
                         FROM
-                            `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`
+                            `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`
                         )
                         SELECT * FROM dataset_validation
                         WHERE message IS NOT NULL
@@ -521,23 +521,23 @@ with models.DAG(
                     CREATE TABLE diegucci-dq.quality_dataset_test.metrics_mtdata_view AS 
                         WITH nomenclature_dataset_count AS (
                         SELECT 
-                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.nomenclature_view`
+                        (SELECT COUNT (*) FROM `diegucci-dq.quality_dataset_test.nomenclature_view`
                             WHERE table_name = '-') AS datasets_ok,
-                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`) AS total_datasets
+                        (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.SCHEMATA`) AS total_datasets
                         ),
                         nomenclature_table_count AS (
                         SELECT 
-                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.nomenclature_view`
+                        (SELECT COUNT (*) FROM `diegucci-dq.quality_dataset_test.nomenclature_view`
                             WHERE table_name != '-') AS tables_ok,
-                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
+                        (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
                         ),
                         labels_count AS (
                         SELECT 
-                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.labels_view`
+                        (SELECT COUNT (*) FROM `diegucci-dq.quality_dataset_test.labels_view`
                             WHERE has_owner = TRUE) AS owner_false,
-                        (SELECT COUNT (*) FROM `sales-esp-dev.dq_quality_results.labels_view`
+                        (SELECT COUNT (*) FROM `diegucci-dq.quality_dataset_test.labels_view`
                             WHERE has_country = TRUE) AS country_false,
-                        (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
+                        (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS total_tables
                         )
                         SELECT 
                         (SELECT ROUND((1-(datasets_ok / total_datasets)) * 100, 2) FROM nomenclature_dataset_count) AS metric_datasets_nom,
@@ -550,89 +550,75 @@ with models.DAG(
                     CREATE TABLE diegucci-dq.quality_dataset_test.decription_view AS
                         WITH tables_slv AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            (SELECT COUNT(*) FROM diegucci-dq.silver.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
                             WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS slv_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.TABLES) AS slv_tables_total
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.silver.INFORMATION_SCHEMA.TABLES) AS slv_tables_total
                         ),
                         tables_gld AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            (SELECT COUNT(*) FROM diegucci-dq.golden.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
                             WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS gld_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.TABLES) AS gld_tables_total
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.golden.INFORMATION_SCHEMA.TABLES) AS gld_tables_total
                         ),
-                        tables_fat AS (
+                        tables_brz AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
-                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS fat_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.TABLES) AS fat_tables_total
-                        ),
-                        tables_edm AS (
-                        SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
-                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS edm_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.TABLES) AS edm_tables_total
+                            (SELECT COUNT(*) FROM diegucci-dq.bronze.INFORMATION_SCHEMA.TABLE_OPTIONS AS topt
+                            WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS brz_tables_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.bronze.INFORMATION_SCHEMA.TABLES) AS brz_tables_total
                         ),
                         tables_other AS (
                         SELECT
-                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
-                            WHERE table_schema NOT IN ("esp_bqset_cashiers_slv_dev", "esp_bqset_cashiers_gld_dev", "esp_bqset_fat_dev", "esp_bqset_edm_dev")
+                            (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
+                            WHERE table_schema NOT IN ("bronze", "silver", "golden")
                             AND topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS other_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS other_tables_total
+                            (SELECT DISTINCT COUNT(table_name) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS other_tables_total
                         ),
                         tables_all AS (
                         SELECT
-                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
+                            (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLE_OPTIONS` AS topt
                             WHERE topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '') AS total_tables_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS tables_total
+                            (SELECT DISTINCT COUNT(table_name) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.TABLES`) AS tables_total
                         ),
                         fields_slv AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            (SELECT COUNT(*) FROM diegucci-dq.silver.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
                             WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS slv_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_slv_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS slv_fields_total
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.silver.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS slv_fields_total
                         ),
                         fields_gld AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            (SELECT COUNT(*) FROM diegucci-dq.golden.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
                             WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS gld_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_cashiers_gld_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS gld_fields_total
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.golden.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS gld_fields_total
                         ),
-                        fields_fat AS (
+                        fields_brz AS (
                         SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
-                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS fat_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_fat_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS fat_fields_total
-                        ),
-                        fields_edm AS (
-                        SELECT
-                            (SELECT COUNT(*) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
-                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS edm_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM sales-esp-dev.esp_bqset_edm_dev.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS edm_fields_total
+                            (SELECT COUNT(*) FROM diegucci-dq.bronze.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS AS topt
+                            WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS brz_fields_ok,
+                            (SELECT DISTINCT COUNT(table_name) FROM diegucci-dq.bronze.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS) AS brz_fields_total
                         ),
                         fields_other AS (
                         SELECT
-                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
-                            WHERE table_schema NOT IN ("esp_bqset_cashiers_slv_dev", "esp_bqset_cashiers_gld_dev", "esp_bqset_fat_dev", "esp_bqset_edm_dev")
+                            (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
+                            WHERE table_schema NOT IN ("silver", "golden", "bronze")
                             AND topt.description IS NOT NULL AND TRIM(topt.description) != '') AS other_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS other_fields_total
+                            (SELECT DISTINCT COUNT(table_name) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS other_fields_total
                         ),
                         fields_all AS (
                         SELECT
-                            (SELECT COUNT(*) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
+                            (SELECT COUNT(*) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS` AS topt
                             WHERE topt.description IS NOT NULL AND TRIM(topt.description) != '') AS total_fields_ok,
-                            (SELECT DISTINCT COUNT(table_name) FROM `sales-esp-dev.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS fields_total
+                            (SELECT DISTINCT COUNT(table_name) FROM `diegucci-dq.region-europe-southwest1.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`) AS fields_total
                         )
                         SELECT
                         (SELECT ROUND(slv_tables_ok / slv_tables_total * 100, 2) FROM tables_slv) AS slv_tables,
                         (SELECT ROUND(gld_tables_ok / gld_tables_total * 100, 2) FROM tables_gld) AS gld_tables,
-                        (SELECT ROUND(fat_tables_ok / fat_tables_total * 100, 2) FROM tables_fat) AS fat_tables,
-                        (SELECT ROUND(edm_tables_ok / edm_tables_total * 100, 2) FROM tables_edm) AS edm_tables,
+                        (SELECT ROUND(brz_tables_ok / brz_tables_total * 100, 2) FROM tables_brz) AS brz_tables,
                         (SELECT ROUND(other_tables_ok / other_tables_total * 100, 2) FROM tables_other) AS other_tables,
                         (SELECT ROUND(total_tables_ok / tables_total * 100, 2) FROM tables_all) AS all_tables,
                         (SELECT ROUND(slv_fields_ok / slv_fields_total * 100, 2) FROM fields_slv) AS slv_fields,
                         (SELECT ROUND(gld_fields_ok / gld_fields_total * 100, 2) FROM fields_gld) AS gld_fields,
-                        (SELECT ROUND(fat_fields_ok / fat_fields_total * 100, 2) FROM fields_fat) AS fat_fields,
-                        (SELECT ROUND(edm_fields_ok / edm_fields_total * 100, 2) FROM fields_edm) AS edm_fields,
+                        (SELECT ROUND(brz_fields_ok / brz_fields_total * 100, 2) FROM fields_brz) AS brz_fields,
                         (SELECT ROUND(other_fields_ok / other_fields_total * 100, 2) FROM fields_other) AS other_fields,
                         (SELECT ROUND(total_fields_ok / fields_total * 100, 2) FROM fields_all) AS all_fields;
                     """,
