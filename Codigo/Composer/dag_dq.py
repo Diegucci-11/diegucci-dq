@@ -465,7 +465,7 @@ with models.DAG(
         configuration={
             "query": {
                 "query": """
-                TRUNCATE TABLE sales-esp-dev.dq_quality_results.labels_view;
+                TRUNCATE TABLE .dq_quality_results.labels_view;
                     INSERT INTO sales-esp-dev.dq_quality_results.labels_view
                         SELECT 
                         table_schema as dataset_name, 
