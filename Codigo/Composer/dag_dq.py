@@ -25,7 +25,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_5"
+DAG_NAME = "dq_validation_dag_6"
 
 YML = "yml_test.yml"
 
@@ -312,8 +312,13 @@ def _get_dataplex_task() -> str:
         return "task_not_exist"
     elif res.status_code == 200:
         return "task_exist"
-    # else:
-    #     return "ERROR"
+    else:
+        print(50*"-")
+        print(res.status_code)
+        print(res)
+        print(50*"-")
+
+        return res.status_code
 
 default_args = {
     'owner': 'Alcampo',
