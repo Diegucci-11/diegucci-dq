@@ -25,7 +25,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_9"
+DAG_NAME = "dq_validation_dag_10"
 
 YML = "yml_test.yml"
 
@@ -52,7 +52,7 @@ project_id = tablas_sheet.cell(4, 2).value
 location = tablas_sheet.cell(6, 2).value
 
 DATAPLEX_PROJECT_ID = "diegucci-dq"
-DATAPLEX_REGION = "europe-west3"
+DATAPLEX_REGION = "europe-southwest1"
 DATAPLEX_LAKE_ID = "quality-tasks-lake"
 SERVICE_ACC = "dataquality@diegucci-dq.iam.gserviceaccount.com"
 PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
