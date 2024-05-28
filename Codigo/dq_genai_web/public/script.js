@@ -1,7 +1,7 @@
 var rule_input = document.getElementById('rule_input');
 var create_rule = document.getElementById('create_rule');
 create_rule.disabled = true;
-rule_input.addEventListener('input', function() {
+rule_input.addEventListener('input', function () {
     if (rule_input.value.trim() === '') {
         create_rule.disabled = true;
     } else {
@@ -9,7 +9,7 @@ rule_input.addEventListener('input', function() {
     }
 });
 
-function generarRegla(){
+function generarRegla() {
     var texto = document.getElementById('rule_input').value;
     var radioSeleccionado = document.querySelector('input[name="dim"]:checked').value;
     create_rule.disabled = true;
@@ -23,33 +23,33 @@ function generarRegla(){
         "dimension": radioSeleccionado
     };
 
-    fetch('https://europe-southwest1-ceep-394706.cloudfunctions.net/dq_v2_create_rule', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(datos)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Hubo un problema con la solicitud.');
-        }
-        return response.json();
-    })
-    .then(data => {
-        procesarRegla(JSON.parse(data))
-        console.log('Se generó la regla');
-        create_rule.disabled = false;
-        load_circle.style.display = 'none';
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Hubo un problema con la solicitud.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            procesarRegla(JSON.parse(data))
+            console.log('Se generó la regla');
+            create_rule.disabled = false;
+            load_circle.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
-function procesarRegla(data){
+function procesarRegla(data) {
     var content = document.getElementById('content');
-    
+
     // Crear la tabla
     tabla = document.createElement('table');
     tabla.setAttribute('id', 'rule_results');
@@ -91,9 +91,9 @@ function procesarRegla(data){
     // Plantearse coger los valores de otro lado? Traerlos también de la CF?
     const options_dim = ['Completitud', 'Consistencia', 'Exactitud', 'Integridad', 'Unicidad', 'Validez', 'Disponibilidad'];
     options_dim.forEach(opcion => {
-      const option = document.createElement('option');
-      option.text = opcion;
-      select_dim.add(option);
+        const option = document.createElement('option');
+        option.text = opcion;
+        select_dim.add(option);
     });
     const value_dim = data["DIMENSION"];
     select_dim.value = value_dim;
@@ -109,7 +109,7 @@ function procesarRegla(data){
     div_name.setAttribute('contenteditable', 'true');
     div_name.textContent = data["NOMBRE_REGLA_YML"];
     celda_name.appendChild(div_name);
-    
+
     fila1.appendChild(celda_dim_title);
     fila1.appendChild(celda_dim);
     fila1.appendChild(celda_name_title);
@@ -141,7 +141,7 @@ function procesarRegla(data){
     div_example.setAttribute('contenteditable', 'true');
     div_example.textContent = data["EJEMPLO"];
     celda_example.appendChild(div_example);
-    
+
     fila2.appendChild(celda_desc_title);
     fila2.appendChild(celda_desc);
     fila2.appendChild(celda_example_title);
@@ -169,27 +169,25 @@ function procesarRegla(data){
     // Plantearse coger los valores de otro lado? Traerlos también de la CF?
     const options_sev = ['1 (Baja)', '2 (Media)', '3 (Alta)'];
     options_sev.forEach(opcion => {
-      const option = document.createElement('option');
-      option.text = opcion;
-      select_sev.add(option);
+        const option = document.createElement('option');
+        option.text = opcion;
+        select_sev.add(option);
     });
     const value_sev = data["SEVERIDAD"];
     select_sev.value = value_sev;
     celda_sev.appendChild(select_sev);
-    
+
     // Creacion lista desplegable para accion
     const select_action = document.createElement('select');
     select_action.setAttribute('id', 'rule_action');
 
-    // Plantearse coger los valores de otro lado? Traerlos también de la CF?
     // const options_action = ['0 (Sin acción)', '1 (Parada y se muestra la alerta en el CdM)', '2 (Notificación y se muestra la alerta en el CdM)', '3 (No Notifica pero se muestra la alerta en el CdM)'];
     const options_action = ['1 (Parada)', '2 (Notificación)', '3 (No Notifica)'];
     options_action.forEach(opcion => {
-      const option = document.createElement('option');
-      option.text = opcion;
-      select_action.add(option);
+        const option = document.createElement('option');
+        option.text = opcion;
+        select_action.add(option);
     });
-    // const value_action = data["ACCION"];
     const value_action = '2 (Notificación)';
     select_action.value = value_action;
     celda_action.appendChild(select_action);
@@ -198,7 +196,7 @@ function procesarRegla(data){
     fila3.appendChild(celda_sev);
     fila3.appendChild(celda_action_title);
     fila3.appendChild(celda_action);
-    
+
     // Fila 4 de la tabla
     const fila4 = document.createElement('tr');
     const celda_params_title = document.createElement('td');
@@ -239,7 +237,7 @@ function procesarRegla(data){
     tbody.appendChild(fila4);
 
     tabla.appendChild(tbody);
-    
+
     // Crear div que contiene botones
     const div_buttons = document.createElement('div');
     div_buttons.setAttribute('id', 'div_buttons');
@@ -248,7 +246,7 @@ function procesarRegla(data){
     const append_button = document.createElement('button');
     append_button.setAttribute('id', 'append_button');
     append_button.setAttribute('onclick', 'recogerValores()');
-    
+
     append_button.textContent = "Añadir regla a Proyecto";
 
     // Crear boton de cancelar
@@ -268,7 +266,7 @@ function procesarRegla(data){
         box_div = document.createElement('div');
         box_div.setAttribute('id', 'rule_results_div');
         box_div.setAttribute('class', 'box');
-    }else{
+    } else {
         var tablaAnterior = document.getElementById('rule_results');
         var div_buttonsAnterior = document.getElementById('div_buttons');
         if (tablaAnterior) {
@@ -282,72 +280,69 @@ function procesarRegla(data){
 }
 
 // Funcion para recoger los valores de la tabla rule_results
-function recogerValores(){
+function recogerValores() {
     var rule_dim = document.getElementById('rule_dim').value;
     var rule_name = document.getElementById('rule_name').textContent;
-    var rule_desc = document.getElementById('rule_desc').textContent ;
-    var rule_example = document.getElementById('rule_example').textContent ;
-    var rule_params = document.getElementById('rule_params').textContent ;
-    var rule_yaml = document.getElementById('rule_yaml').textContent ;
+    var rule_desc = document.getElementById('rule_desc').textContent;
+    var rule_example = document.getElementById('rule_example').textContent;
+    // var data_type = document.getElementById('data_type').textContent;
+    var rule_params = document.getElementById('rule_params').textContent;
+    var rule_yaml = document.getElementById('rule_yaml').textContent;
     var rule_action = document.getElementById('rule_action').value;
     var rule_sev = document.getElementById('rule_sev').value;
-    
+
     var data = {
         "DIMENSION": rule_dim,
         "NOMBRE_REGLA_YML": rule_name,
         "DESCRIPCION": rule_desc,
         "EJEMPLO": rule_example,
+        "TIPO_DATO": "Cadena",
         "PARAMETROS": rule_params,
         "SEVERIDAD": rule_sev,
         "ACCION": rule_action,
-        "ACCION_YML": rule_yaml,
-        // Valores hardcodeados porque puede que se quiten de la matrix_input en un futuro
-        // pero los requiere la función append_rule de momento. (Se podrá cambiar cuando lleguemos a un acuerdo)
-        "TIPO_REGLA_YML": "Quality rule",
-        "COD": "1",
-        "CAMPO": "campo",
+        "CODIGO_YML": rule_yaml,
         "NOMBRE_REGLA": rule_name
     }
-    
+
     // Llamar a función append_rule
-    fetch('https://europe-southwest1-ceep-394706.cloudfunctions.net/dq_v2_append_rule', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Hubo un problema con la solicitud.');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Regla insertada correctamente');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Hubo un problema con la solicitud.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Regla insertada correctamente');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
 
-function actualizarNombre(){
+function actualizarNombre() {
     var valorNombre = document.getElementById("rule_name").innerText;
     document.getElementById("nombre_regla").innerText = valorNombre;
 }
 
-function resetearValores(){
+function resetearValores() {
     console.log("Reseteando valores...")
     rule_input.value = "";
 
     var box_div = document.getElementById('rule_results_div');
-    if(box_div){
+    if (box_div) {
         box_div.remove();
     }
 
     var radioButtons = document.querySelectorAll('input[type="radio"][name="dim"]');
 
-    radioButtons.forEach(function(radioButton) {
+    radioButtons.forEach(function (radioButton) {
         if (radioButton.value === "Completitud") {
             radioButton.checked = true;
         } else {
@@ -355,3 +350,5 @@ function resetearValores(){
         }
     });
 }
+
+// firebase deploy --only hosting:tfg-generador-de-reglas

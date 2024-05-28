@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "dataquality-genai",
+    "site": "tfg-generador-de-reglas",
     "public": "public",
     "ignore": [
       "firebase.json",
