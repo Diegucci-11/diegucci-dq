@@ -28,10 +28,10 @@ steps:
     id: 'composer_dags'
     waitFor: ['composer-env']    
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-    id: 'functions'
-    waitFor: ['service_account']
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+  #   id: 'functions'
+  #   waitFor: ['service_account']
 
 #CAMBIARLO DE TRIGGER ? 
 

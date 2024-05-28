@@ -54,16 +54,6 @@ variable "zip_trigger_dag_dq" {
   type        = string
 }
 
-variable "key_name" {
-  description = "Nombre para acceder a la clave en el codigo"
-  type        = string
-}
-
-variable "name_secret" {
-  description = "Name for the secret of the service-account key"
-  type        = string
-}
-
 variable "matrix_input_file" {
   description = "name of the matrix input file"
   type        = string

@@ -37,12 +37,6 @@ resource "google_cloudfunctions2_function" "config_gs" {
     environment_variables = {
       MATRIX_FILE   = var.matrix_input_file
     }
-    secret_environment_variables {
-      key        = var.key_name
-      project_id = var.id_project
-      secret     = var.name_secret
-      version    = "latest"
-    }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -82,12 +76,6 @@ resource "google_cloudfunctions2_function" "create_dag_dq" {
     environment_variables = {
       MATRIX_FILE   = var.matrix_input_file
     }
-    secret_environment_variables {
-      key        = var.key_name
-      project_id = var.id_project
-      secret     = var.name_secret
-      version    = "latest"
-    }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -126,12 +114,6 @@ resource "google_cloudfunctions2_function" "trigger_dag_dq" {
     timeout_seconds    = 500
     environment_variables = {
       MATRIX_FILE   = var.matrix_input_file
-    }
-    secret_environment_variables {
-      key        = var.key_name
-      project_id = var.id_project
-      secret     = var.name_secret
-      version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
