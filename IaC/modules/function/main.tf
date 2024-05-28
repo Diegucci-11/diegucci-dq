@@ -44,8 +44,7 @@ resource "google_cloudfunctions2_function" "config_gs" {
       version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
-    # service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com" # HACER DE OTRA FORMA?
-    service_account_email = var.complete_email
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
 
@@ -90,8 +89,7 @@ resource "google_cloudfunctions2_function" "create_dag_dq" {
       version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
-    # service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com" # HACER DE OTRA FORMA?
-    service_account_email = var.complete_email
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
 
@@ -136,7 +134,6 @@ resource "google_cloudfunctions2_function" "trigger_dag_dq" {
       version    = "latest"
     }
     ingress_settings = "ALLOW_ALL"
-    # service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com" # HACER DE OTRA FORMA?
-    service_account_email = var.complete_email
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }

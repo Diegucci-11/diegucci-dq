@@ -18,7 +18,7 @@ variable "region_composer" {
   type        = string
 }
 
-variable "complete_email" {
-  description = "Email completo de la cuenta de servicio"
+variable "service_account" {
+  description = "Email de la cuenta de servicio"
   type        = string
 }
