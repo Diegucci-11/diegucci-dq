@@ -43,22 +43,3 @@ resource "google_project_iam_member" "composer_extv2_role" {
   role    = "roles/composer.ServiceAgentV2Ext"
   member  = "serviceAccount: service-${project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
 }
-
-# NO FUNCIONA LA CLAVE COMO SECRETO... HACER A MANO DE MOMENTO
-
-# resource "google_service_account_key" "my_service_account_key" {
-#   service_account_id = google_service_account.data_quality_service_account.name
-# }
-
-# resource "google_secret_manager_secret" "my_service_account_secret" {
-#   secret_id = var.name_secret
-
-#   replication {
-#     auto {}
-#   }
-# }
-
-# resource "google_secret_manager_secret_version" "my_service_account_secret_version" {
-#   secret = google_secret_manager_secret.my_service_account_secret.name
-#   secret_data = google_service_account_key.my_service_account_key.private_key
-# }

@@ -1,11 +1,10 @@
 # Project Configuration
-id_project = "diegucci-dq"
-region_project = "europe-west3"
-project_number = "409016403024"
+id_project = "tfg-dq"
+region_project = "europe-southwest1"
+project_number = "897334757784"
 
 # Service Account
 service_account = "dataquality"
-# name_secret = "data_quality_key" # NO FUNCIONA! 
 # complete_email = "dataquality@diegucci-dq.iam.gserviceaccount.com" # PROBAR SI FUNCIONA LA DE ABAJO
 complete_email = "${service_account}@${id_project}.iam.gserviceaccount.com"
 
@@ -22,9 +21,6 @@ name_function_create_dag_dq = "create_dag_dq"
 zip_create_dag_dq = "create_dag_dq.zip"
 name_function_trigger_dag_dq = "trigger_dag_dq"
 zip_trigger_dag_dq = "trigger_dag_dq.zip"
-
-key_name = "DQ_KEY"
-name_secret = "data_quality_key" # CREAR A MANO DE MOMENTO !?
 
 matrix_input_file = "Matrix_Input_v2"
 

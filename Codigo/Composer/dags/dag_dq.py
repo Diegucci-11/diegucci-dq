@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime
 import google.auth
+from google.auth import default
 import json
 import requests
 import os
@@ -25,18 +26,13 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateEmptyDatasetOperator
 from google.cloud import secretmanager
 
-DAG_NAME = "dq_validation_dag_11"
+DAG_NAME = "dq_validation_dag"
 
 YML = "yml_test.yml"
 
 SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+credentials, _ = default(scopes=SCOPES)
 
-client = secretmanager.SecretManagerServiceClient()
-name_secret = "projects/409016403024/secrets/data_quality_key/versions/latest"
-response = client.access_secret_version(request={"name": name_secret})
-payload = response.payload.data.decode("UTF-8")
-
-credentials = service_account.Credentials.from_service_account_info(json.loads(payload), scopes=SCOPES)
 client = gspread.authorize(credentials)
 spreadsheet = client.open("Matrix_Input_v2")
 
