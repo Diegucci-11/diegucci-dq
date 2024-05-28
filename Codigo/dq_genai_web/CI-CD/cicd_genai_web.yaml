@@ -1,7 +1,10 @@
 steps:
-  - name: 'gcr.io/cloud-builders/npm'
-    entrypoint: 'npm'
-    args: ['install', '-g', 'firebase-tools']
+  - name: 'node:14'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install -g firebase-tools
 
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
