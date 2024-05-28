@@ -116,7 +116,7 @@ resource "google_cloudfunctions2_function" "create_rule" {
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
-
+ 
 # create_dag_dq function
 data "archive_file" "data_create_dag_dq" {
   type        = "zip"
