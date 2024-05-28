@@ -8,7 +8,7 @@ location = 'europe-southwest1'
 composer_environment = 'composer-test-1'
 
 @functions_framework.http
-def create_dag(request):
+def create_dag_dq(request):
     data = request.get_json()
 
     with open('dq_dag.txt', 'r') as file:

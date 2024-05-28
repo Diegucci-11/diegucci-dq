@@ -3,7 +3,7 @@ import requests
 import composer2_airflow_rest_api
 
 @functions_framework.http
-def trigger_dag(request):
+def trigger_dag_dq(request):
     data = request.get_json()
     
     dag_name = "dag_dq_" + data["dag_name"]
