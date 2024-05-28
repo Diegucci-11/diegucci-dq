@@ -4,4 +4,4 @@ steps:
     args:
       - '-c'
       - |
-        npm install -g firebase-tools && cd ../public && firebase init && firebase deploy --only hosting:tfg-generador-de-reglas
+        npm install -g firebase-tools && pwd && cd Codigo/dq_genai_web/public && firebase init && firebase deploy --only hosting:tfg-generador-de-reglas
