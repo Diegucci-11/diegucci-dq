@@ -4,43 +4,43 @@ provider "google" {
 }
 
 # config_gs function
-data "archive_file" "data_config_gs" {
-  type        = "zip"
-  output_path = var.zip_config_gs
-  source_dir  = "../../../Codigo/config_gs/code"
-}
+# data "archive_file" "data_config_gs" {
+#   type        = "zip"
+#   output_path = var.zip_config_gs
+#   source_dir  = "../../../Codigo/config_gs/code"
+# }
 
-resource "google_storage_bucket_object" "archive_config_gs" {
-  name   = var.zip_config_gs
-  bucket = var.name_functions_bucket
-  source = data.archive_file.data_config_gs.output_path
-}
+# resource "google_storage_bucket_object" "archive_config_gs" {
+#   name   = var.zip_config_gs
+#   bucket = var.name_functions_bucket
+#   source = data.archive_file.data_config_gs.output_path
+# }
 
-resource "google_cloudfunctions2_function" "config_gs" {
-  name          = var.name_function_config_gs
-  location      = var.region_function
-  build_config {
-    runtime     = var.programming_language
-    entry_point = "config_gs"
-    source {
-      storage_source {
-        bucket  = var.name_functions_bucket
-        object  = var.zip_config_gs
-      }
-    }
-  }
-  service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
-    environment_variables = {
-      MATRIX_FILE   = var.matrix_input_file
-    }
-    ingress_settings = "ALLOW_ALL"
-    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
-  }
-}
+# resource "google_cloudfunctions2_function" "config_gs" {
+#   name          = var.name_function_config_gs
+#   location      = var.region_function
+#   build_config {
+#     runtime     = var.programming_language
+#     entry_point = "config_gs"
+#     source {
+#       storage_source {
+#         bucket  = var.name_functions_bucket
+#         object  = var.zip_config_gs
+#       }
+#     }
+#   }
+#   service_config {
+#     max_instance_count = 2
+#     available_memory   = "1024M"
+#     available_cpu      = "0.583"
+#     timeout_seconds    = 500
+#     environment_variables = {
+#       MATRIX_FILE   = var.matrix_input_file
+#     }
+#     ingress_settings = "ALLOW_ALL"
+#     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+#   }
+# }
 
 # append_rule function
 data "archive_file" "data_append_rule" {
