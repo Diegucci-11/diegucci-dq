@@ -5,8 +5,6 @@ project_number = "897334757784"
 
 # Service Account
 service_account = "dataquality"
-# complete_email = "dataquality@diegucci-dq.iam.gserviceaccount.com" # PROBAR SI FUNCIONA LA DE ABAJO
-complete_email = "${service_account}@${id_project}.iam.gserviceaccount.com"
 
 # Dataplex Lake
 name_dataplex_lake = "data-quality-lake"
@@ -21,6 +19,10 @@ name_function_create_dag_dq = "create_dag_dq"
 zip_create_dag_dq = "create_dag_dq.zip"
 name_function_trigger_dag_dq = "trigger_dag_dq"
 zip_trigger_dag_dq = "trigger_dag_dq.zip"
+name_function_append_rule = "append_rule"
+zip_append_rule = "append_rule.zip"
+name_function_create_rule = "create_rule"
+zip_create_rule = "create_rule.zip"
 
 matrix_input_file = "Matrix_Input_v2"
 

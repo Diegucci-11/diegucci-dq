@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+<!-- Hacerlo todo responsive -->
+<head>
+    <meta charset="utf-8">
+    <title>Inetum DataQuality</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/jpg" href="images/favicon.jpg">
+    
+</head>
+
+<body>
+    <header>
+        <a href="https://sites.google.com/view/data-inetum/inicio"><img src="images/inetum.png" width="250" height="100"></a>
+        <h2 style="color: white; font-size: 2rem; font-family: Verdana;">DataQuality <span style="color:#f04641">GenAI</span></h2>
+    </header>
+    <!-- Cambiar estos <br> por algún div, algo más pro... -->
+    </br></br>
+    <div id="content" style="display: flex; justify-content: center;">
+        <div class="box" style="margin-right: 3rem;">
+            <table style="display: flex; justify-content: center;">
+                <tr>
+                    <td colspan="2" style="text-align: center;"><h1 style="text-align: center; color: #00AA9B;">Introduzca la regla</h1></td>
+                </tr>
+                <tr>
+                    <td><textarea rows="10" cols="30" id="rule_input" placeholder="Escribe algo..." style="resize: none; font-family: Verdana;" id="rule_input"></textarea></td>
+                    <td>
+                        <div style="text-align: left; font-family: Verdana;">
+                            <input type="radio" value="Completitud" name="dim" checked> Completitud<br>
+                            <input type="radio" value="Consistencia" name="dim"> Consistencia<br>
+                            <input type="radio" value="Exactitud" name="dim"> Exactitud<br>
+                            <input type="radio" value="Integridad" name="dim"> Integridad<br>
+                            <input type="radio" value="Unicidad" name="dim"> Unicidad<br>
+                            <input type="radio" value="Validez" name="dim"> Validez<br>
+                            <input type="radio" value="Disponibilidad" name="dim"> Disponibilidad<br>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <div id="load-circle" class="circulo-carga" style="display: None;"></div>
+            <div style="margin-top: 8rem; text-align: center;">
+                <button onclick="generarRegla()" id="create_rule">Generar regla</button>
+            </div>
+        </div>
+<!-- asdfasfasfafdsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssccccccccccccccccccccs -->
+        <!-- <div id="rule_results_div" class="box">
+            <table id="rule_results"><tbody>
+                <tr><td colspan="4" id="nombre_regla" style="border: 1px solid white; color:#00AA9B; font-weight: bolder; font-size: 2rem;">VALUE_MULTIPLE_OF_10</td></tr>
+                <tr><td class="rule_schema">Dimensión: </td><td contenteditable="true" class="rule_content" id="rule_dim">Validez</td><td class="rule_schema">Nombre de la regla: </td><td contenteditable="true" class="rule_content" id="rule_name" oninput="actualizarNombre()">VALUE_MULTIPLE_OF_10</td></tr>
+                <tr><td class="rule_schema">Descripción: </td><td contenteditable="true" class="rule_content" id="rule_desc">Valida que el valor del campo sea múltiplo de 10</td><td class="rule_schema">Ejemplo: </td><td contenteditable="true" class="rule_content" id="rule_example">Que el valor del campo sea múltiplo de 10</td></tr>
+                <tr><td class="rule_schema">Severity: </td><td class="rule_content"><select id="rule_sev"><option>1 (Baja)</option><option>2 (Media)</option><option>3 (Alta)</option></select></td><td class="rule_schema">Action: </td><td class="rule_content"><select id="rule_action"><option>1 (Parada)</option><option>2 (Notificación)</option><option>3 (No Notifica)</option></select></td></tr>
+                <tr><td class="rule_schema">Parametros: </td><td contenteditable="true" class="rule_content" id="rule_params" style="overflow-y: auto; height: 3.5rem;"> </td><td class="rule_schema">Código yaml: </td>
+                    <td class="rule_content" id="rule_yaml" style="padding:0;"><div contenteditable="true" class="div_content" style="padding:0.5rem; margin-top: 0; height: 8rem; width:14rem; overflow-y: auto; overflow-x: hidden;">
+                    VALUE_MULTIPLE_OF_10:
+                    rule_type: CUSTOM_SQL_EXPR
+                    dimension: Validez
+                    params:
+                    custom_sql_expr: |-
+                    MOD($column, 10) = 0</div></td></tr>
+            </tbody></table>
+            <div id="div_buttons">
+                <button id="append_button" onclick="recogerValores()">Añadir regla a Proyecto</button><button id="cancel_button" onclick="resetearValores()">Cancelar Regla</button>
+            </div>
+        </div> -->
+<!-- ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss -->
+
+
+    </div>
+    
+    <!-- Revisar! No funciona el chatbot! -->
+    <!-- <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger intent="WELCOME" chat-title="dq_chatbot" agent-id="d57fc3b8-8446-4256-8ded-2eca7a900f6f"language-code="es"></df-messenger> -->
+
+    <footer>
+        <span style="font-weight: bolder;">© 2023 Inetum, CEEP</span></br>
+        <a style="color:white" href="https://sites.google.com/view/data-inetum/contacto">Contacta con nosotros</a>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

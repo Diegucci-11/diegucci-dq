@@ -34,6 +34,26 @@ variable "zip_config_gs" {
   type        = string
 }
 
+variable "name_function_append_rule"{
+  description = "Name for the append_rule function"
+  type        = string
+}
+
+variable "zip_append_rule" {
+  description = "zip para la función append_rule"
+  type        = string
+}
+
+variable "name_function_create_rule"{
+  description = "Name for the create_rule function"
+  type        = string
+}
+
+variable "zip_create_rule" {
+  description = "zip para la función create_rule"
+  type        = string
+}
+
 variable "name_function_create_dag_dq"{
   description = "Name for the create_dag_dq function"
   type        = string

@@ -42,6 +42,81 @@ resource "google_cloudfunctions2_function" "config_gs" {
   }
 }
 
+# append_rule function
+data "archive_file" "data_append_rule" {
+  type        = "zip"
+  output_path = var.append_rule
+  source_dir  = "../../../Codigo/append_rule/code"
+}
+
+resource "google_storage_bucket_object" "archive_append_rule" {
+  name   = var.append_rule
+  bucket = var.name_functions_bucket
+  source = data.archive_file.data_append_rule.output_path
+}
+
+resource "google_cloudfunctions2_function" "append_rule" {
+  name          = var.name_function_append_rule
+  location      = var.region_function
+  build_config {
+    runtime     = var.programming_language
+    entry_point = "append_rule"
+    source {
+      storage_source {
+        bucket  = var.name_functions_bucket
+        object  = var.append_rule
+      }
+    }
+  }
+  service_config {
+    max_instance_count = 2
+    available_memory   = "1024M"
+    available_cpu      = "0.583"
+    timeout_seconds    = 500
+    environment_variables = {
+      MATRIX_FILE   = var.matrix_input_file
+    }
+    ingress_settings = "ALLOW_ALL"
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+  }
+}
+
+# create_rule function
+data "archive_file" "data_create_rule" {
+  type        = "zip"
+  output_path = var.create_rule
+  source_dir  = "../../../Codigo/create_rule/code"
+}
+
+resource "google_storage_bucket_object" "archive_create_rule" {
+  name   = var.create_rule
+  bucket = var.name_functions_bucket
+  source = data.archive_file.data_create_rule.output_path
+}
+
+resource "google_cloudfunctions2_function" "create_rule" {
+  name          = var.name_function_create_rule
+  location      = var.region_function
+  build_config {
+    runtime     = var.programming_language
+    entry_point = "create_rule"
+    source {
+      storage_source {
+        bucket  = var.name_functions_bucket
+        object  = var.create_rule
+      }
+    }
+  }
+  service_config {
+    max_instance_count = 2
+    available_memory   = "1024M"
+    available_cpu      = "0.583"
+    timeout_seconds    = 500
+    ingress_settings = "ALLOW_ALL"
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+  }
+}
+
 # create_dag_dq function
 data "archive_file" "data_create_dag_dq" {
   type        = "zip"
@@ -73,9 +148,6 @@ resource "google_cloudfunctions2_function" "create_dag_dq" {
     available_memory   = "1024M"
     available_cpu      = "0.583"
     timeout_seconds    = 500
-    environment_variables = {
-      MATRIX_FILE   = var.matrix_input_file
-    }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -112,9 +184,6 @@ resource "google_cloudfunctions2_function" "trigger_dag_dq" {
     available_memory   = "1024M"
     available_cpu      = "0.583"
     timeout_seconds    = 500
-    environment_variables = {
-      MATRIX_FILE   = var.matrix_input_file
-    }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }

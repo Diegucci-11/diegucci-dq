@@ -18,20 +18,20 @@ steps:
     id: 'service_account'
     waitFor: ['enable_apis']
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
-    id: 'composer-env'
-    waitFor: ['service_account']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'Codigo/Composer/CI-CD/cicd_config_dags.yaml', '.']
-    id: 'composer_dags'
-    waitFor: ['composer-env']    
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
+  #   id: 'composer-env'
+  #   waitFor: ['service_account']
 
   # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-  #   id: 'functions'
-  #   waitFor: ['service_account']
+  #   args: ['builds', 'submit', '--config', 'Codigo/Composer/CI-CD/cicd_config_dags.yaml', '.']
+  #   id: 'composer_dags'
+  #   waitFor: ['composer-env']    
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+    id: 'functions'
+    waitFor: ['service_account']
 
 #CAMBIARLO DE TRIGGER ? 
 

@@ -1,0 +1,32 @@
+steps:
+  # Paso 1: Ejecutar las pruebas unitarias
+  # - name: 'python:3.9'
+  #   entrypoint: 'bash'
+  #   id: testing_functions
+  #   args:
+  #     - '-c'
+  #     - |
+  #       pip install -r Codigo/Config_GS/config_gs/requirements.txt
+  #       python -m unittest Codigo/Config_GS/test/test_config_gs.py
+
+  # Paso 2: Desplegar la Cloud Function
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if gcloud functions describe append_rule --project=tfg-dq --region=europe-southwest1 > /dev/null 2>&1; then
+          echo "La función existe."
+        else
+          echo "La función no existe."
+          exit 1
+        fi
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+            'functions', 'deploy', 'append_rule',
+            '--region=europe-southwest1',
+            '--source=Codigo/append_rule/code', 
+          ]
+
