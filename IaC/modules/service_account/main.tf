@@ -41,5 +41,5 @@ resource "google_project_iam_member" "composer_worker_role" {
 resource "google_project_iam_member" "composer_extv2_role" {
   project = var.id_project
   role    = "roles/composer.ServiceAgentV2Ext"
-  member  = "serviceAccount: service-${project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+  member  = "serviceAccount: service-${var.project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
 }

@@ -17,8 +17,3 @@ variable "project_number" {
   description = "Número del proyecto"
   type        = string
 }
-
-# variable "name_secret" {
-#   description = "Name for the secret of the service-account key"
-#   type        = string
-# }
