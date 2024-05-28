@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket  = "tf_backend_dq"
+    bucket  = "backend_dq_tfg"
     prefix  = "tfstate-functions"
   }
 }
