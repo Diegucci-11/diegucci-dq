@@ -25,8 +25,8 @@ zip_trigger_dag_dq = "trigger_dag_dq.zip"
 matrix_input_file = "Matrix_Input_v2"
 
 # Buckets GCS
-name_yml_bucket = "yml_bucket"
-name_functions_bucket = "functions_dq_bucket"
+name_yml_bucket = "yml_bucket_tfg"
+name_functions_bucket = "functions_dq_tfg_bucket"
 region_bucket = "europe-southwest1"
 
 # Composer Environment
