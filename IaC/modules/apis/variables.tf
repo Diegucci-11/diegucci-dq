@@ -8,7 +8,7 @@ variable "id_project" {
   type        = string
 }
 
-variable "region" {
-  description = "Region for deployment"
+variable "region_project" {
+  description = "Region del proyecto"
   type        = string
 }

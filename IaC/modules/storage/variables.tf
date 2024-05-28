@@ -3,8 +3,8 @@ variable "id_project" {
   type        = string
 }
 
-variable "region" {
-  description = "Región para despliegue"
+variable "region_project" {
+  description = "Región del proyecto"
   type        = string
 }
 
@@ -15,5 +15,10 @@ variable "name_yml_bucket" {
 
 variable "name_functions_bucket" {
   description = "Nombre del bucket para guardar los códigos de las funciones"
+  type        = string
+}
+
+variable "region_bucket" {
+  description = "Región del proyecto"
   type        = string
 }

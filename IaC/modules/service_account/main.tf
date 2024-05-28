@@ -1,6 +1,6 @@
 provider "google" {
   project     = var.id_project
-  region      = var.region
+  region      = var.region_project
 }
 
 resource "google_service_account" "data_quality_service_account" {
@@ -26,25 +26,39 @@ resource "google_project_iam_member" "secret_accessor_role" {
   member  = "serviceAccount:${google_service_account.data_quality_service_account.email}"
 }
 
+resource "google_project_iam_member" "bigquery_admin_role" {
+  project = var.id_project
+  role    = "roles/bigquery.admin"
+  member  = "serviceAccount:${google_service_account.data_quality_service_account.email}"
+}
+
+resource "google_project_iam_member" "composer_worker_role" {
+  project = var.id_project
+  role    = "roles/composer.worker"
+  member  = "serviceAccount:${google_service_account.data_quality_service_account.email}"
+}
+
 resource "google_project_iam_member" "composer_extv2_role" {
   project = var.id_project
   role    = "roles/composer.ServiceAgentV2Ext"
-  member  = "serviceAccount:service-${var.project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
+  member  = "serviceAccount: service-${project_number}@cloudcomposer-accounts.iam.gserviceaccount.com"
 }
 
-resource "google_service_account_key" "my_service_account_key" {
-  service_account_id = google_service_account.data_quality_service_account.name
-}
+# NO FUNCIONA LA CLAVE COMO SECRETO... HACER A MANO DE MOMENTO
 
-resource "google_secret_manager_secret" "my_service_account_secret" {
-  secret_id = var.name_secret
+# resource "google_service_account_key" "my_service_account_key" {
+#   service_account_id = google_service_account.data_quality_service_account.name
+# }
 
-  replication {
-    auto {}
-  }
-}
+# resource "google_secret_manager_secret" "my_service_account_secret" {
+#   secret_id = var.name_secret
 
-resource "google_secret_manager_secret_version" "my_service_account_secret_version" {
-  secret = google_secret_manager_secret.my_service_account_secret.name
-  secret_data = google_service_account_key.my_service_account_key.private_key
-} 
+#   replication {
+#     auto {}
+#   }
+# }
+
+# resource "google_secret_manager_secret_version" "my_service_account_secret_version" {
+#   secret = google_secret_manager_secret.my_service_account_secret.name
+#   secret_data = google_service_account_key.my_service_account_key.private_key
+# }

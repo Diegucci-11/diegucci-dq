@@ -3,8 +3,8 @@ variable "id_project" {
   type        = string
 }
 
-variable "project_number" {
-  description = "Project number GCP"
+variable "region_project" {
+  description = "Region for deployment"
   type        = string
 }
 
@@ -13,12 +13,12 @@ variable "service_account" {
   type        = string
 }
 
-variable "name_secret" {
-  description = "Name for the secret of the service-account key"
+variable "project_number" {
+  description = "Número del proyecto"
   type        = string
 }
 
-variable "region" {
-  description = "Region for deployment"
-  type        = string
-}
+# variable "name_secret" {
+#   description = "Name for the secret of the service-account key"
+#   type        = string
+# }

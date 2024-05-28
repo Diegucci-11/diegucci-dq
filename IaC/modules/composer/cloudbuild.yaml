@@ -7,19 +7,3 @@ steps:
     args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
     id: 'env-creation'
     dir: 'IaC/modules/composer'
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud composer environments storage dags import \
-          --environment env-test-1 \
-          --location europe-west3 \
-          --source="Codigo/Composer/dag_dq.py"
-    waitFor: ['env-creation']
-
-
-
-
-

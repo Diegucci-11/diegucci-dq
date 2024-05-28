@@ -1,0 +1,10 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud composer environments storage dags import \
+          --environment composer-environment \
+          --location europe-southwest1 \
+          --source="Codigo/Composer/dags/dag_dq.py"

@@ -1,11 +1,11 @@
 provider "google" {
   project     = var.id_project
-  region      = var.region
+  region      = var.region_project
 }
 
 resource "google_composer_environment" "environment_creation" {
   name   = var.env_name
-  region = var.region
+  region = var.region_composer
   config {
     software_config {
       image_version = "composer-2-airflow-2"
@@ -13,7 +13,6 @@ resource "google_composer_environment" "environment_creation" {
       pypi_packages = {
         gspread = ""
       }
-
     }
 
     workloads_config {
@@ -41,7 +40,7 @@ resource "google_composer_environment" "environment_creation" {
     node_config {
       network    = "default"
       subnetwork = "default"
-      service_account = "dataquality@diegucci-dq.iam.gserviceaccount.com"
+      service_account = var.complete_email
     }
   }
 }

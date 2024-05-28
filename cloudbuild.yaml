@@ -4,16 +4,6 @@ steps:
     id: 'enable_apis'
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
-    id: 'service_account'
-    waitFor: ['enable_apis']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
-    id: 'composer'
-    waitFor: ['enable_apis']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
     args: ['builds', 'submit', '--config', 'IaC/modules/storage/cloudbuild.yaml', '.']
     id: 'storage'
     waitFor: ['enable_apis']
@@ -24,10 +14,38 @@ steps:
     waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-    id: 'functions'
+    args: ['builds', 'submit', '--config', 'IaC/modules/service_account/cloudbuild.yaml', '.']
+    id: 'service_account'
+    waitFor: ['enable_apis']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'Codigo/Config_GS/CI-CD/cicd_config_gs.yaml', '.']
-    id: 'check-changes-config-gs'
+    args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
+    id: 'composer-env'
     waitFor: ['service_account']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'Codigo/Composer/CI-CD/cicd_config_dags.yaml', '.']
+    id: 'composer_dags'
+    waitFor: ['composer-env']    
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+    id: 'functions'
+    waitFor: ['service_account']
+
+#CAMBIARLO DE TRIGGER ? 
+
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'Codigo/config_gs/CI-CD/cicd_config_gs.yaml', '.']
+  #   id: 'config-gs'
+  #   waitFor: ['functions']
+
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'Codigo/create_dag_dq/CI-CD/cicd_create_dag_dq.yaml', '.']
+  #   id: 'create_dag_dq'
+  #   waitFor: ['functions']
+
+  # - name: 'gcr.io/cloud-builders/gcloud'
+  #   args: ['builds', 'submit', '--config', 'Codigo/trigger_dag_dq/CI-CD/cicd_trigger_dag_dq.yaml', '.']
+  #   id: 'trigger_dag_dq'
+  #   waitFor: ['functions']

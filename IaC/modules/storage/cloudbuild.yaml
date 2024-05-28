@@ -6,26 +6,3 @@ steps:
   - name: 'hashicorp/terraform:1.6.6'
     args: ['apply', '-compact-warnings', '-auto-approve', '-var-file=../../environments/dev/main.tfvars']
     dir: 'IaC/modules/storage'
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   entrypoint: 'bash'
-  #   args:
-  #     - '-c'
-  #     - |
-  #       export BUCKET_NAME=$(grep name_functions_bucket ../../environments/dev/main.tfvars | cut -d '=' -f2 | tr -d '[:space:]')
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        apt-get update && apt-get install -y zip
-        zip -r config_gs.zip ../../../Codigo/Config_GS/config_gs
-    dir: 'IaC/modules/storage'
-
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: 
-      - 'cp'
-      - 'config_gs.zip'
-      - 'gs://functions_dq_bucket/' # PENDIENTE DE PARAMETRIZAR
-    dir: 'IaC/modules/storage'
