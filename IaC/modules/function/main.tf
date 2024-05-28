@@ -7,7 +7,7 @@ provider "google" {
 data "archive_file" "data_config_gs" {
   type        = "zip"
   output_path = var.zip_config_gs
-  source_dir  = "../../../Codigo/config_gs/code"
+  source_dir  = "../../../Codigo/append_rule/code"
 }
 
 resource "google_storage_bucket_object" "archive_config_gs" {
