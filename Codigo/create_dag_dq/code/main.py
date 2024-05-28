@@ -3,7 +3,7 @@ import google.auth
 import google.auth.transport.requests
 from google.cloud import storage
 
-project_id = 'diegucci-dq'
+project_id = 'tfg-dq'
 location = 'europe-southwest1'
 composer_environment = 'composer-test-1'
 
@@ -16,7 +16,7 @@ def create_dag(request):
 
     DAG_NAME_SENTENCE = f'DAG_NAME = "dag_dq_{data["dag_name"]}"'
     DAG_CRON_SENTENCE = f'CRON = "{data["dag_cron"]}"'
-    DAG_YML_SENTENCE = f'DAG_NAME = "dq_yaml_{data["dag_name"]}"'
+    DAG_YML_SENTENCE = f'YML = "dq_yaml_{data["dag_name"]}"'
 
     contenido_modificado = contenido.replace('DAG_NAME = "dq_validation_dag"', DAG_NAME_SENTENCE)
     contenido_modificado = contenido_modificado.replace('CRON = "0 0 1 * *""', DAG_CRON_SENTENCE)
@@ -26,11 +26,6 @@ def create_dag(request):
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
     authed_session = google.auth.transport.requests.AuthorizedSession(credentials)
-
-    environment_url = (
-        "https://composer.googleapis.com/v1beta1/projects/{}/locations/{}"
-        "/environments/{}"
-    ).format(project_id, location, composer_environment)
 
     url = f"https://composer.googleapis.com/v1beta1/projects/{project_id}/locations/{location}/environments/{composer_environment}"
     response = authed_session.request("GET", url)
