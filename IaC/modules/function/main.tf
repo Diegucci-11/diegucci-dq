@@ -45,12 +45,12 @@ resource "google_cloudfunctions2_function" "config_gs" {
 # append_rule function
 data "archive_file" "data_append_rule" {
   type        = "zip"
-  output_path = var.append_rule
+  output_path = var.zip_append_rule
   source_dir  = "../../../Codigo/append_rule/code"
 }
 
 resource "google_storage_bucket_object" "archive_append_rule" {
-  name   = var.append_rule
+  name   = var.zip_append_rule
   bucket = var.name_functions_bucket
   source = data.archive_file.data_append_rule.output_path
 }
@@ -64,7 +64,7 @@ resource "google_cloudfunctions2_function" "append_rule" {
     source {
       storage_source {
         bucket  = var.name_functions_bucket
-        object  = var.append_rule
+        object  = var.zip_append_rule
       }
     }
   }
@@ -84,12 +84,12 @@ resource "google_cloudfunctions2_function" "append_rule" {
 # create_rule function
 data "archive_file" "data_create_rule" {
   type        = "zip"
-  output_path = var.create_rule
+  output_path = var.zip_create_rule
   source_dir  = "../../../Codigo/create_rule/code"
 }
 
 resource "google_storage_bucket_object" "archive_create_rule" {
-  name   = var.create_rule
+  name   = var.zip_create_rule
   bucket = var.name_functions_bucket
   source = data.archive_file.data_create_rule.output_path
 }
@@ -103,7 +103,7 @@ resource "google_cloudfunctions2_function" "create_rule" {
     source {
       storage_source {
         bucket  = var.name_functions_bucket
-        object  = var.create_rule
+        object  = var.zip_create_rule
       }
     }
   }
