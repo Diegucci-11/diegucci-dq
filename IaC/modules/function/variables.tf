@@ -19,8 +19,8 @@ variable "region_function" {
   type        = string
 }
 
-variable "complete_email" {
-  description = "Complete email of the service account"
+variable "service_account" {
+  description = "Email of the service account"
   type        = string
 }
 
