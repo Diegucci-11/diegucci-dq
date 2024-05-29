@@ -31,7 +31,7 @@ def create_rule(data):
     test_prompt = data["prompt"]
     dimension = data["dimension"]
 
-    vertexai.init(project="ceep-394706", location="europe-west3")
+    vertexai.init(project="tfg-dq", location="europe-west3")
     chat_model = CodeChatModel.from_pretrained("codechat-bison")
     parameters = {
         "candidate_count": 1,
@@ -58,7 +58,7 @@ def create_rule(data):
 def cargar_datos_entrenamiento():
     SCOPES = ["https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/drive"]
     credentials, _ = default(scopes=SCOPES)
-    client = bigquery.Client(credentials=credentials, project="ceep-394706")
+    client = bigquery.Client(credentials=credentials)
 
     sql_query = f"""
             SELECT *
