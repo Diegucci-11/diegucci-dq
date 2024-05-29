@@ -51,5 +51,6 @@ apis_list = [
     "dataplex.googleapis.com",
     "dataproc.googleapis.com",
     "composer.googleapis.com",
+    "aiplatform.googleapis.com"
   ]
 
