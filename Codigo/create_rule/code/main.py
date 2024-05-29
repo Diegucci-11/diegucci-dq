@@ -19,7 +19,7 @@ def rule_generator(request):
         }
         return ("", 204, headers)
 
-    headers = {"Access-Control-Allow-Origin": "https://dataquality-genai.web.app"}
+    headers = {"Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app/"}
 
     request_data = request.get_json()
     result = create_rule(request_data)
