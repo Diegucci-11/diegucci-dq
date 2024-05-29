@@ -10,14 +10,14 @@ import gspread
 def rule_generator(request):
     if request.method == "OPTIONS":
         headers = {
-            "Access-Control-Allow-Origin": "https://dataquality-genai.web.app",
+            "Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app",
             "Access-Control-Allow-Methods": "POST",
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Max-Age": "3600",
         }
         return ("", 204, headers)
 
-    headers = {"Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app/"}
+    headers = {"Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app"}
 
     request_data = request.get_json()
     result = create_rule(request_data)
