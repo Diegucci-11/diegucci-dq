@@ -117,6 +117,15 @@ resource "google_cloudfunctions2_function" "create_rule" {
   }
 }
 
+# PARA SIMPLIFICAR EL TFG
+resource "google_cloudfunctions2_function_iam_member" "noauth" {
+  project = var.id_project
+  region  = var.region_function
+  cloud_function = google_cloudfunctions2_function.create_rule.name
+  role    = "roles/cloudfunctions.invoker"
+  member  = "allUsers"
+}
+
 # create_dag_dq function
 data "archive_file" "data_create_dag_dq" {
   type        = "zip"
