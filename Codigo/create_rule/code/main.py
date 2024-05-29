@@ -4,9 +4,7 @@ import vertexai
 from vertexai.language_models import CodeChatModel
 from google.cloud import bigquery
 from google.auth import default
-
-BQ_DATASET = "dq_v2_rule_dictionary"
-BQ_TABLE = "rule_dictionary"
+import gspread
 
 @functions_framework.http
 def rule_generator(request):
@@ -56,15 +54,39 @@ def create_rule(data):
     return rule_json
 
 def cargar_datos_entrenamiento():
-    SCOPES = ["https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/drive"]
+    SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials, _ = default(scopes=SCOPES)
-    client = bigquery.Client(credentials=credentials)
 
-    sql_query = f"""
-            SELECT *
-            FROM {BQ_DATASET}.{BQ_TABLE}
-        """
+    client = gspread.authorize(credentials)
+    spreadsheet = client.open("Matrix_Input_v2")
+    reglas_sheet = spreadsheet.worksheet('Reglas')
 
-    query_job = client.query(sql_query)
-    results = [dict(row) for row in query_job]
-    return results
+    rules = reglas_sheet.range('A2:H')
+    print(50*"-")
+    print(rules)
+    print(type(rules))
+    print(50*"-")
+    headers = rules[0]
+    print(50*"-")
+    print(headers)
+    print(type(headers))
+    print(50*"-")
+    data = [dict(zip(headers, row)) for row in rules[1:]]
+    print(50*"-")
+    print(data)
+    print(type(data))
+    print(50*"-")
+    return json.dumps(data, ensure_ascii=False, indent=2)
+
+    # SCOPES = ["https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/drive"]
+    # credentials, _ = default(scopes=SCOPES)
+    # client = bigquery.Client(credentials=credentials)
+
+    # sql_query = f"""
+    #         SELECT *
+    #         FROM {BQ_DATASET}.{BQ_TABLE}
+    #     """
+
+    # query_job = client.query(sql_query)
+    # results = [dict(row) for row in query_job]
+    # return results
