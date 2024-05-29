@@ -23,7 +23,7 @@ function generarRegla() {
         "dimension": radioSeleccionado
     };
 
-    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule_2', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
