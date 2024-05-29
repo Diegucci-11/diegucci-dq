@@ -120,7 +120,7 @@ resource "google_cloudfunctions2_function" "create_rule" {
 # PARA SIMPLIFICAR EL TFG
 resource "google_cloudfunctions2_function_iam_member" "noauth" {
   project = var.id_project
-  region  = var.region_function
+  location  = google_cloudfunctions2_function.create_rule.location
   cloud_function = google_cloudfunctions2_function.create_rule.name
   role    = "roles/cloudfunctions.invoker"
   member  = "allUsers"
