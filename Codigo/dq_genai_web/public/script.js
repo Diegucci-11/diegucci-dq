@@ -191,21 +191,28 @@ function procesarRegla(data) {
 
     // Fila 4 de la tabla
     const fila4 = document.createElement('tr');
-    const celda_params_title = document.createElement('td');
+    const celda_tipo_dato_title = document.createElement('td');
     const celda_yml_title = document.createElement('td');
-    celda_params_title.setAttribute('class', 'rule_schema');
+    celda_tipo_dato_title.setAttribute('class', 'rule_schema');
     celda_yml_title.setAttribute('class', 'rule_schema');
-    celda_params_title.textContent = "Parametros: ";
+    celda_tipo_dato_title.textContent = "Tipo de Dato: ";
     celda_yml_title.textContent = "Código yaml: ";
 
-    const celda_params = document.createElement('td');
-    celda_params.setAttribute('class', 'rule_content');
-    const div_params = document.createElement('div');
-    div_params.setAttribute('id', 'rule_params');
-    div_params.setAttribute('class', 'div_content_2');
-    div_params.setAttribute('contenteditable', 'true');
-    div_params.textContent = data["PARAMETROS"];
-    celda_params.appendChild(div_params);
+    const celda_tipo_dato = document.createElement('td');
+    celda_tipo_dato.setAttribute('class', 'rule_content');
+    // Creacion lista desplegable para tipo de dato
+    const select_tipo_dato = document.createElement('select');
+    select_tipo_dato.setAttribute('id', 'rule_tipo_dato');
+
+    const options_tipo_dato = ['TODOS', 'CADENA', 'NUMERICO', 'FECHA'];
+    options_tipo_dato.forEach(opcion => {
+        const option = document.createElement('option');
+        option.text = opcion;
+        select_tipo_dato.add(option);
+    });
+    const value_tipo_dato = data["TIPO_DATO"];
+    select_tipo_dato.value = value_tipo_dato;
+    celda_sev.appendChild(select_tipo_dato);
 
     const celda_yml = document.createElement('td');
     celda_yml.setAttribute('class', 'rule_content');
@@ -216,8 +223,8 @@ function procesarRegla(data) {
     div_yml.textContent = data["ACCION_YML"];
     celda_yml.appendChild(div_yml);
 
-    fila4.appendChild(celda_params_title);
-    fila4.appendChild(celda_params);
+    fila4.appendChild(celda_tipo_dato_title);
+    fila4.appendChild(celda_tipo_dato);
     fila4.appendChild(celda_yml_title);
     fila4.appendChild(celda_yml);
 
@@ -277,7 +284,7 @@ function recogerValores() {
     var rule_name = document.getElementById('rule_name').textContent;
     var rule_desc = document.getElementById('rule_desc').textContent;
     var rule_example = document.getElementById('rule_example').textContent;
-    var rule_params = document.getElementById('rule_params').textContent;
+    var rule_tipo_dato = document.getElementById('rule_tipo_dato').textContent;
     var rule_yaml = document.getElementById('rule_yaml').textContent;
     var rule_action = document.getElementById('rule_action').value;
     var rule_sev = document.getElementById('rule_sev').value;
@@ -287,7 +294,7 @@ function recogerValores() {
         "NOMBRE_REGLA_YML": rule_name,
         "DESCRIPCION": rule_desc,
         "EJEMPLO": rule_example,
-        "TIPO_DATO": rule_params,
+        "TIPO_DATO": rule_tipo_dato,
         "SEVERIDAD": rule_sev,
         "ACCION": rule_action,
         "CODIGO_YML": rule_yaml,
