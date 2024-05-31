@@ -25,9 +25,9 @@ function generarRegla() {
 
     fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule_2', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
         body: JSON.stringify(datos)
     })
         .then(response => {
