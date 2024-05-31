@@ -34,6 +34,7 @@ function generarRegla() {
             if (!response.ok) {
                 throw new Error('Hubo un problema con la solicitud.');
             }
+            load_circle.style.display = 'none';
             return response.json();
         })
         .then(data => {
@@ -44,6 +45,7 @@ function generarRegla() {
         })
         .catch(error => {
             console.error('Error:', error);
+            load_circle.style.display = 'none';
         });
 }
 
