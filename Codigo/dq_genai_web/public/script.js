@@ -1,6 +1,9 @@
 var rule_input = document.getElementById('rule_input');
 var create_rule = document.getElementById('create_rule');
 create_rule.disabled = true;
+
+var json_rule = {}
+
 rule_input.addEventListener('input', function () {
     if (rule_input.value.trim() === '') {
         create_rule.disabled = true;
@@ -38,6 +41,7 @@ function generarRegla() {
             return response.json();
         })
         .then(data => {
+            json_rule = JSON.parse(data)
             procesarRegla(JSON.parse(data))
             console.log('Se generó la regla');
             create_rule.disabled = false;
@@ -166,7 +170,7 @@ function procesarRegla(data) {
         option.text = opcion;
         select_sev.add(option);
     });
-    const value_sev = data["SEVERIDAD"];
+    const value_sev = '2 (Media)';
     select_sev.value = value_sev;
     celda_sev.appendChild(select_sev);
 
@@ -220,7 +224,7 @@ function procesarRegla(data) {
     div_yml.setAttribute('id', 'rule_yaml');
     div_yml.setAttribute('class', 'div_content_2');
     div_yml.setAttribute('contenteditable', 'true');
-    div_yml.textContent = data["ACCION_YML"];
+    div_yml.textContent = data["CODIGO_YML"];
     celda_yml.appendChild(div_yml);
 
     fila4.appendChild(celda_tipo_dato_title);
@@ -295,6 +299,7 @@ function recogerValores() {
         "DESCRIPCION": rule_desc,
         "EJEMPLO": rule_example,
         "TIPO_DATO": rule_tipo_dato,
+        "PARAMETROS": json_rule["PARAMETROS"],
         "SEVERIDAD": rule_sev,
         "ACCION": rule_action,
         "CODIGO_YML": rule_yaml,
