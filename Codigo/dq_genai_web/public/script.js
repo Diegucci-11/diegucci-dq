@@ -202,21 +202,32 @@ function procesarRegla(data) {
     celda_tipo_dato_title.textContent = "Tipo de Dato: ";
     celda_yml_title.textContent = "Código yaml: ";
 
+    //  --------------------------------------------
     const celda_tipo_dato = document.createElement('td');
     celda_tipo_dato.setAttribute('class', 'rule_content');
-    // Creacion lista desplegable para tipo de dato
-    const select_tipo_dato = document.createElement('select');
-    select_tipo_dato.setAttribute('id', 'rule_tipo_dato');
+    const div_tipo_dato = document.createElement('div');
+    div_tipo_dato.setAttribute('id', 'rule_tipo_dato');
+    div_tipo_dato.setAttribute('class', 'div_content_2');
+    div_tipo_dato.setAttribute('contenteditable', 'true');
+    div_tipo_dato.textContent = data["TIPO_DATO"];
+    celda_tipo_dato.appendChild(div_tipo_dato);
+    // .............................................
+    // const celda_tipo_dato = document.createElement('td');
+    // celda_tipo_dato.setAttribute('class', 'rule_content');
+    // // Creacion lista desplegable para tipo de dato
+    // const select_tipo_dato = document.createElement('select');
+    // select_tipo_dato.setAttribute('id', 'rule_tipo_dato');
 
-    const options_tipo_dato = ['TODOS', 'CADENA', 'NUMERICO', 'FECHA'];
-    options_tipo_dato.forEach(opcion => {
-        const option = document.createElement('option');
-        option.text = opcion;
-        select_tipo_dato.add(option);
-    });
-    const value_tipo_dato = data["TIPO_DATO"];
-    select_tipo_dato.value = value_tipo_dato;
-    celda_tipo_dato_title.appendChild(select_tipo_dato);
+    // const options_tipo_dato = ['TODOS', 'CADENA', 'NUMERICO', 'FECHA'];
+    // options_tipo_dato.forEach(opcion => {
+    //     const option = document.createElement('option');
+    //     option.text = opcion;
+    //     select_tipo_dato.add(option);
+    // });
+    // const value_tipo_dato = data["TIPO_DATO"];
+    // select_tipo_dato.value = value_tipo_dato;
+    // celda_tipo_dato_title.appendChild(select_tipo_dato);
+    //  --------------------------------------------
 
     const celda_yml = document.createElement('td');
     celda_yml.setAttribute('class', 'rule_content');
@@ -307,7 +318,7 @@ function recogerValores() {
     }
 
     // Llamar a función append_rule
-    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule_2', {
         method: 'POST',
         // headers: {
         //     'Content-Type': 'application/json'
