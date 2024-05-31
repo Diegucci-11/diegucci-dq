@@ -216,7 +216,7 @@ function procesarRegla(data) {
     });
     const value_tipo_dato = data["TIPO_DATO"];
     select_tipo_dato.value = value_tipo_dato;
-    celda_sev.appendChild(select_tipo_dato);
+    celda_tipo_dato_title.appendChild(select_tipo_dato);
 
     const celda_yml = document.createElement('td');
     celda_yml.setAttribute('class', 'rule_content');

@@ -92,6 +92,13 @@ select {
     padding-left: 0.5rem;
 }
 
+#rule_tipo_dato {
+    width: 100%;
+    height: 100%;
+    font-size: 120%;
+    padding-left: 0.5rem;
+}
+
 .div_content {
     padding: 0.5rem;
     margin: 0;
