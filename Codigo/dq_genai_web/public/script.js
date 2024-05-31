@@ -304,6 +304,9 @@ function recogerValores() {
     var rule_action = document.getElementById('rule_action').value;
     var rule_sev = document.getElementById('rule_sev').value;
 
+    console.log("Valor de json_rule:\n")
+    console.log(json_rule)
+
     var data = {
         "DIMENSION": rule_dim,
         "NOMBRE_REGLA_YML": rule_name,
@@ -329,12 +332,15 @@ function recogerValores() {
             if (!response.ok) {
                 throw new Error('Hubo un problema con la solicitud.');
             }
+            console.log(data)
             return response.json();
         })
         .then(data => {
+            console.log(data)
             console.log('Regla insertada correctamente');
         })
         .catch(error => {
+            console.log(data)
             console.error('Error:', error);
         });
 }
