@@ -70,8 +70,8 @@ footer {
     border: 2px solid #00AA9B;
     width: 15rem !important;
     height: 4rem !important;
-    align-items: center;
-    display: flex;
+    /* align-items: center;
+    display: flex; */
 }
 
 #rule_yaml {
@@ -108,8 +108,8 @@ select {
     width: 15rem;
     overflow-y: auto;
     overflow-x: hidden;
-    align-items: center;
-    display: flex;
+    /* align-items: center;
+    display: flex; */
     text-align: center;
 }
 
