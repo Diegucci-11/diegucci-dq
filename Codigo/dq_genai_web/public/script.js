@@ -23,6 +23,11 @@ function generarRegla() {
         "dimension": radioSeleccionado
     };
 
+    var datos = {
+        "prompt": "Quiero una regla que valide que el número es múltiplo de 3",
+        "dimension": "Exactitud"
+    };
+
     fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule_2', {
         method: 'POST',
         headers: {
