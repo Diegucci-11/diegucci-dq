@@ -28,8 +28,7 @@ function generarRegla() {
         headers: {
             'Content-Type': 'application/json'
         },
-        // body: JSON.stringify(datos)
-        body: JSON.stringify({ "promt": "quiero una regla para validar que un número es múltiplo de 3", "dimension": "exactitud" })
+        body: JSON.stringify(datos)
     })
         .then(response => {
             if (!response.ok) {
