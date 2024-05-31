@@ -43,6 +43,7 @@ function generarRegla() {
         .then(data => {
             console.log('Se generó la regla');
             console.log(data)
+            json_rule = JSON.parse(data)
             procesarRegla(JSON.parse(data))
             create_rule.disabled = false;
             load_circle.style.display = 'none';
