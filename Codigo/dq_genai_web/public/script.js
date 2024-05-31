@@ -23,11 +23,6 @@ function generarRegla() {
         "dimension": radioSeleccionado
     };
 
-    var datos = {
-        "prompt": "Quiero una regla que valide que el número es múltiplo de 3",
-        "dimension": "Exactitud"
-    };
-
     fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule_2', {
         method: 'POST',
         // headers: {
@@ -85,17 +80,9 @@ function procesarRegla(data) {
 
     const celda_dim = document.createElement('td');
     celda_dim.setAttribute('class', 'rule_content');
-    // const div_dim = document.createElement('div');
-    // div_dim.setAttribute('id', 'rule_dim');
-    // div_dim.setAttribute('class', 'div_content');
-    // div_dim.setAttribute('contenteditable', 'true');
-    // div_dim.textContent = data["DIMENSION"];
-    // celda_dim.appendChild(div_dim);
-
     const select_dim = document.createElement('select');
     select_dim.setAttribute('id', 'rule_dim');
 
-    // Plantearse coger los valores de otro lado? Traerlos también de la CF?
     const options_dim = ['Completitud', 'Consistencia', 'Exactitud', 'Integridad', 'Unicidad', 'Validez', 'Disponibilidad'];
     options_dim.forEach(opcion => {
         const option = document.createElement('option');
@@ -173,7 +160,6 @@ function procesarRegla(data) {
     const select_sev = document.createElement('select');
     select_sev.setAttribute('id', 'rule_sev');
 
-    // Plantearse coger los valores de otro lado? Traerlos también de la CF?
     const options_sev = ['1 (Baja)', '2 (Media)', '3 (Alta)'];
     options_sev.forEach(opcion => {
         const option = document.createElement('option');
@@ -188,7 +174,6 @@ function procesarRegla(data) {
     const select_action = document.createElement('select');
     select_action.setAttribute('id', 'rule_action');
 
-    // const options_action = ['0 (Sin acción)', '1 (Parada y se muestra la alerta en el CdM)', '2 (Notificación y se muestra la alerta en el CdM)', '3 (No Notifica pero se muestra la alerta en el CdM)'];
     const options_action = ['1 (Parada)', '2 (Notificación)', '3 (No Notifica)'];
     options_action.forEach(opcion => {
         const option = document.createElement('option');
@@ -292,7 +277,6 @@ function recogerValores() {
     var rule_name = document.getElementById('rule_name').textContent;
     var rule_desc = document.getElementById('rule_desc').textContent;
     var rule_example = document.getElementById('rule_example').textContent;
-    // var data_type = document.getElementById('data_type').textContent;
     var rule_params = document.getElementById('rule_params').textContent;
     var rule_yaml = document.getElementById('rule_yaml').textContent;
     var rule_action = document.getElementById('rule_action').value;
@@ -303,20 +287,19 @@ function recogerValores() {
         "NOMBRE_REGLA_YML": rule_name,
         "DESCRIPCION": rule_desc,
         "EJEMPLO": rule_example,
-        "TIPO_DATO": "Cadena",
-        "PARAMETROS": rule_params,
+        "TIPO_DATO": rule_params,
         "SEVERIDAD": rule_sev,
         "ACCION": rule_action,
         "CODIGO_YML": rule_yaml,
-        "NOMBRE_REGLA": rule_name
+        "TIPO_REGLA_YML": rule_name
     }
 
     // Llamar a función append_rule
     fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        // headers: {
+        //     'Content-Type': 'application/json'
+        // },
         body: JSON.stringify(data)
     })
         .then(response => {
@@ -357,5 +340,3 @@ function resetearValores() {
         }
     });
 }
-
-// firebase deploy --only hosting:tfg-generador-de-reglas
