@@ -104,7 +104,6 @@ def dq_validation(request):
 
     return "ok"
     
-
 def send_text_card(title: str, subtitle: str, paragraph: str) -> Response:
     header = {"title": title, "subtitle": subtitle}
     widget = {"textParagraph": {"text": paragraph}}

@@ -15,9 +15,15 @@ def schedule_validation(request):
     
     client = scheduler_v1.CloudSchedulerClient()
     
-    # job = scheduler_v1.Job()
+    # req = scheduler_v1.types.HttpMethod()
+    # req.uri = f"https://europe-southwest1-{PROJECT_ID}.cloudfunctions.net/dq_validation"
+    # req.http_method = "POST"
+    # req.body = b'{"name": name, "gs_name": gs_name}'
+    # req.headers = {"Content-type": "application/json"}
+
+    # job = scheduler_v1.types.Job()
     # job.name = f"projects/{PROJECT_ID}/locations/{LOCATION_ID}/jobs/{JOB_ID}"
-    # job.http_target = f"https://europe-southwest1-{PROJECT_ID}.cloudfunctions.net/dq_validation"
+    # job.http_target = req
     # job.schedule = cron
     # job.time_zone = "Etc/UTC"
 
