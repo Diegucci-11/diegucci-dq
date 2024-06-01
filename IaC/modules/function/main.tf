@@ -30,13 +30,6 @@ resource "google_cloudfunctions2_function" "config_gs" {
     }
   }
   service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
-    environment_variables = {
-      MATRIX_FILE   = var.matrix_input_file
-    }
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -69,10 +62,6 @@ resource "google_cloudfunctions2_function" "append_rule" {
     }
   }
   service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
     environment_variables = {
       MATRIX_FILE   = var.matrix_input_file
     }
@@ -108,10 +97,6 @@ resource "google_cloudfunctions2_function" "create_rule" {
     }
   }
   service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -144,10 +129,6 @@ resource "google_cloudfunctions2_function" "create_dag_dq" {
     }
   }
   service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
@@ -180,10 +161,6 @@ resource "google_cloudfunctions2_function" "trigger_dag_dq" {
     }
   }
   service_config {
-    max_instance_count = 2
-    available_memory   = "1024M"
-    available_cpu      = "0.583"
-    timeout_seconds    = 500
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
