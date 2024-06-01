@@ -301,12 +301,7 @@ resource "google_bigquery_table" "looker_dq_summary" {
   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
   table_id   = "looker_dq_summary"
 
-  effective_labels = {
-    owner = "erik"
-    country = "spain"
-  }
-
-  view = {
+  view {
     query = <<EOF
     SELECT 
       DATE(execution_ts) AS date,
@@ -345,12 +340,7 @@ resource "google_bigquery_table" "looker_dq_summary_errors" {
   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
   table_id   = "looker_dq_summary_errors"
 
-  effective_labels = {
-    owner = "erik"
-    country = "spain"
-  }
-
-  view = {
+  view {
     query = <<EOF
     SELECT 
       DATE(execution_ts) AS date,

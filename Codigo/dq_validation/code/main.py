@@ -64,7 +64,7 @@ CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{D
 CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
 
 @functions_framework.http
-def main(request):
+def dq_validation(request):
     print("Executing yaml_publisher...")
     tables_to_delete = yml_publisher()
     print("Yaml_publisher executed")

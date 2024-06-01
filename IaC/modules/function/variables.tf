@@ -74,6 +74,16 @@ variable "zip_trigger_dag_dq" {
   type        = string
 }
 
+variable "zip_dq_validation" {
+  description = "zip para la función dq_validation"
+  type        = string
+}
+
+variable "name_function_dq_validation"{
+  description = "Name for the dq_validation function"
+  type        = string
+}
+
 variable "matrix_input_file" {
   description = "name of the matrix input file"
   type        = string

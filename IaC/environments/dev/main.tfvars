@@ -23,6 +23,8 @@ name_function_append_rule = "append_rule_tf"
 zip_append_rule = "append_rule.zip"
 name_function_create_rule = "create_rule_tf"
 zip_create_rule = "create_rule.zip"
+name_function_dq_validation = "dq_validation_tf"
+zip_dq_validation = "dq_validation.zip"
 
 matrix_input_file = "Matrix_Input_v2"
 
