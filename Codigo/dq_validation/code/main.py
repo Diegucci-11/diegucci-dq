@@ -42,7 +42,7 @@ GCP_PROJECT_ID = project_id
 GCP_BQ_DATASET_ID = dataset
 GCP_BQ_REGION = location
 
-DATAPLEX_PROJECT_ID = os.environ.get('PROJECT_ID')
+DATAPLEX_PROJECT_ID = GCP_PROJECT_ID
 DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = f"data-quality-lake"
 SERVICE_ACC = f"dataquality@tfg-dq.iam.gserviceaccount.com"

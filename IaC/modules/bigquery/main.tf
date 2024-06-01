@@ -333,6 +333,7 @@ resource "google_bigquery_table" "looker_dq_summary" {
       failed_records_query AS failed_records_query
     FROM `${var.dataset_name}.dq_summary`
     EOF
+    use_legacy_sql = false
   }
 }
 
@@ -374,5 +375,6 @@ resource "google_bigquery_table" "looker_dq_summary_errors" {
       failed_records_query AS failed_records_query
     FROM `${var.dataset_name}.dq_summary_errors`
     EOF
+    use_legacy_sql = false
   }
 }
