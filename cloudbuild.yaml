@@ -38,19 +38,3 @@ steps:
     id: 'functions'
     waitFor: ['service_account']
 timeout: '3600s'
-#CAMBIARLO DE TRIGGER ? 
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/config_gs/CI-CD/cicd_config_gs.yaml', '.']
-  #   id: 'config-gs'
-  #   waitFor: ['functions']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/create_dag_dq/CI-CD/cicd_create_dag_dq.yaml', '.']
-  #   id: 'create_dag_dq'
-  #   waitFor: ['functions']
-
-  # - name: 'gcr.io/cloud-builders/gcloud'
-  #   args: ['builds', 'submit', '--config', 'Codigo/trigger_dag_dq/CI-CD/cicd_trigger_dag_dq.yaml', '.']
-  #   id: 'trigger_dag_dq'
-  #   waitFor: ['functions']

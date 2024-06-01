@@ -115,11 +115,6 @@ resource "google_cloudfunctions2_function" "create_rule" {
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
-  timeouts {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
 }
 
 # create_dag_dq function

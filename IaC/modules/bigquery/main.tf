@@ -19,7 +19,7 @@ resource "google_bigquery_table" "dq_summary" {
   }
 
   effective_labels = {
-    owner = "erik"
+    owner = "erik",
     country = "spain"
   }
 
@@ -139,7 +139,7 @@ resource "google_bigquery_table" "dq_summary_errors" {
   }
 
   effective_labels = {
-    owner = "erik"
+    owner = "erik",
     country = "spain"
   }
 
@@ -262,7 +262,7 @@ resource "google_bigquery_table" "looker_metadata_quality" {
   table_id   = "looker_metadata_quality"
 
   effective_labels = {
-    owner = "erik"
+    owner = "erik",
     country = "spain"
   }
 
