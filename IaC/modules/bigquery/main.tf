@@ -9,308 +9,308 @@ resource "google_bigquery_dataset" "dq_dataset" {
   location                    = var.region_dataset
 }
 
-# resource "google_bigquery_table" "dq_summary" {
-#   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
-#   table_id   = "dq_summary"
+resource "google_bigquery_table" "dq_summary" {
+  dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
+  table_id   = "dq_summary"
 
-#   time_partitioning {
-#     type = "DAY",
-#     field = "execution_ts"
-#   }
+  time_partitioning {
+    type = "DAY",
+    field = "execution_ts"
+  }
 
-#   effective_labels = {
-#     owner = "erik"
-#     country = "spain"
-#   }
+  effective_labels = {
+    owner = "erik"
+    country = "spain"
+  }
 
-#   schema = <<EOF
-#     [
-#       {
-#         "name": "invocation_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "execution_ts",
-#         "type": "TIMESTAMP"
-#       },
-#       {
-#         "name": "rule_binding_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "rule_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "table_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "column_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dimension",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "metadata_json_string",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "configs_hashsum",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_lake",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_zone",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_asset_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dq_run_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "progress_watermark",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "rows_validated",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "complex_rule_validation_errors_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "complex_rule_validation_success_flag",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "last_modified",
-#         "type": "TIMESTAMP"
-#       },
-#       {
-#         "name": "success_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "success_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "failed_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "failed_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "null_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "null_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "failed_records_query",
-#         "type": "STRING"
-#       }
-#     ]
-#   EOF
-# }
+  schema = <<EOF
+    [
+      {
+        "name": "invocation_id",
+        "type": "STRING"
+      },
+      {
+        "name": "execution_ts",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "rule_binding_id",
+        "type": "STRING"
+      },
+      {
+        "name": "rule_id",
+        "type": "STRING"
+      },
+      {
+        "name": "table_id",
+        "type": "STRING"
+      },
+      {
+        "name": "column_id",
+        "type": "STRING"
+      },
+      {
+        "name": "dimension",
+        "type": "STRING"
+      },
+      {
+        "name": "metadata_json_string",
+        "type": "STRING"
+      },
+      {
+        "name": "configs_hashsum",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_lake",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_zone",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_asset_id",
+        "type": "STRING"
+      },
+      {
+        "name": "dq_run_id",
+        "type": "STRING"
+      },
+      {
+        "name": "progress_watermark",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "rows_validated",
+        "type": "INTEGER"
+      },
+      {
+        "name": "complex_rule_validation_errors_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "complex_rule_validation_success_flag",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "last_modified",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "success_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "success_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "failed_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "failed_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "null_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "null_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "failed_records_query",
+        "type": "STRING"
+      }
+    ]
+  EOF
+}
 
-# resource "google_bigquery_table" "dq_summary_errors" {
-#   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
-#   table_id   = "dq_summary_errors"
+resource "google_bigquery_table" "dq_summary_errors" {
+  dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
+  table_id   = "dq_summary_errors"
 
-#   time_partitioning {
-#     type = "DAY",
-#     field = "execution_ts"
-#   }
+  time_partitioning {
+    type = "DAY",
+    field = "execution_ts"
+  }
 
-#   effective_labels = {
-#     owner = "erik"
-#     country = "spain"
-#   }
+  effective_labels = {
+    owner = "erik"
+    country = "spain"
+  }
 
-#   schema = <<EOF
-#     [
-#       {
-#         "name": "invocation_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "execution_ts",
-#         "type": "TIMESTAMP"
-#       },
-#       {
-#         "name": "rule_binding_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "rule_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "table_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "column_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dimension",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "metadata_json_string",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "configs_hashsum",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_lake",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_zone",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataplex_asset_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dq_run_id",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "progress_watermark",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "rows_validated",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "complex_rule_validation_errors_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "complex_rule_validation_success_flag",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "last_modified",
-#         "type": "TIMESTAMP"
-#       },
-#       {
-#         "name": "success_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "success_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "failed_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "failed_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "null_count",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "null_percentage",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "failed_records_query",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "severity",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "action",
-#         "type": "INTEGER"
-#       }
-#     ]
-#   EOF
-# }
+  schema = <<EOF
+    [
+      {
+        "name": "invocation_id",
+        "type": "STRING"
+      },
+      {
+        "name": "execution_ts",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "rule_binding_id",
+        "type": "STRING"
+      },
+      {
+        "name": "rule_id",
+        "type": "STRING"
+      },
+      {
+        "name": "table_id",
+        "type": "STRING"
+      },
+      {
+        "name": "column_id",
+        "type": "STRING"
+      },
+      {
+        "name": "dimension",
+        "type": "STRING"
+      },
+      {
+        "name": "metadata_json_string",
+        "type": "STRING"
+      },
+      {
+        "name": "configs_hashsum",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_lake",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_zone",
+        "type": "STRING"
+      },
+      {
+        "name": "dataplex_asset_id",
+        "type": "STRING"
+      },
+      {
+        "name": "dq_run_id",
+        "type": "STRING"
+      },
+      {
+        "name": "progress_watermark",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "rows_validated",
+        "type": "INTEGER"
+      },
+      {
+        "name": "complex_rule_validation_errors_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "complex_rule_validation_success_flag",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "last_modified",
+        "type": "TIMESTAMP"
+      },
+      {
+        "name": "success_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "success_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "failed_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "failed_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "null_count",
+        "type": "INTEGER"
+      },
+      {
+        "name": "null_percentage",
+        "type": "FLOAT"
+      },
+      {
+        "name": "failed_records_query",
+        "type": "STRING"
+      },
+      {
+        "name": "severity",
+        "type": "INTEGER"
+      },
+      {
+        "name": "action",
+        "type": "INTEGER"
+      }
+    ]
+  EOF
+}
 
-# resource "google_bigquery_table" "looker_metadata_quality" {
-#   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
-#   table_id   = "looker_metadata_quality"
+resource "google_bigquery_table" "looker_metadata_quality" {
+  dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
+  table_id   = "looker_metadata_quality"
 
-#   effective_labels = {
-#     owner = "erik"
-#     country = "spain"
-#   }
+  effective_labels = {
+    owner = "erik"
+    country = "spain"
+  }
 
-#   schema = <<EOF
-#     [
-#       {
-#         "name": "proyecto",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "dataset",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "capa",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "tabla",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "description",
-#         "type": "INTEGER"
-#       },
-#       {
-#         "name": "desc_campos",
-#         "type": "FLOAT"
-#       },
-#       {
-#         "name": "has_owner",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "has_country",
-#         "type": "BOOLEAN"
-#       },
-#       {
-#         "name": "dataset_message",
-#         "type": "STRING"
-#       },
-#       {
-#         "name": "tabla_message",
-#         "type": "STRING"
-#       }
-#     ]
-#   EOF
-# }
+  schema = <<EOF
+    [
+      {
+        "name": "proyecto",
+        "type": "STRING"
+      },
+      {
+        "name": "dataset",
+        "type": "STRING"
+      },
+      {
+        "name": "capa",
+        "type": "STRING"
+      },
+      {
+        "name": "tabla",
+        "type": "STRING"
+      },
+      {
+        "name": "description",
+        "type": "INTEGER"
+      },
+      {
+        "name": "desc_campos",
+        "type": "FLOAT"
+      },
+      {
+        "name": "has_owner",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "has_country",
+        "type": "BOOLEAN"
+      },
+      {
+        "name": "dataset_message",
+        "type": "STRING"
+      },
+      {
+        "name": "tabla_message",
+        "type": "STRING"
+      }
+    ]
+  EOF
+}
 
 # resource "google_bigquery_table" "looker_dq_summary" {
 #   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
