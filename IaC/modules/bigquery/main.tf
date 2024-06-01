@@ -14,12 +14,12 @@ resource "google_bigquery_table" "dq_summary" {
   table_id   = "dq_summary"
 
   time_partitioning {
-    type = "DAY",
+    type = "DAY"
     field = "execution_ts"
   }
 
   effective_labels = {
-    owner = "erik",
+    owner = "erik"
     country = "spain"
   }
 
@@ -134,12 +134,12 @@ resource "google_bigquery_table" "dq_summary_errors" {
   table_id   = "dq_summary_errors"
 
   time_partitioning {
-    type = "DAY",
+    type = "DAY"
     field = "execution_ts"
   }
 
   effective_labels = {
-    owner = "erik",
+    owner = "erik"
     country = "spain"
   }
 
@@ -262,7 +262,7 @@ resource "google_bigquery_table" "looker_metadata_quality" {
   table_id   = "looker_metadata_quality"
 
   effective_labels = {
-    owner = "erik",
+    owner = "erik"
     country = "spain"
   }
 
