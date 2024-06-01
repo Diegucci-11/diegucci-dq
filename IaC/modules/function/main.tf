@@ -228,7 +228,7 @@ resource "google_cloudfunctions2_function" "dq_validation" {
 data "archive_file" "data_schedule_validation" {
   type        = "zip"
   output_path = var.zip_schedule_validation
-  source_dir  = "../../../Codigo/schedule_validation/code"
+  source_dir  = "../../../Codigo/schedule_dq/code"
 }
 
 resource "google_storage_bucket_object" "archive_schedule_validation" {

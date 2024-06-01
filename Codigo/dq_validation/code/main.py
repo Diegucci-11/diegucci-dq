@@ -39,6 +39,10 @@ GCP_PROJECT_ID = project_id
 GCP_BQ_DATASET_ID = dataset
 GCP_BQ_REGION = location
 
+DATASET_BRZ = "brz_bqset"
+DATASET_SLV = "slv_bqset"
+DATASET_GLD = "gld_bqset"
+
 DATAPLEX_PROJECT_ID = GCP_PROJECT_ID
 DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = f"data-quality-lake"
@@ -368,10 +372,10 @@ def metadata_quality():
                 CASE WHEN topt.option_name = 'description'AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
                 ELSE 0
             END description
-            FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
+            FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
+            RIGHT JOIN `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
             ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema = "{DATASET_SLV}"
+            WHERE t.table_schema NOT IN (dq_dataset, "{DATASET_BRZ}") 
 
             UNION ALL
 
@@ -379,10 +383,10 @@ def metadata_quality():
                 CASE WHEN topt.option_name = 'description'AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
                 ELSE 0
             END description
-            FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
+            FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
+            RIGHT JOIN `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
             ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema = "{DATASET_GLD}"
+            WHERE t.table_schema NOT IN (dq_dataset, "{DATASET_SLV}") 
 
             UNION ALL
 
@@ -390,21 +394,10 @@ def metadata_quality():
                 CASE WHEN topt.option_name = 'description'AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
                 ELSE 0
             END description
-            FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
-                ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema = "{DATASET_FAT}"
-
-            UNION ALL
-
-            SELECT t.table_catalog AS proyecto, t.table_schema AS dataset, "GOLDEN" AS capa, t.table_name AS tabla,
-                CASE WHEN topt.option_name = 'description'AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
-                ELSE 0
-            END description
-            FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
-                ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema = "{DATASET_EDM}"
+            FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
+            RIGHT JOIN `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
+            ON t.table_catalog = topt.table_catalog
+            WHERE t.table_schema NOT IN (dq_dataset, "{DATASET_GLD}") 
 
             UNION ALL
 
@@ -412,32 +405,14 @@ def metadata_quality():
                 CASE WHEN topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
                 ELSE 0
             END description
-            FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
+            FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
+            RIGHT JOIN `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
                 ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema NOT IN (dq_dataset, "{DATASET_SLV}", "{DATASET_GLD}")
-
-            UNION ALL
-
-            SELECT t.table_catalog AS proyecto, t.table_schema AS dataset, "OTHER" AS capa, t.table_name AS tabla,
-                CASE WHEN topt.option_name = 'description' AND topt.option_value IS NOT NULL AND TRIM(topt.option_value) != '' THEN 100
-                ELSE 0
-            END description
-            FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-            RIGHT JOIN `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
-                ON t.table_catalog = topt.table_catalog
-            WHERE t.table_schema NOT IN ("{DATASET_FAT}", "{DATASET_EDM}")
+            WHERE t.table_schema NOT IN (dq_dataset, "{DATASET_BRZ}", "{DATASET_SLV}", "{DATASET_GLD}")
             ),
             campos AS(
                 SELECT table_schema AS dataset, table_name AS tabla, ROUND(COUNT(description)/COUNT(*), 2) AS desc_campos
-                FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`
-                WHERE table_schema != dq_dataset
-                GROUP BY table_schema, table_name
-
-                UNION ALL 
-
-                SELECT table_schema AS dataset, table_name AS tabla, ROUND(COUNT(description)/COUNT(*), 2) AS desc_campos
-                FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`
+                FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.COLUMN_FIELD_PATHS`
                 WHERE table_schema != dq_dataset
                 GROUP BY table_schema, table_name
             ),
@@ -455,28 +430,8 @@ def metadata_quality():
                             AND NOT REGEXP_CONTAINS(option_value, r'STRUCT\("owner",\s*("[^"]+"[^"]*)') THEN true
                         ELSE false
                     END AS has_country
-                FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-                    RIGHT JOIN `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
-                    ON t.table_catalog = topt.table_catalog
-                WHERE t.table_schema != dq_dataset
-
-                UNION ALL
-
-                SELECT 
-                    t.table_schema as dataset, 
-                    t.table_name as tabla,
-                    CASE 
-                        WHEN REGEXP_CONTAINS(option_value, r'STRUCT\("owner",\s*("[^"]+"[^"]*)') 
-                            AND NOT REGEXP_CONTAINS(option_value, r'STRUCT\("country",\s*("[^"]+"[^"]*)') THEN true
-                        ELSE false
-                    END AS has_owner,
-                    CASE 
-                        WHEN REGEXP_CONTAINS(option_value, r'STRUCT\("country",\s*("[^"]+"[^"]*)') 
-                            AND NOT REGEXP_CONTAINS(option_value, r'STRUCT\("owner",\s*("[^"]+"[^"]*)') THEN true
-                        ELSE false
-                    END AS has_country
-                FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
-                    RIGHT JOIN `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
+                FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLE_OPTIONS` topt
+                    RIGHT JOIN `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES` t
                     ON t.table_catalog = topt.table_catalog
                 WHERE t.table_schema != dq_dataset
             ),
@@ -489,20 +444,7 @@ def metadata_quality():
                         WHEN REGEXP_CONTAINS(SCHEMA_NAME, r'[A-Z]') THEN 'El nombre del dataset no debe contener mayúsculas ni números.'
                     ELSE null
                     END AS dataset_message
-                FROM`{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.SCHEMATA`
-                WHERE SCHEMA_NAME != dq_dataset
-
-                UNION ALL
-
-                SELECT
-                    SCHEMA_NAME AS dataset,
-                    CASE 
-                        WHEN NOT REGEXP_CONTAINS(SCHEMA_NAME, r'^esp') THEN 'El nombre del dataset no tiene prefijo de país.'
-                        WHEN NOT REGEXP_CONTAINS(SCHEMA_NAME, r'(dev|uat|prd)$') THEN 'El nombre del dataset no tiene sufijo de entorno.'
-                        WHEN REGEXP_CONTAINS(SCHEMA_NAME, r'[A-Z]') THEN 'El nombre del dataset no debe contener mayúsculas ni números.'
-                    ELSE null
-                    END AS dataset_message
-                FROM`{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.SCHEMATA`
+                FROM`{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.SCHEMATA`
                 WHERE SCHEMA_NAME != dq_dataset
             ),
             table_validation AS (
@@ -514,20 +456,7 @@ def metadata_quality():
                         WHEN REGEXP_CONTAINS(table_name, r'[A-Z]') THEN 'El nombre de la tabla no debe contener mayúsculas ni números.'
                     ELSE null
                     END AS tabla_message
-                FROM `{GCP_PROJECT_CRTD}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES`
-                WHERE table_schema != dq_dataset 
-
-                UNION ALL
-
-                SELECT
-                    table_schema AS dataset,
-                    table_name AS tabla,
-                    CASE 
-                        WHEN NOT REGEXP_CONTAINS(table_name, r'^(slv|gld|fat|edm)') THEN 'El nombre del dataset no tiene sufijo de entorno.'
-                        WHEN REGEXP_CONTAINS(table_name, r'[A-Z]') THEN 'El nombre de la tabla no debe contener mayúsculas ni números.'
-                    ELSE null
-                    END AS tabla_message
-                FROM `{GCP_PROJECT_FAT}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES`
+                FROM `{GCP_PROJECT_ID}.region-{GCP_BQ_REGION}.INFORMATION_SCHEMA.TABLES`
                 WHERE table_schema != dq_dataset 
             ),
             nomenclature AS(
