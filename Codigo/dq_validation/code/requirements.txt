@@ -1,0 +1,8 @@
+functions-framework==3.*
+google-cloud-dataplex
+google-cloud-storage
+google-cloud-bigquery
+gspread
+google-auth
+google-oauth2-tool
+pandas

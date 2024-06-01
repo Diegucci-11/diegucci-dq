@@ -297,90 +297,90 @@ resource "google_bigquery_table" "looker_metadata_quality" {
   EOF
 }
 
-# resource "google_bigquery_table" "looker_dq_summary" {
-#   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
-#   table_id   = "looker_dq_summary"
+resource "google_bigquery_table" "looker_dq_summary" {
+  dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
+  table_id   = "looker_dq_summary"
 
-#   effective_labels = {
-#     owner = "erik"
-#     country = "spain"
-#   }
+  effective_labels = {
+    owner = "erik"
+    country = "spain"
+  }
 
-#   view = {
-#     query = "SELECT 
-#       DATE(execution_ts) AS date,
-#       REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
-#       REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
-#       REGEXP_EXTRACT(table_id, r'\.(.*)$') AS table,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.columna'), '\"', '') AS column,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.capa'), '\"', '') AS capa,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.bu'), '\"', '') AS business_unit,
-#       dimension AS dimension,
-#       rule_id AS rule_id,
-#       rows_validated AS rows_validated,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN rows_validated - complex_rule_validation_errors_count
-#         ELSE success_count
-#       END AS success_count,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN ROUND((1 - complex_rule_validation_errors_count / rows_validated) * 100, 2)
-#         ELSE ROUND(success_percentage * 100, 2)
-#       END AS success_percentage,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN complex_rule_validation_errors_count
-#         ELSE failed_count
-#       END AS failed_count,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN ROUND((complex_rule_validation_errors_count / rows_validated) * 100, 2)
-#         ELSE ROUND(failed_percentage * 100, 2)
-#       END AS failed_percentage,
-#       failed_records_query AS failed_records_query
-#     FROM `${var.dataset_name}.dq_summary`
-#     "
-#   }
-# }
+  view = {
+    query = "SELECT 
+      DATE(execution_ts) AS date,
+      REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
+      REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
+      REGEXP_EXTRACT(table_id, r'\.(.*)$') AS table,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.columna'), '\"', '') AS column,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.capa'), '\"', '') AS capa,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.bu'), '\"', '') AS business_unit,
+      dimension AS dimension,
+      rule_id AS rule_id,
+      rows_validated AS rows_validated,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN rows_validated - complex_rule_validation_errors_count
+        ELSE success_count
+      END AS success_count,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN ROUND((1 - complex_rule_validation_errors_count / rows_validated) * 100, 2)
+        ELSE ROUND(success_percentage * 100, 2)
+      END AS success_percentage,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN complex_rule_validation_errors_count
+        ELSE failed_count
+      END AS failed_count,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN ROUND((complex_rule_validation_errors_count / rows_validated) * 100, 2)
+        ELSE ROUND(failed_percentage * 100, 2)
+      END AS failed_percentage,
+      failed_records_query AS failed_records_query
+    FROM `${var.dataset_name}.dq_summary`
+    "
+  }
+}
 
-# resource "google_bigquery_table" "looker_dq_summary_errors" {
-#   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
-#   table_id   = "looker_dq_summary_errors"
+resource "google_bigquery_table" "looker_dq_summary_errors" {
+  dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
+  table_id   = "looker_dq_summary_errors"
 
-#   effective_labels = {
-#     owner = "erik"
-#     country = "spain"
-#   }
+  effective_labels = {
+    owner = "erik"
+    country = "spain"
+  }
 
-#   view = {
-#     query = "SELECT 
-#       DATE(execution_ts) AS date,
-#       REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
-#       REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
-#       REGEXP_EXTRACT(table_id, r'\.(.*)$') AS table,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.columna'), '\"', '') AS column,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.capa'), '\"', '') AS capa,
-#       REPLACE(JSON_EXTRACT(metadata_json_string, '$.bu'), '\"', '') AS business_unit,
-#       dimension AS dimension,
-#       rule_id AS rule_id,
-#       rows_validated AS rows_validated,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN rows_validated - complex_rule_validation_errors_count
-#         ELSE success_count
-#       END AS success_count,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN ROUND((1 - complex_rule_validation_errors_count / rows_validated) * 100, 2)
-#         ELSE ROUND(success_percentage * 100, 2)
-#       END AS success_percentage,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN complex_rule_validation_errors_count
-#         ELSE failed_count
-#       END AS failed_count,
-#       CASE 
-#         WHEN complex_rule_validation_success_flag THEN ROUND((complex_rule_validation_errors_count / rows_validated) * 100, 2)
-#         ELSE ROUND(failed_percentage * 100, 2)
-#       END AS failed_percentage,
-#       severity AS severidad,
-#       action AS accion,
-#       failed_records_query AS failed_records_query
-#     FROM `${var.dataset_name}.dq_summary_errors`
-#     "
-#   }
-# }
+  view = {
+    query = "SELECT 
+      DATE(execution_ts) AS date,
+      REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
+      REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
+      REGEXP_EXTRACT(table_id, r'\.(.*)$') AS table,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.columna'), '\"', '') AS column,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.capa'), '\"', '') AS capa,
+      REPLACE(JSON_EXTRACT(metadata_json_string, '$.bu'), '\"', '') AS business_unit,
+      dimension AS dimension,
+      rule_id AS rule_id,
+      rows_validated AS rows_validated,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN rows_validated - complex_rule_validation_errors_count
+        ELSE success_count
+      END AS success_count,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN ROUND((1 - complex_rule_validation_errors_count / rows_validated) * 100, 2)
+        ELSE ROUND(success_percentage * 100, 2)
+      END AS success_percentage,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN complex_rule_validation_errors_count
+        ELSE failed_count
+      END AS failed_count,
+      CASE 
+        WHEN complex_rule_validation_success_flag THEN ROUND((complex_rule_validation_errors_count / rows_validated) * 100, 2)
+        ELSE ROUND(failed_percentage * 100, 2)
+      END AS failed_percentage,
+      severity AS severidad,
+      action AS accion,
+      failed_records_query AS failed_records_query
+    FROM `${var.dataset_name}.dq_summary_errors`
+    "
+  }
+}
