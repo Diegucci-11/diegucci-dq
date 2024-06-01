@@ -18,6 +18,11 @@ steps:
     id: 'service_account'
     waitFor: ['enable_apis']
 
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/bigquery/cloudbuild.yaml', '.']
+    id: 'bigquery'
+    waitFor: ['enable_apis']
+
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
   #   id: 'composer-env'
@@ -32,7 +37,7 @@ steps:
     args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
     id: 'functions'
     waitFor: ['service_account']
-
+timeout: '3600s'
 #CAMBIARLO DE TRIGGER ? 
 
   # - name: 'gcr.io/cloud-builders/gcloud'
