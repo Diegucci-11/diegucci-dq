@@ -18,11 +18,6 @@ resource "google_bigquery_table" "dq_summary" {
     field = "execution_ts"
   }
 
-  effective_labels = {
-    owner = "erik"
-    country = "spain"
-  }
-
   schema = <<EOF
     [
       {
@@ -136,11 +131,6 @@ resource "google_bigquery_table" "dq_summary_errors" {
   time_partitioning {
     type = "DAY"
     field = "execution_ts"
-  }
-
-  effective_labels = {
-    owner = "erik"
-    country = "spain"
   }
 
   schema = <<EOF
@@ -260,11 +250,6 @@ resource "google_bigquery_table" "dq_summary_errors" {
 resource "google_bigquery_table" "looker_metadata_quality" {
   dataset_id = google_bigquery_dataset.dq_dataset.dataset_id
   table_id   = "looker_metadata_quality"
-
-  effective_labels = {
-    owner = "erik"
-    country = "spain"
-  }
 
   schema = <<EOF
     [
