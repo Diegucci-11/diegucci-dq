@@ -16,7 +16,7 @@ steps:
     args:
       - '-c'
       - |
-        if gcloud functions describe config_gs --project=tfg-dq --region=europe-southwest1 > /dev/null 2>&1; then
+        if gcloud functions describe schedule_dq --project=tfg-dq --region=europe-southwest1 > /dev/null 2>&1; then
           echo "La función existe."
         else
           echo "La función no existe."
@@ -25,8 +25,8 @@ steps:
 
   - name: 'gcr.io/cloud-builders/gcloud'
     args: [
-            'functions', 'deploy', 'config_gs',
+            'functions', 'deploy', 'schedule_dq',
             '--region=europe-southwest1',
-            '--source=Codigo/config_gs/code', 
+            '--source=Codigo/schedule_dq/code', 
           ]
 

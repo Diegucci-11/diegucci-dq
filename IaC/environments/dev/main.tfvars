@@ -25,6 +25,8 @@ name_function_create_rule = "create_rule_tf"
 zip_create_rule = "create_rule.zip"
 name_function_dq_validation = "dq_validation_tf"
 zip_dq_validation = "dq_validation.zip"
+name_function_schedule_validation = "schedule_validation_tf"
+zip_schedule_validation = "schedule_validation.zip"
 
 matrix_input_file = "Matrix_Input_v2"
 

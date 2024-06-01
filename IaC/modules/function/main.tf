@@ -223,3 +223,35 @@ resource "google_cloudfunctions2_function" "dq_validation" {
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
+
+# schedule_validation function
+data "archive_file" "data_schedule_validation" {
+  type        = "zip"
+  output_path = var.zip_schedule_validation
+  source_dir  = "../../../Codigo/schedule_validation/code"
+}
+
+resource "google_storage_bucket_object" "archive_schedule_validation" {
+  name   = var.zip_schedule_validation
+  bucket = var.name_functions_bucket
+  source = data.archive_file.data_schedule_validation.output_path
+}
+
+resource "google_cloudfunctions2_function" "schedule_validation" {
+  name          = var.name_function_schedule_validation
+  location      = var.region_function
+  build_config {
+    runtime     = var.programming_language
+    entry_point = "schedule_validation"
+    source {
+      storage_source {
+        bucket  = var.name_functions_bucket
+        object  = var.zip_schedule_validation
+      }
+    }
+  }
+  service_config {
+    ingress_settings = "ALLOW_ALL"
+    service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+  }
+}

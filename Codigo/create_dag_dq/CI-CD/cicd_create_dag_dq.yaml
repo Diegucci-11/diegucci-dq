@@ -16,7 +16,7 @@ steps:
     args:
       - '-c'
       - |
-        if gcloud functions describe create_dag_dq --project=diegucci-dq --region=europe-southwest1 > /dev/null 2>&1; then
+        if gcloud functions describe create_dag_dq --project=tfg-dq --region=europe-southwest1 > /dev/null 2>&1; then
           echo "La función existe."
         else
           echo "La función no existe."

@@ -84,6 +84,16 @@ variable "name_function_dq_validation"{
   type        = string
 }
 
+variable "zip_schedule_validation" {
+  description = "zip para la función schedule_validation"
+  type        = string
+}
+
+variable "name_function_schedule_validation"{
+  description = "Name for the schedule_validation function"
+  type        = string
+}
+
 variable "matrix_input_file" {
   description = "name of the matrix input file"
   type        = string
