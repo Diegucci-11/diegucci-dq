@@ -2,12 +2,12 @@ import functions_framework
 import json
 import vertexai
 from vertexai.language_models import CodeChatModel
-from google.cloud import bigquery
 from google.auth import default
 import gspread
 
 @functions_framework.http
-def rule_generator(request):
+def create_rule(request):
+
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app",
@@ -19,13 +19,15 @@ def rule_generator(request):
 
     headers = {"Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app"}
 
-    request_data = request.get_json()
-    result = create_rule(request_data)
+    raw_body = request.get_data(as_text=True)
+    request_data = json.loads(raw_body)
 
+    result = generate_rule(request_data)
+    
     return (result, 200, headers)
 
 
-def create_rule(data):
+def generate_rule(data):
     test_prompt = data["prompt"]
     dimension = data["dimension"]
 
@@ -48,10 +50,8 @@ def create_rule(data):
     rule = chat.send_message("A partir de esos ejemplos que te mandé, necesito que me crees otra regla de calidad con todos esos campos y mismo formato a partir de este prompt:\n" + test_prompt + "\nY con esta dimensión: " + dimension + "\nNO MUESTRES NADA MÁS QUE NO SEA EL CÓDIGO JSON", **parameters)
     rule = rule.text
     rule = rule[8:-3]
-
-    rule_json = json.dumps(rule)
-
-    return rule_json
+    print(rule)
+    return json.dumps(rule.replace("'", "\""))
 
 def cargar_datos_entrenamiento():
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
@@ -61,32 +61,7 @@ def cargar_datos_entrenamiento():
     spreadsheet = client.open("Matrix_Input_v2")
     reglas_sheet = spreadsheet.worksheet('Reglas')
 
-    rules = reglas_sheet.range('A2:H')
-    print(50*"-")
-    print(rules)
-    print(type(rules))
-    print(50*"-")
-    headers = rules[0]
-    print(50*"-")
-    print(headers)
-    print(type(headers))
-    print(50*"-")
-    data = [dict(zip(headers, row)) for row in rules[1:]]
-    print(50*"-")
-    print(data)
-    print(type(data))
-    print(50*"-")
-    return json.dumps(data, ensure_ascii=False, indent=2)
+    cell_values = reglas_sheet.get_all_values()
+    data = [dict(zip(cell_values[1], row)) for row in cell_values[2:]]
+    return data
 
-    # SCOPES = ["https://www.googleapis.com/auth/bigquery", "https://www.googleapis.com/auth/drive"]
-    # credentials, _ = default(scopes=SCOPES)
-    # client = bigquery.Client(credentials=credentials)
-
-    # sql_query = f"""
-    #         SELECT *
-    #         FROM {BQ_DATASET}.{BQ_TABLE}
-    #     """
-
-    # query_job = client.query(sql_query)
-    # results = [dict(row) for row in query_job]
-    # return results

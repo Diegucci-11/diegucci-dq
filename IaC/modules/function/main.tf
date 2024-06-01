@@ -118,12 +118,20 @@ resource "google_cloudfunctions2_function" "create_rule" {
 }
 
 # PARA SIMPLIFICAR EL TFG
-resource "google_cloudfunctions2_function_iam_member" "noauth" {
+data "google_iam_policy" "invoker" {
+  binding {
+    role = "roles/cloudfunctions.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloudfunctions2_function_iam_policy" "policy" {
   project = var.id_project
-  location  = google_cloudfunctions2_function.create_rule.location
+  location = google_cloudfunctions2_function.create_rule.location
   cloud_function = google_cloudfunctions2_function.create_rule.name
-  role    = "roles/cloudfunctions.invoker"
-  member  = "allUsers"
+  policy_data = data.google_iam_policy.invoker.policy_data
 }
 
 # create_dag_dq function

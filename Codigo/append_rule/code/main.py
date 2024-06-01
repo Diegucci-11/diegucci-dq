@@ -2,45 +2,45 @@ import functions_framework
 import gspread
 import os
 from google.auth import default
+import json
 
 @functions_framework.http
 def append_rule(request):
     if request.method == "OPTIONS":
         headers = {
-            "Access-Control-Allow-Origin": "https://dataquality-genai.web.app",
+            "Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app",
             "Access-Control-Allow-Methods": "POST",
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Max-Age": "3600",
         }
         return ("", 204, headers)
 
-    headers = {"Access-Control-Allow-Origin": "https://dataquality-genai.web.app"}
+    headers = {"Access-Control-Allow-Origin": "https://tfg-generador-de-reglas.web.app"}
 
-    request_data = request.get_json()
+    # request_data = request.get_json()
+    raw_body = request.get_data(as_text=True)
+    request_data = json.loads(raw_body)
     result = insert_rule(request_data)
 
     return (result, 200, headers)
 
 def insert_rule(data):
-    
     dimension = data["DIMENSION"]
-    cod = data["COD"]
     nombre_regla_yml = data["NOMBRE_REGLA_YML"]
-    nombre_regla = data["NOMBRE_REGLA"]
     descripcion = data["DESCRIPCION"]
     ejemplo = data["EJEMPLO"]
-    campo = data["CAMPO"]
+    tipo_dato = data["TIPO_DATO"]
     parametros = data["PARAMETROS"]
     severidad = data["SEVERIDAD"]
-    accion1 = data["ACCION"]
-    accion2 = data["ACCION_YML"]
+    accion = data["ACCION"]
+    codigo = data["CODIGO_YML"]
     tipo_regla_yml = data["TIPO_REGLA_YML"]
 
     SCOPES = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials, _ = default(scopes=SCOPES)
     client = gspread.authorize(credentials)
 
-    spreadsheet = client.open(os.environ.get("MATRIX_INPUT"))
+    spreadsheet = client.open(os.environ.get("MATRIX_FILE"))
     sheet = spreadsheet.worksheet('Reglas')
 
     valor_buscado = dimension
@@ -56,7 +56,7 @@ def insert_rule(data):
             fila_a_insertar = i
             break
 
-    valores_nueva_fila = [dimension, cod, nombre_regla_yml, nombre_regla, descripcion, ejemplo, campo, parametros, severidad, accion1, accion2, tipo_regla_yml]
+    valores_nueva_fila = [dimension, nombre_regla_yml, descripcion, ejemplo, tipo_dato, parametros, severidad, accion, codigo, tipo_regla_yml]
     sheet.insert_row(valores_nueva_fila, fila_a_insertar)
 
     print("Se ha insertado una nueva fila.")
