@@ -203,16 +203,6 @@ function procesarRegla(data) {
     celda_tipo_dato_title.textContent = "Tipo de Dato: ";
     celda_yml_title.textContent = "Código yaml: ";
 
-    //  --------------------------------------------
-    // const celda_tipo_dato = document.createElement('td');
-    // celda_tipo_dato.setAttribute('class', 'rule_content');
-    // const div_tipo_dato = document.createElement('div');
-    // div_tipo_dato.setAttribute('id', 'rule_tipo_dato');
-    // div_tipo_dato.setAttribute('class', 'div_content_2');
-    // div_tipo_dato.setAttribute('contenteditable', 'true');
-    // div_tipo_dato.textContent = data["TIPO_DATO"];
-    // celda_tipo_dato.appendChild(div_tipo_dato);
-    // .............................................
     const celda_tipo_dato = document.createElement('td');
     celda_tipo_dato.setAttribute('class', 'rule_content');
     // Creacion lista desplegable para tipo de dato
@@ -228,7 +218,6 @@ function procesarRegla(data) {
     const value_tipo_dato = data["TIPO_DATO"];
     select_tipo_dato.value = value_tipo_dato;
     celda_tipo_dato.appendChild(select_tipo_dato);
-    //  --------------------------------------------
 
     const celda_yml = document.createElement('td');
     celda_yml.setAttribute('class', 'rule_content');
