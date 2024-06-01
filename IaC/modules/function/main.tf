@@ -188,3 +188,38 @@ resource "google_cloudfunctions2_function" "trigger_dag_dq" {
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
 }
+
+# dq_validation function
+# data "archive_file" "data_dq_validation" {
+#   type        = "zip"
+#   output_path = var.zip_dq_validation
+#   source_dir  = "../../../Codigo/dq_validation/code"
+# }
+
+# resource "google_storage_bucket_object" "archive_dq_validation" {
+#   name   = var.zip_dq_validation
+#   bucket = var.name_functions_bucket
+#   source = data.archive_file.data_dq_validation.output_path
+# }
+
+# resource "google_cloudfunctions2_function" "dq_validation" {
+#   name          = var.name_function_dq_validation
+#   location      = var.region_function
+#   build_config {
+#     runtime     = var.programming_language
+#     entry_point = "dq_validation"
+#     source {
+#       storage_source {
+#         bucket  = var.name_functions_bucket
+#         object  = var.zip_dq_validation
+#       }
+#     }
+#   }
+#   service_config {
+#     environment_variables = {
+#       MATRIX_FILE   = var.matrix_input_file
+#     }
+#     ingress_settings = "ALLOW_ALL"
+#     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+#   }
+# }

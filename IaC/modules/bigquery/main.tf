@@ -307,7 +307,8 @@ resource "google_bigquery_table" "looker_dq_summary" {
   }
 
   view = {
-    query = "SELECT 
+    query = <<EOF
+    SELECT 
       DATE(execution_ts) AS date,
       REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
       REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
@@ -336,7 +337,7 @@ resource "google_bigquery_table" "looker_dq_summary" {
       END AS failed_percentage,
       failed_records_query AS failed_records_query
     FROM `${var.dataset_name}.dq_summary`
-    "
+    EOF
   }
 }
 
@@ -350,7 +351,8 @@ resource "google_bigquery_table" "looker_dq_summary_errors" {
   }
 
   view = {
-    query = "SELECT 
+    query = <<EOF
+    SELECT 
       DATE(execution_ts) AS date,
       REGEXP_EXTRACT(table_id, r'^(.*?)\.') AS project,
       REGEXP_EXTRACT(table_id, r'\.(.*?)\.') AS dataset,
@@ -381,6 +383,6 @@ resource "google_bigquery_table" "looker_dq_summary_errors" {
       action AS accion,
       failed_records_query AS failed_records_query
     FROM `${var.dataset_name}.dq_summary_errors`
-    "
+    EOF
   }
 }
