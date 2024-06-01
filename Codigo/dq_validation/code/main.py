@@ -10,17 +10,16 @@ from google.cloud import bigquery
 from google.cloud import storage
 import gspread
 from google.cloud import dataplex_v1
-from google.oauth2 import service_account
+from google.auth import default
 
 YML = "dq_specifications.yml"
 
-credentials = service_account.Credentials.from_service_account_file("credenciales.json", scopes=['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive'])
-dplex_credentials = service_account.Credentials.from_service_account_file("credenciales.json", scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
-credenciales = service_account.Credentials.from_service_account_file("credenciales.json")
+credentials, _ = default(scopes=['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive'])
+dplex_credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
 
 dataplex_client = dataplex_v1.DataplexServiceClient(credentials=dplex_credentials)
-storage_client = storage.Client(credentials=credenciales)
-bq_client = bigquery.Client(credentials=credenciales)
+storage_client = storage.Client()
+bq_client = bigquery.Client()
 gs_client = gspread.authorize(credentials)
 
 spreadsheet = gs_client.open(os.environ.get('MATRIX_FILE'))
@@ -35,8 +34,6 @@ product_name = tablas_sheet.cell(2, 2).value
 environment = tablas_sheet.cell(3, 2).value
 project_id = tablas_sheet.cell(4, 2).value
 location = tablas_sheet.cell(6, 2).value
-
-WEBHOOK_URL = "https://chat.googleapis.com/v1/spaces/AAAA1g9h-o0/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=C3-Eh6-5Uz1eL2KmMhcFcK5b5-5rdQitIKAsrsXpWtY"
 
 GCP_PROJECT_ID = project_id
 GCP_BQ_DATASET_ID = dataset
