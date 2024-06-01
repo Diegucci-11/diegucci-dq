@@ -119,7 +119,7 @@ def yml_publisher():
     all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
     df_matrix = pd.DataFrame(all_values_matrix_input[2:])
-    df_tablas = pd.DataFrame(tablas_sheet.get('A14:D'), columns=["Tabla", "Descripcion", "Proyecto", "Dataset"])
+    df_tablas = pd.DataFrame(tablas_sheet.get('A14:C'), columns=["Proyecto", "Dataset", "Tabla"])
     df_tablas = df_tablas.loc[:, ["Proyecto", "Dataset", "Tabla"]]
     
     df = pd.merge(df_tablas, df_matrix, how="right", left_on='Tabla', right_on=0)

@@ -1,18 +1,14 @@
 import functions_framework
 import json
 import requests
-import os
 import time
 import pandas as pd
-from requests.models import Response
 import google.auth
 from google.cloud import bigquery
 from google.cloud import storage
 import gspread
 from google.cloud import dataplex_v1
 from google.auth import default
-
-YML = "dq_specifications.yml"
 
 credentials, _ = default(scopes=['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive'])
 dplex_credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
@@ -22,80 +18,65 @@ storage_client = storage.Client()
 bq_client = bigquery.Client()
 gs_client = gspread.authorize(credentials)
 
-spreadsheet = gs_client.open(os.environ.get('MATRIX_FILE'))
-
-tablas_sheet = spreadsheet.worksheet('Tablas')
-reglas_sheet = spreadsheet.worksheet('Reglas')
-correos_sheet = spreadsheet.worksheet('Correos')
-filtros_sheet = spreadsheet.worksheet('Filtros')
-
-dataset = tablas_sheet.cell(5, 2).value
-product_name = tablas_sheet.cell(2, 2).value
-environment = tablas_sheet.cell(3, 2).value
-project_id = tablas_sheet.cell(4, 2).value
-location = tablas_sheet.cell(6, 2).value
-
-GCP_PROJECT_ID = project_id
-GCP_BQ_DATASET_ID = dataset
-GCP_BQ_REGION = location
-
-DATASET_BRZ = "brz_bqset"
-DATASET_SLV = "slv_bqset"
-DATASET_GLD = "gld_bqset"
-
-DATAPLEX_PROJECT_ID = GCP_PROJECT_ID
+DATAPLEX_PROJECT_ID = "tfg-dq"
 DATAPLEX_REGION = "europe-west3"
 DATAPLEX_LAKE_ID = f"data-quality-lake"
-SERVICE_ACC = f"dataquality@tfg-dq.iam.gserviceaccount.com"
-CONFIGS_BUCKET_NAME = f"yml_bucket_tfg"
-DATAPLEX_TASK_ID = "dq-validation"
-TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
-COMPLETE_TASK_NAME = f"projects/{DATAPLEX_PROJECT_ID}/locations/{DATAPLEX_REGION}/lakes/{DATAPLEX_LAKE_ID}/tasks/{DATAPLEX_TASK_ID}"
-
-ERRORS_TABLE = "dq_summary_errors"
-TABLE_MTDATA_QUALITY = "looker_metadata_quality"
-
-FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
-CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/{YML}"
-TRIGGER_SPEC_TYPE = "ON_DEMAND"
 DATAPLEX_ENDPOINT = 'https://dataplex.googleapis.com'
-PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
-SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
-CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip"
-CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
 
 @functions_framework.http
 def dq_validation(request):
+    request_json = request.get_json()
+    gs_name = request_json['gs_name']
+    name = request_json['name']
+    name = name.replace('_', '-')
+
+    spreadsheet = gs_client.open(gs_name)
+
+    tablas_sheet = spreadsheet.worksheet('Tablas')
+    correos_sheet = spreadsheet.worksheet('Correos')
+
+    GCP_PROJECT_ID = tablas_sheet.cell(4, 2).value
+    GCP_BQ_DATASET_ID = tablas_sheet.cell(5, 2).value
+    GCP_BQ_REGION = tablas_sheet.cell(6, 2).value
+    product_name = tablas_sheet.cell(2, 2).value
+    environment = tablas_sheet.cell(3, 2).value
+
+    YML = f"dq_specifications_{name}.yml"
+    DATAPLEX_TASK_ID = f"dq-validation-{name}"
+    TARGET_BQ_TABLE = f"{DATAPLEX_TASK_ID}_table"
+    CONFIGS_BUCKET_NAME = f"yml_bucket_tfg"
+    ERRORS_TABLE = "dq_summary_errors"
+
     print("Executing yaml_publisher...")
-    tables_to_delete = yml_publisher()
+    tables_to_delete = yml_publisher(TARGET_BQ_TABLE, YML, CONFIGS_BUCKET_NAME, spreadsheet)
     print("Yaml_publisher executed")
-    if _get_dataplex_task()=="task_exist":
+    if _get_dataplex_task(DATAPLEX_TASK_ID)=="task_exist":
         print("Dataplex task exists")
         print("Deleting dataplex task...")
-        delete_task()
+        delete_task(DATAPLEX_TASK_ID)
         print("Dataplex task deleted")
         print("Creating dataplex task...")
-        create_task()
+        create_task(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, GCP_BQ_REGION, CONFIGS_BUCKET_NAME, DATAPLEX_TASK_ID, TARGET_BQ_TABLE, YML)
         print("Dataplex task created")
-    elif _get_dataplex_task()=="task_not_exist":
+    elif _get_dataplex_task(DATAPLEX_TASK_ID)=="task_not_exist":
         print("Creating dataplex task...")
-        create_task()
+        create_task(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, GCP_BQ_REGION, CONFIGS_BUCKET_NAME, DATAPLEX_TASK_ID, TARGET_BQ_TABLE, YML)
         print("Dataplex task created")
     else:
         raise ValueError("Error con la tarea de Dataplex")
     
     print("Monitoring dataplex task state...")
-    task_status = _get_dataplex_job_state()
+    task_status = _get_dataplex_job_state(DATAPLEX_TASK_ID)
 
     if task_status != 'SUCCEEDED':
         raise ValueError("Error con la tarea de Dataplex")
     
     print("Dataplex task succeeded")
     print("Executing QID...")
-    qid_publisher(tables_to_delete)
+    qid(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE, spreadsheet, tables_to_delete)
     print("QID executed")
     print("Executing metadata quality task...")
-    metadata_quality()
+    metadata_quality(GCP_PROJECT_ID, GCP_BQ_REGION, GCP_BQ_DATASET_ID)
     print("Metadata quality task executed")
     # print("Executing QAE...")
     # qae_query()
@@ -104,25 +85,19 @@ def dq_validation(request):
 
     return "ok"
     
-def send_text_card(title: str, subtitle: str, paragraph: str) -> Response:
-    header = {"title": title, "subtitle": subtitle}
-    widget = {"textParagraph": {"text": paragraph}}
-    cards = [
-        {
-            "header": header,
-            "sections": [{"widgets": [widget]}],
-        },
-    ]
-    return requests.post(WEBHOOK_URL, json={"cards": cards})
-
-def yml_publisher():
+def yml_publisher(TARGET_BQ_TABLE, YML, CONFIGS_BUCKET_NAME, spreadsheet):
     file_name = YML
     tables_deletion = [TARGET_BQ_TABLE]
 
-    rules = reglas_sheet.range('I3:J')
+    reglas_sheet = spreadsheet.worksheet('Reglas')
+    filtros_sheet = spreadsheet.worksheet('Filtros')
+    tablas_sheet = spreadsheet.worksheet('Tablas')
+    location = tablas_sheet.cell(6, 2).value
+
+    rules = reglas_sheet.range('I3:I')
     rules_values = [str(cell.value) for cell in rules if cell.value.strip()]
 
-    filters = filtros_sheet.range('E3:E')
+    filters = filtros_sheet.range('H3:H')
     filters_values = [str(cell.value) for cell in filters if cell.value.strip()]
 
     output_yaml = "rule_dimensions:\n  - Exactitud\n  - Completitud\n  - Consistencia\n  - Integridad\n  - Disponibilidad\n  - Unicidad\n  - Validez\n\n"
@@ -136,7 +111,7 @@ def yml_publisher():
     all_values_matrix_input = spreadsheet.worksheet('Matriz_Input').get_all_values()
 
     df_matrix = pd.DataFrame(all_values_matrix_input[2:])
-    df_tablas = pd.DataFrame(tablas_sheet.get('A14:D'), columns=["Tabla", "Descripcion", "Proyecto", "Dataset"])
+    df_tablas = pd.DataFrame(tablas_sheet.get('A14:C'), columns=["Proyecto", "Dataset", "Tabla"])
     df_tablas = df_tablas.loc[:, ["Proyecto", "Dataset", "Tabla"]]
     
     df = pd.merge(df_tablas, df_matrix, how="right", left_on='Tabla', right_on=0)
@@ -160,9 +135,9 @@ def yml_publisher():
             binding += "  " + fila.iloc[2].upper() + "_" + aux.upper() + ":\n"
             binding += f"    entity_uri: bigquery://projects/{fila.iloc[0]}/locations/{location}/datasets/{fila.iloc[1]}/tables/{fila.iloc[2]}\n"
             binding += f"    column_id: {partes[0] if struct else fila.iloc[3]}\n"
-            binding += f"    row_filter_id: NO_FILTER\n"
+            binding += f"    row_filter_id: {fila.iloc[9]}\n"
             binding += "    rule_ids:"
-            for columna, valor_celda in fila[9:].items():
+            for columna, valor_celda in fila[10:].items():
                 if valor_celda.upper() == 'X' and not struct:
                     binding += f"\n\n      - {df.iloc[0][columna]}"
                 elif valor_celda.upper() == 'X' and struct:
@@ -176,7 +151,7 @@ def yml_publisher():
                         binding += f"\n          {df.iloc[1][columna]}: {valor_celda}"
 
             binding += "\n\n    metadata:\n"
-            binding += f"      column: {fila.iloc[3]}\n"
+            binding += f"      columna: {fila.iloc[3]}\n"
             binding += f"      capa: {fila.iloc[7]}\n"
             binding += f"      bu: {fila.iloc[8]}\n\n"
 
@@ -185,10 +160,11 @@ def yml_publisher():
     upload_blob(CONFIGS_BUCKET_NAME, output_yaml, file_name)
     return tables_deletion
 
-def qid_publisher(tables_deletion):
+def qid(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE, spreadsheet, tables_deletion):
+    reglas_sheet = spreadsheet.worksheet('Reglas')
     rules = reglas_sheet.get_all_values()
     dataFrame = pd.DataFrame(rules)
-    df_reglas = dataFrame.iloc[2:, [1, 5, 6]]
+    df_reglas = dataFrame.iloc[2:, [1, 6, 7]]
     df_reglas.dropna(how='all', axis=0, inplace=True)
 
     output_qid = f"""
@@ -197,17 +173,17 @@ def qid_publisher(tables_deletion):
                 """
     severity_list = ",CASE\n\n"
     action_list = ",CASE\n\n"
-    message_list = ",CASE\n\n"
+    # message_list = ",CASE\n\n"
     for indice_fila, fila in df_reglas.iterrows():
       if fila.iloc[0] != "" and fila.iloc[0] is not None:
         severity_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[1][0:1]  + "\n"
         action_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN " + fila.iloc[2][0:1]  + "\n"
-        message_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
+        # message_list += "WHEN rule_id = \"" + fila.iloc[0] + "\" THEN CONCAT(\"Hay algún error en: \"," + "table_id" + ", \" y en campo: \"," + "column_id"  + ")\n"
 
     severity_list += "END severity\n"
     action_list += "END action\n"
-    message_list += "END message\n"
-    output_qid += severity_list + action_list + message_list
+    # message_list += "END message\n"
+    output_qid += severity_list + action_list #+ message_list
     output_qid += f"FROM {GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.dq_summary WHERE failed_count > 0 or complex_rule_validation_errors_count > 0;"
     
     for table in tables_deletion:
@@ -215,56 +191,56 @@ def qid_publisher(tables_deletion):
 
     bq_client.query(output_qid)
 
-def qae_query():
-    query = f"""
-                SELECT 
-                CURRENT_DATETIME() as ts_notification
-                ,array_agg(DISTINCT concat(severity) IGNORE NULLS) as severity_list
-                ,array_length(array_agg(severity IGNORE NULLS)) as issues_found
-                FROM {GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{ERRORS_TABLE}
-                WHERE CURRENT_DATE() = date(execution_ts)
-            """
+# def qae_query(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE):
+#     query = f"""
+#                 SELECT 
+#                 CURRENT_DATETIME() as ts_notification
+#                 ,array_agg(DISTINCT concat(severity) IGNORE NULLS) as severity_list
+#                 ,array_length(array_agg(severity IGNORE NULLS)) as issues_found
+#                 FROM {GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{ERRORS_TABLE}
+#                 WHERE CURRENT_DATE() = date(execution_ts)
+#             """
 
-    query_job = bq_client.query(query)
-    df = query_job.to_dataframe()
-    severity = df['severity_list'].explode().tolist()
-    if(len(severity)>0):
-        severity = [int(x) for x in severity]
-        qae_notification(severity)
+#     query_job = bq_client.query(query)
+#     df = query_job.to_dataframe()
+#     severity = df['severity_list'].explode().tolist()
+#     if(len(severity)>0):
+#         severity = [int(x) for x in severity]
+#         qae_notification(severity)
 
-def qae_notification(severidad_list):
-    df_correos = pd.DataFrame(correos_sheet.get('A3:D'), columns=["nombre", "correo", "entorno", "severidad"])
-    df_correos = df_correos[df_correos['severidad'].str[0].astype(int).isin(severidad_list)]
-    df_correos = df_correos[df_correos['entorno']==environment]
+# def qae_notification(severidad_list):
+#     df_correos = pd.DataFrame(correos_sheet.get('A3:D'), columns=["nombre", "correo", "entorno", "severidad"])
+#     df_correos = df_correos[df_correos['severidad'].str[0].astype(int).isin(severidad_list)]
+#     df_correos = df_correos[df_correos['entorno']==environment]
 
-    indices_max_severidad = df_correos.groupby('correo')['severidad'].idxmax()
-    df_max_severidad = df_correos.loc[indices_max_severidad]
+#     indices_max_severidad = df_correos.groupby('correo')['severidad'].idxmax()
+#     df_max_severidad = df_correos.loc[indices_max_severidad]
 
-    for i, fila in df_max_severidad.iterrows():
-        enviarCorreo(fila.iloc[0], fila.iloc[1], fila.iloc[2], fila.iloc[3], product_name)
+#     for i, fila in df_max_severidad.iterrows():
+#         enviarCorreo(fila.iloc[0], fila.iloc[1], fila.iloc[2], fila.iloc[3], product_name)
 
-def enviarCorreo(name, email, env, severity, product):
-    subject = "Errores en la Calidad de los Datos"
-    body = f"""<div style=\"max-width:600px; margin: 0 auto; padding: 20px; border: 1px solid #ffffff;\">
-                    <h1>ERRORES EN LA CALIDAD DE LOS DATOS</h1>
-                    <p>Hola {name},</p>
-                    <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
-                    <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
-                    <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
-                    <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/0/reporting/883e5753-e94c-45cf-b43f-6f892ef874c0/page/p_imr3x67q8c">enlace</a></p>
-                </div>
-                <hr />
-                <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
-                    <strong>Data Quality</strong><br>
-                </div>
-            """
+# def enviarCorreo(name, email, env, severity, product):
+#     subject = "Errores en la Calidad de los Datos"
+#     body = f"""<div style=\"max-width:600px; margin: 0 auto; padding: 20px; border: 1px solid #ffffff;\">
+#                     <h1>ERRORES EN LA CALIDAD DE LOS DATOS</h1>
+#                     <p>Hola {name},</p>
+#                     <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
+#                     <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
+#                     <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
+#                     <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/0/reporting/883e5753-e94c-45cf-b43f-6f892ef874c0/page/p_imr3x67q8c">enlace</a></p>
+#                 </div>
+#                 <hr />
+#                 <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
+#                     <strong>Data Quality</strong><br>
+#                 </div>
+#             """
 
-    send_text_card(
-        title=subject,
-        subtitle="",
-        paragraph=body,
-    )
-    # send_email(subject, body, email)
+#     send_text_card(
+#         title=subject,
+#         subtitle="",
+#         paragraph=body,
+#     )
+#     # send_email(subject, body, email)
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
     bucket = storage_client.bucket(bucket_name)
@@ -287,7 +263,7 @@ def get_session_headers() -> dict:
 
     return headers
 
-def get_clouddq_task_status() -> str:
+def get_clouddq_task_status(DATAPLEX_TASK_ID) -> str:
     headers = get_session_headers()
     res = requests.get(
         f"{DATAPLEX_ENDPOINT}/v1/projects/{DATAPLEX_PROJECT_ID}/locations/{DATAPLEX_REGION}/lakes/{DATAPLEX_LAKE_ID}/tasks/{DATAPLEX_TASK_ID}/jobs",
@@ -304,17 +280,17 @@ def get_clouddq_task_status() -> str:
     else:
         return "FAILED"
 
-def _get_dataplex_job_state() -> str:
-    task_status = get_clouddq_task_status()
+def _get_dataplex_job_state(DATAPLEX_TASK_ID) -> str:
+    task_status = get_clouddq_task_status(DATAPLEX_TASK_ID)
     while (task_status != 'SUCCEEDED' and task_status != 'FAILED' and task_status != 'CANCELLED'
            and task_status != 'ABORTED'):
         print(time.ctime())
         time.sleep(30)
-        task_status = get_clouddq_task_status()
+        task_status = get_clouddq_task_status(DATAPLEX_TASK_ID)
         print(f"CloudDQ task status is {task_status}")
     return task_status
 
-def _get_dataplex_task() -> str:
+def _get_dataplex_task(DATAPLEX_TASK_ID) -> str:
     headers = get_session_headers()
     res = requests.get(
         f"{DATAPLEX_ENDPOINT}/v1/projects/{DATAPLEX_PROJECT_ID}/locations/{DATAPLEX_REGION}/lakes/{DATAPLEX_LAKE_ID}/tasks/{DATAPLEX_TASK_ID}",
@@ -327,12 +303,22 @@ def _get_dataplex_task() -> str:
     else:
         return "ERROR"
 
-def create_task():
+def create_task(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, GCP_BQ_REGION, CONFIGS_BUCKET_NAME, DATAPLEX_TASK_ID, TARGET_BQ_TABLE, YML):
+    CONFIGS_PATH = f"gs://{CONFIGS_BUCKET_NAME}/{YML}"
+    FULL_TARGET_TABLE_NAME = f"{GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{TARGET_BQ_TABLE}"
+    COMPLETE_TASK_NAME = f"projects/{DATAPLEX_PROJECT_ID}/locations/{DATAPLEX_REGION}/lakes/{DATAPLEX_LAKE_ID}/tasks/{DATAPLEX_TASK_ID}"
+    SERVICE_ACC = f"dataquality@tfg-dq.iam.gserviceaccount.com"
+    TRIGGER_SPEC_TYPE = "ON_DEMAND"
+    PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME = "dataplex-clouddq-artifacts"
+    SPARK_FILE_FULL_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq_pyspark_driver.py"
+    CLOUDDQ_EXECUTABLE_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip"
+    CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH = f"gs://{PUBLIC_CLOUDDQ_EXECUTABLE_BUCKET_NAME}-{DATAPLEX_REGION}/clouddq-executable.zip.hashsum"
+
     task = dataplex_v1.Task()
     task.name = COMPLETE_TASK_NAME
     task.spark.python_script_file = SPARK_FILE_FULL_PATH
     task.spark.file_uris = [CLOUDDQ_EXECUTABLE_FILE_PATH, CLOUDDQ_EXECUTABLE_HASHSUM_FILE_PATH, CONFIGS_PATH]
-    task.trigger_spec.type_ = "ON_DEMAND"
+    task.trigger_spec.type_ = TRIGGER_SPEC_TYPE
     task.execution_spec.service_account = SERVICE_ACC
     
     args = {
@@ -351,14 +337,19 @@ def create_task():
     response = operation.result()
     print(response)
 
-def delete_task():
+def delete_task(DATAPLEX_TASK_ID):
+    COMPLETE_TASK_NAME = f"projects/{DATAPLEX_PROJECT_ID}/locations/{DATAPLEX_REGION}/lakes/{DATAPLEX_LAKE_ID}/tasks/{DATAPLEX_TASK_ID}"
     request = dataplex_v1.DeleteTaskRequest(name=COMPLETE_TASK_NAME)
 
     operation = dataplex_client.delete_task(request=request)
     print("Waiting for operation to complete...")
     operation.result()
 
-def metadata_quality():
+def metadata_quality(GCP_PROJECT_ID, GCP_BQ_REGION, GCP_BQ_DATASET_ID):
+    DATASET_BRZ = "brz_bqset"
+    DATASET_SLV = "slv_bqset"
+    DATASET_GLD = "gld_bqset"
+    TABLE_MTDATA_QUALITY = "looker_metadata_quality"
 
     query = f"""
             DECLARE dq_dataset STRING DEFAULT '{GCP_BQ_DATASET_ID}';

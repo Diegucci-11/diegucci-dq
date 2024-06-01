@@ -23,6 +23,11 @@ steps:
     id: 'bigquery'
     waitFor: ['enable_apis']
 
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
+    id: 'functions'
+    waitFor: ['service_account']
+
   # - name: 'gcr.io/cloud-builders/gcloud'
   #   args: ['builds', 'submit', '--config', 'IaC/modules/composer/cloudbuild.yaml', '.']
   #   id: 'composer-env'
@@ -33,8 +38,4 @@ steps:
   #   id: 'composer_dags'
   #   waitFor: ['composer-env']    
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['builds', 'submit', '--config', 'IaC/modules/function/cloudbuild.yaml', '.']
-    id: 'functions'
-    waitFor: ['service_account']
 timeout: '3600s'

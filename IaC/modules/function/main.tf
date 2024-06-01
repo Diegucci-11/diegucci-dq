@@ -193,9 +193,10 @@ resource "google_cloudfunctions2_function" "dq_validation" {
     }
   }
   service_config {
-    environment_variables = {
-      MATRIX_FILE   = var.matrix_input_file
-    }
+    max_instance_count  = 3
+    available_memory   = "512M"
+    available_cpu      = "0.583"
+    timeout_seconds     = 3600
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
   }
