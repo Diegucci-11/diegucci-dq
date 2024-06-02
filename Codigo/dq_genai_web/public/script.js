@@ -289,7 +289,7 @@ function recogerValores() {
     var rule_name = document.getElementById('rule_name').textContent;
     var rule_desc = document.getElementById('rule_desc').textContent;
     var rule_example = document.getElementById('rule_example').textContent;
-    var rule_tipo_dato = document.getElementById('rule_tipo_dato').textContent;
+    var rule_tipo_dato = document.getElementById('rule_tipo_dato').value;
     var rule_yaml = document.getElementById('rule_yaml').textContent;
     var rule_action = document.getElementById('rule_action').value;
     var rule_sev = document.getElementById('rule_sev').value;
