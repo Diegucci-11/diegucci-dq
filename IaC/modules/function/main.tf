@@ -199,6 +199,12 @@ resource "google_cloudfunctions2_function" "dq_validation" {
     timeout_seconds     = 3600
     ingress_settings = "ALLOW_ALL"
     service_account_email = "${var.service_account}@${var.id_project}.iam.gserviceaccount.com"
+    secret_environment_variables {
+      key        = "email_password"
+      project_id = var.id_project
+      secret     = "email_password"
+      version    = "latest"
+    }
   }
 }
 

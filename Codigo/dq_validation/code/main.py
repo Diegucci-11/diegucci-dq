@@ -9,6 +9,9 @@ from google.cloud import storage
 import gspread
 from google.cloud import dataplex_v1
 from google.auth import default
+from email.message import EmailMessage
+import smtplib
+import os
 
 credentials, _ = default(scopes=['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive'])
 dplex_credentials, _ = default(scopes=["https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/cloudfunctions"])
@@ -33,13 +36,10 @@ def dq_validation(request):
     spreadsheet = gs_client.open(gs_name)
 
     tablas_sheet = spreadsheet.worksheet('Tablas')
-    correos_sheet = spreadsheet.worksheet('Correos')
 
     GCP_PROJECT_ID = tablas_sheet.cell(4, 2).value
     GCP_BQ_DATASET_ID = tablas_sheet.cell(5, 2).value
     GCP_BQ_REGION = tablas_sheet.cell(6, 2).value
-    product_name = tablas_sheet.cell(2, 2).value
-    environment = tablas_sheet.cell(3, 2).value
 
     YML = f"dq_specifications_{name}.yml"
     DATAPLEX_TASK_ID = f"dq-validation-{name}"
@@ -78,9 +78,9 @@ def dq_validation(request):
     print("Executing metadata quality task...")
     metadata_quality(GCP_PROJECT_ID, GCP_BQ_REGION, GCP_BQ_DATASET_ID)
     print("Metadata quality task executed")
-    # print("Executing QAE...")
-    # qae_query()
-    # print("QAE executed")
+    print("Executing QAE...")
+    qae_query(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE, spreadsheet)
+    print("QAE executed")
     print("Proccess finished successfuly!")
 
     return "ok"
@@ -191,56 +191,76 @@ def qid(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE, spreadsheet, tables_del
 
     bq_client.query(output_qid)
 
-# def qae_query(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE):
-#     query = f"""
-#                 SELECT 
-#                 CURRENT_DATETIME() as ts_notification
-#                 ,array_agg(DISTINCT concat(severity) IGNORE NULLS) as severity_list
-#                 ,array_length(array_agg(severity IGNORE NULLS)) as issues_found
-#                 FROM {GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{ERRORS_TABLE}
-#                 WHERE CURRENT_DATE() = date(execution_ts)
-#             """
+def qae_query(GCP_PROJECT_ID, GCP_BQ_DATASET_ID, ERRORS_TABLE, spreadsheet):
+    query = f"""
+                SELECT 
+                CURRENT_DATETIME() as ts_notification
+                ,array_agg(DISTINCT concat(severity) IGNORE NULLS) as severity_list
+                ,array_length(array_agg(severity IGNORE NULLS)) as issues_found
+                FROM {GCP_PROJECT_ID}.{GCP_BQ_DATASET_ID}.{ERRORS_TABLE}
+                WHERE CURRENT_DATE() = date(execution_ts)
+            """
 
-#     query_job = bq_client.query(query)
-#     df = query_job.to_dataframe()
-#     severity = df['severity_list'].explode().tolist()
-#     if(len(severity)>0):
-#         severity = [int(x) for x in severity]
-#         qae_notification(severity)
+    query_job = bq_client.query(query)
+    df = query_job.to_dataframe()
+    severity = df['severity_list'].explode().tolist()
+    if(len(severity)>0):
+        severity = [int(x) for x in severity]
+        qae_notification(severity, spreadsheet)
 
-# def qae_notification(severidad_list):
-#     df_correos = pd.DataFrame(correos_sheet.get('A3:D'), columns=["nombre", "correo", "entorno", "severidad"])
-#     df_correos = df_correos[df_correos['severidad'].str[0].astype(int).isin(severidad_list)]
-#     df_correos = df_correos[df_correos['entorno']==environment]
+def qae_notification(severidad_list, spreadsheet):
+    correos_sheet = spreadsheet.worksheet('Correos')
+    tablas_sheet = spreadsheet.worksheet('Tablas')
+    product_name = tablas_sheet.cell(2, 2).value
+    environment = tablas_sheet.cell(3, 2).value
 
-#     indices_max_severidad = df_correos.groupby('correo')['severidad'].idxmax()
-#     df_max_severidad = df_correos.loc[indices_max_severidad]
+    df_correos = pd.DataFrame(correos_sheet.get('A3:D'), columns=["nombre", "correo", "entorno", "severidad"])
+    df_correos = df_correos[df_correos['severidad'].str[0].astype(int).isin(severidad_list)]
+    df_correos = df_correos[df_correos['entorno']==environment]
 
-#     for i, fila in df_max_severidad.iterrows():
-#         enviarCorreo(fila.iloc[0], fila.iloc[1], fila.iloc[2], fila.iloc[3], product_name)
+    indices_max_severidad = df_correos.groupby('correo')['severidad'].idxmax()
+    df_max_severidad = df_correos.loc[indices_max_severidad]
 
-# def enviarCorreo(name, email, env, severity, product):
-#     subject = "Errores en la Calidad de los Datos"
-#     body = f"""<div style=\"max-width:600px; margin: 0 auto; padding: 20px; border: 1px solid #ffffff;\">
-#                     <h1>ERRORES EN LA CALIDAD DE LOS DATOS</h1>
-#                     <p>Hola {name},</p>
-#                     <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
-#                     <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
-#                     <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
-#                     <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/0/reporting/883e5753-e94c-45cf-b43f-6f892ef874c0/page/p_imr3x67q8c">enlace</a></p>
-#                 </div>
-#                 <hr />
-#                 <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
-#                     <strong>Data Quality</strong><br>
-#                 </div>
-#             """
+    for i, fila in df_max_severidad.iterrows():
+        enviarCorreo(fila.iloc[0], fila.iloc[1], fila.iloc[2], fila.iloc[3], product_name)
 
-#     send_text_card(
-#         title=subject,
-#         subtitle="",
-#         paragraph=body,
-#     )
-#     # send_email(subject, body, email)
+def enviarCorreo(name, email, env, severity, product):
+    subject = "Errores en la Calidad de los Datos"
+    body = f"""<div style=\"max-width:600px; margin: 0 auto; padding: 20px; border: 1px solid #ffffff;\">
+                    <h1>ERRORES EN LA CALIDAD DE LOS DATOS</h1>
+                    <p>Hola {name},</p>
+                    <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
+                    <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
+                    <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
+                    <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/0/reporting/883e5753-e94c-45cf-b43f-6f892ef874c0/page/p_imr3x67q8c">enlace</a></p>
+                </div>
+                <hr />
+                <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
+                    <strong>Data Quality</strong><br>
+                </div>
+            """
+    send_email(subject, body, email)
+
+def send_email(subject, body, email):
+    email_from = "diegucci.sautter@gmail.com"
+    email_to = email
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.ehlo()
+        smtp.login(email_from, os.environ.get("email_password"))
+        try:
+            msg = EmailMessage()
+            msg.set_content(body, subtype="html")
+            msg['Subject'] = subject
+            msg['From'] = email_from
+            msg['To'] = email_to
+            msg['Cc'] = ''
+            msg['Bcc'] = ''
+            smtp.send_message(msg)
+            smtp.close()
+            print("Mensaje enviado correctamente")
+        except:
+            print("Error en el envio del correo!")
 
 def upload_blob(bucket_name, output_list, destination_blob_name):
     bucket = storage_client.bucket(bucket_name)
