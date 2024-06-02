@@ -232,20 +232,23 @@ def enviarCorreo(name, email, env, severity, product):
                     <p>Este es un mensaje de notificación sobre el incumplimiento de reglas de Calidad de tus datos.</p>
                     <p>Estos errores han tenido lugar en el producto: {product} y en el entorno {env}</p>
                     <p>La severidad de estas reglas llega hasta nivel: {severity}</p>
-                    <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/0/reporting/883e5753-e94c-45cf-b43f-6f892ef874c0/page/p_imr3x67q8c">enlace</a></p>
+                    <p>Para consultar detenidamente los errores utiliza el siguiente <a href="https://lookerstudio.google.com/u/1/reporting/4c19bdb2-5f6d-4ef4-a948-0269e5b8053a/page/p_imr3x67q8c">enlace</a></p>
                 </div>
                 <hr />
                 <div style=\"background-color: #ffffff; padding: 20px; text-align: center;\">
                     <strong>Data Quality</strong><br>
                 </div>
             """
+    
     send_email(subject, body, email)
 
 def send_email(subject, body, email):
-    email_from = "diegucci.sautter@gmail.com"
+    email_from = "erik_tfg@outlook.es"
     email_to = email
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+    with smtplib.SMTP('smtp.office365.com', 587) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
         smtp.ehlo()
         smtp.login(email_from, os.environ.get("email_password"))
         try:
