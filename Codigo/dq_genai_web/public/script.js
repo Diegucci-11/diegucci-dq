@@ -26,7 +26,7 @@ function generarRegla() {
         "dimension": radioSeleccionado
     };
 
-    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule_2', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/create_rule', {
         method: 'POST',
         // headers: {
         //     'Content-Type': 'application/json'
@@ -311,7 +311,7 @@ function recogerValores() {
     }
 
     // Llamar a función append_rule
-    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule_2', {
+    fetch('https://europe-southwest1-tfg-dq.cloudfunctions.net/append_rule', {
         method: 'POST',
         // headers: {
         //     'Content-Type': 'application/json'
